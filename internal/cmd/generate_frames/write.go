@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/gabe565/ascii-telnet-go/config"
 	"github.com/gabe565/ascii-telnet-go/internal/frame"
+	"go/format"
 	"os"
 	"path/filepath"
 	"text/template"
@@ -25,11 +27,22 @@ func writeFrame(f frame.Frame) error {
 		return err
 	}
 
-	err = tmpl.Execute(out, map[string]any{
+	var buf bytes.Buffer
+
+	err = tmpl.Execute(&buf, map[string]any{
 		"Package": config.OutputDir,
 		"Frame":   f,
 	})
 	if err != nil {
+		return err
+	}
+
+	formatted, err := format.Source(buf.Bytes())
+	if err != nil {
+		panic(err)
+	}
+
+	if _, err := out.Write(formatted); err != nil {
 		return err
 	}
 
@@ -58,11 +71,22 @@ func writeFrameList(n int) error {
 
 	frames := make([]struct{}, n)
 
-	err = tmpl.Execute(out, map[string]any{
+	var buf bytes.Buffer
+
+	err = tmpl.Execute(&buf, map[string]any{
 		"Package": config.OutputDir,
 		"Frames":  frames,
 	})
 	if err != nil {
+		return err
+	}
+
+	formatted, err := format.Source(buf.Bytes())
+	if err != nil {
+		panic(err)
+	}
+
+	if _, err := out.Write(formatted); err != nil {
 		return err
 	}
 
