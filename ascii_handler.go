@@ -7,7 +7,6 @@ import (
 	"github.com/ahmetb/go-cursor"
 	"github.com/gabe565/ascii-telnet-go/generated_frames"
 	"github.com/reiver/go-telnet"
-	"io"
 	"syscall"
 	"time"
 )
@@ -19,7 +18,7 @@ func (handler AsciiHandler) ServeTELNET(ctx telnet.Context, w telnet.Writer, r t
 	for _, f := range generated_frames.List {
 		buf.WriteString(f.Data)
 
-		_, err := io.WriteString(w, buf.String())
+		_, err := w.Write(buf.Bytes())
 		if err != nil {
 			if errors.Is(err, syscall.EPIPE) {
 				return
