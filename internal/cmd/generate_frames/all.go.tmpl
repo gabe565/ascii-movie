@@ -6,6 +6,6 @@ import "github.com/gabe565/ascii-telnet-go/internal/frame"
 
 var List = []frame.Frame{
 	{{- range $i, $_ := .Frames }}
-	Frame{{ $i }},
+	frame{{ $i }},
 	{{- end }}
 }
