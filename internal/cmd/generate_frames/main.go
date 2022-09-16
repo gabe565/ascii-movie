@@ -43,6 +43,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	var frameCap int
 	var f *frame.Frame
 	var i int
 	scan := bufio.NewScanner(in)
@@ -71,6 +72,9 @@ func main() {
 			f.Data += strings.Repeat(" ", config.PadLeft-1)
 			f.Data += strings.Repeat("\n", config.PadBottom)
 			f.Height = strings.Count(f.Data, "\n")
+			if frameCap < len(f.Data) {
+				frameCap = len(f.Data)
+			}
 			if err := writeFrame(*f); err != nil {
 				log.Fatal(err)
 			}
@@ -79,7 +83,7 @@ func main() {
 		i += 1
 	}
 
-	if err := writeFrameList(totalLines / config.FrameHeight); err != nil {
+	if err := writeFrameList(totalLines/config.FrameHeight, frameCap); err != nil {
 		log.Fatal(err)
 	}
 }

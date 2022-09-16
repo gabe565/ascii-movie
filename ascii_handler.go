@@ -15,6 +15,8 @@ type AsciiHandler struct{}
 
 func (handler AsciiHandler) ServeTELNET(ctx telnet.Context, w telnet.Writer, r telnet.Reader) {
 	var buf bytes.Buffer
+	buf.Grow(generated_frames.Cap)
+
 	for _, f := range generated_frames.List {
 		buf.WriteString(f.Data)
 

@@ -4,6 +4,8 @@ package {{ .Package }}
 
 import "github.com/gabe565/ascii-telnet-go/internal/frame"
 
+var Cap = {{ .Cap }}
+
 var List = []frame.Frame{
 	{{- range $i, $_ := .Frames }}
 	frame{{ $i }},

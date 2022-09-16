@@ -53,7 +53,7 @@ func writeFrame(f frame.Frame) error {
 	return nil
 }
 
-func writeFrameList(n int) error {
+func writeFrameList(n, cap int) error {
 	filename := filepath.Join(config.OutputDir, "0_frame_list.go")
 
 	out, err := os.Create(filename)
@@ -76,6 +76,7 @@ func writeFrameList(n int) error {
 	err = tmpl.Execute(&buf, map[string]any{
 		"Package": config.OutputDir,
 		"Frames":  frames,
+		"Cap":     cap,
 	})
 	if err != nil {
 		return err
