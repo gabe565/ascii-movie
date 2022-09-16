@@ -5,7 +5,6 @@ package config
 const MovieFile = "movies/sw1.txt"
 
 const FrameHeight = 14
-const Height = 13
 const Width = 67
 
 const PadTop = 3
