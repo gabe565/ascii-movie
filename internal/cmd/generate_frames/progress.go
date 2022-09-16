@@ -9,34 +9,26 @@ import (
 
 var colorLightBlack = color.New(38).SprintFunc()
 
+var parts = []rune{
+	' ',
+	'▏',
+	'▎',
+	'▍',
+	'▌',
+	'▋',
+	'▊',
+	'▉',
+	'█',
+}
+
 func progressBar(n, total, width int) string {
 	percent := float64(n) / float64(total)
 	fullWidth := percent * float64(width)
-	var partChar rune
-	switch int(math.Mod(fullWidth, 1.0) * 8) {
-	case 0:
-		partChar = ' '
-	case 1:
-		partChar = '▏'
-	case 2:
-		partChar = '▎'
-	case 3:
-		partChar = '▍'
-	case 4:
-		partChar = '▌'
-	case 5:
-		partChar = '▋'
-	case 6:
-		partChar = '▊'
-	case 7:
-		partChar = '▉'
-	default:
-		partChar = '█'
-	}
+	part := parts[int(math.Mod(fullWidth, 1.0)*8)]
 	return colorLightBlack(
 		"[" +
 			strings.Repeat("█", int(fullWidth)) +
-			string(partChar) +
+			string(part) +
 			strings.Repeat(" ", width-int(fullWidth)) +
 			"]",
 	)
