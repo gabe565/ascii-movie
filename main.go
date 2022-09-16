@@ -22,6 +22,8 @@ func main() {
 		_ = listen.Close()
 	}(listen)
 
+	log.WithField("address", addr).Info("listening for connections")
+
 	for {
 		conn, err := listen.Accept()
 		if err != nil {
