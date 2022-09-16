@@ -6,6 +6,7 @@ require (
 	github.com/ahmetb/go-cursor v0.0.0-20131010032410-8136607ea412
 	github.com/fatih/color v1.13.0
 	github.com/sirupsen/logrus v1.9.0
+	github.com/spf13/pflag v1.0.5
 )
 
 require (
