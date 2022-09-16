@@ -1,7 +1,5 @@
 package config
 
-//go:generate go run ./internal/cmd/generate_frames
-
 const MovieFile = "movies/sw1.txt"
 
 const FrameHeight = 14
