@@ -19,8 +19,8 @@
   & Player     : Martin W. Kirst
                  https://github.com/nitram509/ascii-telnet-server
 
-  Rust Port    : Gabe Cook
-                 https://github.com/gabe565/ascii-telnet-rust
+  Go Port      : Gabe Cook
+                 https://github.com/gabe565/ascii-telnet-go
 
   The hard work was done by Simon,
   I just wrote the telnet player
