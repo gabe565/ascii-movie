@@ -1,0 +1,11 @@
+**/.DS_Store
+.dockerignore
+.git/
+.github/
+.idea/
+.pre-commit-config.yaml
+Dockerfile
+data/
+docker-compose.yml
+ascii-telnet-go
+vendor/
