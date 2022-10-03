@@ -2,10 +2,6 @@ name: Build
 
 on: push
 
-env:
-  go_version: "1.19"
-  node_version: "16"
-
 jobs:
   lint:
     name: Backend Lint
