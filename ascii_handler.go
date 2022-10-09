@@ -16,7 +16,7 @@ func ServeAscii(w io.Writer) error {
 	for _, f := range generated_frames.List {
 		buf.WriteString(f.Data)
 
-		if _, err := w.Write(buf.Bytes()); err != nil {
+		if _, err := io.Copy(w, &buf); err != nil {
 			return err
 		}
 
