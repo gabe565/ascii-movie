@@ -76,3 +76,28 @@ jobs:
             FONTAWESOME_NPM_AUTH_TOKEN=${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy-prod:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    environment:
+    concurrency: prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: gabe565/fleet-infra
+          token: ${{ secrets.PAT }}
+      - id: vars
+        name: Build deployment vars
+        run: |
+          echo "tag=sha-${GITHUB_SHA:0:7}" >> $GITHUB_OUTPUT
+      - name: Bump version
+        uses: clevyr/yampl-action@v1
+        with:
+          file: apps/tennant/ascii-telnet/helmrelease.yaml
+          values: |
+            tag=${{ steps.vars.outputs.tag }}
+          commit_message: ":arrow_up: [${{ github.event.repository.name }}] Bump version to ${{ steps.vars.outputs.tag }}"
