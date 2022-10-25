@@ -19,6 +19,8 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           args: --timeout=5m
+          skip-build-cache: true
+          skip-pkg-cache: true
 
   test:
     name: Backend Test
