@@ -21,16 +21,15 @@ RUN --mount=type=cache,target=/root/.cache \
         'linux/arm64' | 'linux/arm64/v8') export GOARCH=arm64 ;; \
         *) echo "Unsupported target: $TARGETPLATFORM" && exit 1 ;; \
     esac \
-    && go build -ldflags='-w -s'
+    && go build -ldflags='-w -s' -o ascii-telnet
 
 
 FROM alpine
 LABEL org.opencontainers.image.source="https://github.com/gabe565/ascii-telnet-go"
-WORKDIR /app
 
 RUN apk add --no-cache tzdata
 
-COPY --from=go-builder /app/ascii-telnet-go ./
+COPY --from=go-builder /app/ascii-telnet /usr/local/bin
 
 ARG USERNAME=ascii-telnet
 ARG UID=1000
@@ -39,4 +38,4 @@ RUN addgroup -g "$GID" "$USERNAME" \
     && adduser -S -u "$UID" -G "$USERNAME" "$USERNAME"
 USER $UID
 
-CMD ["./ascii-telnet-go"]
+CMD ["ascii-telnet", "serve"]
