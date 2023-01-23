@@ -1,7 +1,6 @@
 .DS_Store
 vendor
 ascii-telnet-go
-generated_frames
 
 # local env files
 .env.local

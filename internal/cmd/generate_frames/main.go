@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"github.com/gabe565/ascii-telnet-go/config"
 	"github.com/gabe565/ascii-telnet-go/internal/frame"
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
@@ -30,11 +31,12 @@ func main() {
 		_ = in.Close()
 	}(in)
 
-	if err := os.RemoveAll(config.OutputDir); err != nil {
-		log.Fatal(err)
-	}
-
-	if err := os.Mkdir(config.OutputDir, 0777); err != nil {
+	if err := filepath.Walk(config.OutputDir, func(path string, info fs.FileInfo, err error) error {
+		if strings.HasSuffix(path, ".go") && !strings.HasSuffix(path, "stub.go") {
+			return os.Remove(path)
+		}
+		return nil
+	}); err != nil {
 		log.Fatal(err)
 	}
 
