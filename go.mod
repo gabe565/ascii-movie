@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/ahmetb/go-cursor v0.0.0-20131010032410-8136607ea412
-	github.com/fatih/color v1.14.0
+	github.com/fatih/color v1.14.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.6.1
 )
