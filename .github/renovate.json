@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "local>gabe565/renovate-config"
-  ],
-  "postUpdateOptions": ["gomodTidy"]
+    "local>gabe565/renovate-config",
+    "local>gabe565/renovate-config:golang"
+  ]
 }
