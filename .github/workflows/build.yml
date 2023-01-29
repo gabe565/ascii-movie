@@ -4,7 +4,7 @@ on: push
 
 jobs:
   lint:
-    name: Backend Lint
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -23,7 +23,7 @@ jobs:
           skip-pkg-cache: true
 
   test:
-    name: Backend Test
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
