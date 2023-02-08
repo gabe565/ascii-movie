@@ -1,6 +1,6 @@
 module github.com/gabe565/ascii-telnet-go
 
-go 1.19
+go 1.20
 
 require (
 	github.com/ahmetb/go-cursor v0.0.0-20131010032410-8136607ea412
