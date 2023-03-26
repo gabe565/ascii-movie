@@ -1,5 +1,7 @@
 # ascii-telnet-go
 
+<img src="./assets/icon.svg" alt="ascii-telnet logo" width="92" align="right">
+
 [![Build](https://github.com/gabe565/ascii-telnet-go/actions/workflows/build.yml/badge.svg)](https://github.com/gabe565/ascii-telnet-go/actions/workflows/build.yml)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/gabe565)](https://artifacthub.io/packages/helm/gabe565/ascii-telnet)
 
