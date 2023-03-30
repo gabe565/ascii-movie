@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.20-alpine as go-builder
+FROM --platform=$BUILDPLATFORM golang:1.20 as build
 WORKDIR /app
 
 COPY go.mod go.sum ./
@@ -19,21 +19,9 @@ RUN --mount=type=cache,target=/root/.cache \
         'linux/arm64' | 'linux/arm64/v8') export GOARCH=arm64 ;; \
         *) echo "Unsupported target: $TARGETPLATFORM" && exit 1 ;; \
     esac \
-    && go build -ldflags='-w -s' -o ascii-telnet
+    && CGO_ENABLED=0 go build -ldflags='-w -s' -o ascii-telnet
 
 
-FROM alpine
-LABEL org.opencontainers.image.source="https://github.com/gabe565/ascii-telnet-go"
-
-RUN apk add --no-cache tzdata
-
-COPY --from=go-builder /app/ascii-telnet /usr/local/bin
-
-ARG USERNAME=ascii-telnet
-ARG UID=1000
-ARG GID=$UID
-RUN addgroup -g "$GID" "$USERNAME" \
-    && adduser -S -u "$UID" -G "$USERNAME" "$USERNAME"
-USER $UID
-
-CMD ["ascii-telnet", "serve"]
+FROM gcr.io/distroless/static-debian11:nonroot
+COPY --from=build /app/ascii-telnet /
+CMD ["/ascii-telnet", "serve"]
