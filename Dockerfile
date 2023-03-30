@@ -22,6 +22,11 @@ RUN --mount=type=cache,target=/root/.cache \
     && CGO_ENABLED=0 go build -ldflags='-w -s' -o ascii-telnet
 
 
-FROM gcr.io/distroless/static-debian11:nonroot
+FROM gcr.io/distroless/static-debian11:debug-nonroot as debug
+COPY --from=build /app/ascii-telnet /
+CMD ["/ascii-telnet", "serve"]
+
+
+FROM gcr.io/distroless/static-debian11:nonroot as production
 COPY --from=build /app/ascii-telnet /
 CMD ["/ascii-telnet", "serve"]
