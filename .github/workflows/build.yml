@@ -40,7 +40,6 @@ jobs:
   build:
     name: Build Image (${{ matrix.target }})
     runs-on: ubuntu-latest
-    needs: [lint, test]
     strategy:
       # Limit 1 to improve caching
       max-parallel: 1
