@@ -9,9 +9,10 @@ import (
 
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "serve",
-		Short: "Serve movie to telnet clients",
-		RunE:  run,
+		Use:     "serve",
+		Aliases: []string{"server", "listen"},
+		Short:   "Serve movie to telnet clients",
+		RunE:    run,
 	}
 
 	cmd.Flags().StringP("address", "a", ":23", "Listen address")
