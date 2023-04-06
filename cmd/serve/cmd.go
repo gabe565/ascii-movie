@@ -2,9 +2,7 @@ package serve
 
 import (
 	"github.com/gabe565/ascii-telnet-go/internal/server"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"net"
 )
 
 func NewCommand() *cobra.Command {
@@ -20,29 +18,17 @@ func NewCommand() *cobra.Command {
 	return cmd
 }
 
-func run(cmd *cobra.Command, args []string) error {
+func run(cmd *cobra.Command, args []string) (err error) {
+	var handler server.Handler
+
 	addr, err := cmd.Flags().GetString("address")
 	if err != nil {
 		return err
 	}
 
-	listen, err := net.Listen("tcp", addr)
-	if err != nil {
-		log.Fatal(err)
+	if err := handler.Listen(cmd.Context(), addr); err != nil {
+		return err
 	}
-	defer func(listen net.Listener) {
-		_ = listen.Close()
-	}(listen)
 
-	log.WithField("address", addr).Info("listening for connections")
-
-	for {
-		conn, err := listen.Accept()
-		if err != nil {
-			log.WithError(err).Error("failed to accept connection")
-			continue
-		}
-
-		go server.Serve(conn)
-	}
+	return nil
 }

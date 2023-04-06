@@ -9,7 +9,9 @@ import (
 	"time"
 )
 
-func ServeAscii(w io.Writer) error {
+type Handler struct{}
+
+func (s *Handler) ServeAscii(w io.Writer) error {
 	var buf bytes.Buffer
 	buf.Grow(generated_frames.Cap)
 

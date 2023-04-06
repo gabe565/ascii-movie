@@ -14,6 +14,7 @@ func NewCommand() *cobra.Command {
 	return cmd
 }
 
-func run(cmd *cobra.Command, args []string) error {
-	return server.ServeAscii(cmd.OutOrStdout())
+func run(cmd *cobra.Command, args []string) (err error) {
+	var handler server.Handler
+	return handler.ServeAscii(cmd.OutOrStdout())
 }

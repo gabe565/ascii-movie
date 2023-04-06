@@ -1,14 +1,49 @@
 package server
 
 import (
+	"context"
 	"errors"
 	"github.com/gabe565/ascii-telnet-go/internal/log_hooks"
 	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"net"
 	"syscall"
 )
 
-func Serve(conn net.Conn) {
+func (s *Handler) Listen(ctx context.Context, addr string) error {
+	log.WithField("address", addr).Info("listening for connections")
+
+	listen, err := net.Listen("tcp", addr)
+	if err != nil {
+		return err
+	}
+	defer func(listen net.Listener) {
+		_ = listen.Close()
+	}(listen)
+
+	go func() {
+		for {
+			conn, err := listen.Accept()
+			if err != nil {
+				select {
+				case <-ctx.Done():
+					return
+				default:
+					log.WithError(err).Error("failed to accept connection")
+					continue
+				}
+			}
+
+			go s.Serve(conn)
+		}
+	}()
+
+	<-ctx.Done()
+	log.Info("closing server")
+	return listen.Close()
+}
+
+func (s *Handler) Serve(conn net.Conn) {
 	defer func(conn net.Conn) {
 		_ = conn.Close()
 	}(conn)
@@ -21,7 +56,7 @@ func Serve(conn net.Conn) {
 	}
 	log = log.WithField("remote_ip", remoteIP)
 
-	if err := ServeAscii(conn); err != nil {
+	if err := s.ServeAscii(conn); err != nil {
 		if errors.Is(err, syscall.EPIPE) {
 			log.Info("disconnected early")
 		} else {
