@@ -9,9 +9,17 @@ The original Star Wars telnet server is currently down, so why not implement it 
 
 See it in action by running `telnet gabecook.com` or `nc gabecook.com 23`.
 
-<p align="center">
-  <a href="https://asciinema.org/a/431278"><img src="https://asciinema.org/a/431278.svg"/></a>
-</p>
+<div align="center">
+  <video src="https://user-images.githubusercontent.com/7717888/230577875-ef2e19bb-a804-40a1-9990-84a4ccff29df.mp4"></video>
+</div>
+
+<details>
+  <summary>Also available on asciinema</summary>
+
+  <p align="center">
+    <a href="https://asciinema.org/a/431278"><img src="https://asciinema.org/a/431278.svg"/></a>
+  </p>
+</details>
 
 ## Running
 
