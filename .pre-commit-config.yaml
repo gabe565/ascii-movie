@@ -8,3 +8,12 @@ repos:
       - id: go-vet-mod
       - id: golangci-lint-mod
         args: [--fix]
+
+  - repo: local
+    hooks:
+      - id: vhs-lint
+        name: VHS Lint
+        language: system
+        entry: vhs validate assets/demo.tape
+        files: .tape$
+        pass_filenames: false
