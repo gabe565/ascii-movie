@@ -22,7 +22,7 @@ var frameTmpl string
 
 func main() {
 	// Open the source movie file
-	filename := filepath.Join("movies", filepath.Base(config.MovieFile))
+	filename := filepath.Join(config.MovieDir, config.MovieFile)
 	in, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)

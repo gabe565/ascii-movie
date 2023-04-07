@@ -1,6 +1,7 @@
 package config
 
-const MovieFile = "movies/sw1.txt"
+const MovieDir = "movies"
+const MovieFile = "sw1.txt"
 
 const FrameHeight = 14
 const Width = 67
