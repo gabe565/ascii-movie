@@ -32,7 +32,7 @@ func main() {
 	}(in)
 
 	if err := filepath.Walk(config.OutputDir, func(path string, info fs.FileInfo, err error) error {
-		if strings.HasSuffix(path, ".go") && !strings.HasSuffix(path, "stub.go") {
+		if filepath.Ext(path) == ".go" && filepath.Base(path) != "stub.go" {
 			return os.Remove(path)
 		}
 		return nil
