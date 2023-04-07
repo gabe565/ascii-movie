@@ -43,6 +43,14 @@ func New(flags *flag.FlagSet, serveFlags bool) (handler Handler, err error) {
 		if err != nil {
 			return handler, err
 		}
+
+		// Deprecated --address flag
+		if flags.Changed("address") {
+			handler.TelnetConfig.Address, err = flags.GetString("address")
+			if err != nil {
+				return handler, err
+			}
+		}
 	}
 
 	return handler, nil

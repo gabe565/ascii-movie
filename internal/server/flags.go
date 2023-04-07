@@ -49,4 +49,13 @@ func ServeFlags(flags *flag.FlagSet) {
 
 	flags.Bool(TelnetEnabledFlag, true, "Enables Telnet listener")
 	flags.String(TelnetAddressFlag, ":23", "Telnet listen address")
+
+	// Deprecated --address flag
+	flags.StringP("address", "a", ":23", "Telnet listen address")
+	if err := flags.MarkDeprecated(
+		"address",
+		"please use --telnet-address instead.",
+	); err != nil {
+		panic(err)
+	}
 }
