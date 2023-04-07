@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"errors"
-	"github.com/gabe565/ascii-telnet-go/internal/log_hooks"
+	"github.com/gabe565/ascii-movie/internal/log_hooks"
 	log "github.com/sirupsen/logrus"
 	"net"
 	"syscall"

@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   app:
-    image: "ghcr.io/gabe565/ascii-telnet-go"
+    image: "ghcr.io/gabe565/ascii-movie"
     build:
       context: .
       target: debug

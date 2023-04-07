@@ -61,7 +61,9 @@ jobs:
           flavor: |
             latest=false
             suffix=${{ matrix.suffix }}
-          images: ghcr.io/gabe565/ascii-telnet-go
+          images: |
+            ghcr.io/gabe565/ascii-telnet-go
+            ghcr.io/gabe565/ascii-movie
           tags: |
             type=raw,priority=1000,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
             type=semver,pattern={{version}}

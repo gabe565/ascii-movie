@@ -18,13 +18,13 @@ Set BorderRadius 10
 # Use a shell alias to hide the cursor after typing
 # and set --speed=2 flag.
 Hide
-Type@0 "alias ascii-telnet='sleep 0.1 && tput civis && ./ascii-telnet --speed=2' && clear"
+Type@0 "alias ascii-movie='sleep 0.1 && tput civis && ./ascii-movie --speed=2' && clear"
 Enter
 Sleep 100ms
 Show
 Sleep 50ms
 
-Type "ascii-telnet play"
+Type "ascii-movie play"
 Sleep 250ms
 Enter
 

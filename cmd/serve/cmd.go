@@ -2,7 +2,7 @@ package serve
 
 import (
 	"context"
-	"github.com/gabe565/ascii-telnet-go/internal/server"
+	"github.com/gabe565/ascii-movie/internal/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"

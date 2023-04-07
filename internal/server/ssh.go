@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
-	"github.com/gabe565/ascii-telnet-go/internal/log_hooks"
+	"github.com/gabe565/ascii-movie/internal/log_hooks"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
 	"io"

@@ -5,7 +5,7 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/ahmetb/go-cursor"
-	"github.com/gabe565/ascii-telnet-go/generated_frames"
+	"github.com/gabe565/ascii-movie/generated_frames"
 	flag "github.com/spf13/pflag"
 	"io"
 	"time"

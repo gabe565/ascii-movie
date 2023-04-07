@@ -1,7 +1,7 @@
 package play
 
 import (
-	"github.com/gabe565/ascii-telnet-go/internal/server"
+	"github.com/gabe565/ascii-movie/internal/server"
 	"github.com/spf13/cobra"
 )
 

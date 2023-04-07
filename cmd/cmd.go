@@ -1,14 +1,14 @@
 package cmd
 
 import (
-	"github.com/gabe565/ascii-telnet-go/cmd/play"
-	"github.com/gabe565/ascii-telnet-go/cmd/serve"
+	"github.com/gabe565/ascii-movie/cmd/play"
+	"github.com/gabe565/ascii-movie/cmd/serve"
 	"github.com/spf13/cobra"
 )
 
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "ascii-telnet",
+		Use: "ascii-movie",
 	}
 	cmd.AddCommand(
 		play.NewCommand(),

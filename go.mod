@@ -1,4 +1,4 @@
-module github.com/gabe565/ascii-telnet-go
+module github.com/gabe565/ascii-movie
 
 go 1.20
 

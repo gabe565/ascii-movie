@@ -3,8 +3,8 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/gabe565/ascii-telnet-go/config"
-	"github.com/gabe565/ascii-telnet-go/internal/frame"
+	"github.com/gabe565/ascii-movie/config"
+	"github.com/gabe565/ascii-movie/internal/frame"
 	"go/format"
 	"os"
 	"path/filepath"

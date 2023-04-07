@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gabe565/ascii-telnet-go/cmd"
+	"github.com/gabe565/ascii-movie/cmd"
 	"os"
 )
 
