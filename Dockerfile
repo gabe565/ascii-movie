@@ -24,9 +24,11 @@ RUN --mount=type=cache,target=/root/.cache \
 
 FROM gcr.io/distroless/static-debian11:debug-nonroot as debug
 COPY --from=build /app/ascii-movie /
-ENTRYPOINT ["/ascii-movie", "serve"]
+ENTRYPOINT ["/ascii-movie"]
+CMD ["serve"]
 
 
 FROM gcr.io/distroless/static-debian11:nonroot as production
 COPY --from=build /app/ascii-movie /
-CMD ["/ascii-movie", "serve"]
+ENTRYPOINT ["/ascii-movie"]
+CMD ["serve"]
