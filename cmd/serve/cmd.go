@@ -14,12 +14,16 @@ func NewCommand() *cobra.Command {
 	}
 
 	cmd.Flags().StringP("address", "a", ":23", "Listen address")
+	server.Flags(cmd.Flags())
 
 	return cmd
 }
 
 func run(cmd *cobra.Command, args []string) (err error) {
-	var handler server.Handler
+	handler, err := server.New(cmd.Flags())
+	if err != nil {
+		return err
+	}
 
 	addr, err := cmd.Flags().GetString("address")
 	if err != nil {

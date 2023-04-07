@@ -5,11 +5,32 @@ import (
 	_ "embed"
 	"github.com/ahmetb/go-cursor"
 	"github.com/gabe565/ascii-telnet-go/generated_frames"
+	flag "github.com/spf13/pflag"
 	"io"
 	"time"
 )
 
-type Handler struct{}
+var ClearExtraLinesFlag = "clear-extra-lines"
+
+func Flags(flags *flag.FlagSet) {
+	flags.Int(
+		ClearExtraLinesFlag,
+		0,
+		"Clears extra lines between each frame. Should typically be ignored.",
+	)
+}
+
+func New(flags *flag.FlagSet) (handler Handler, err error) {
+	handler.ClearExtraLines, err = flags.GetInt(ClearExtraLinesFlag)
+	if err != nil {
+		return handler, err
+	}
+	return handler, nil
+}
+
+type Handler struct {
+	ClearExtraLines int
+}
 
 func (s *Handler) ServeAscii(w io.Writer) error {
 	var buf bytes.Buffer
@@ -25,7 +46,7 @@ func (s *Handler) ServeAscii(w io.Writer) error {
 		time.Sleep(f.Sleep)
 
 		buf.Reset()
-		buf.WriteString(cursor.MoveUp(f.Height) + cursor.ClearScreenDown())
+		buf.WriteString(cursor.MoveUp(f.Height+s.ClearExtraLines) + cursor.ClearScreenDown())
 	}
 	return nil
 }

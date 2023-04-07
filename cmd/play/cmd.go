@@ -11,10 +11,15 @@ func NewCommand() *cobra.Command {
 		Short: "Play the movie locally",
 		RunE:  run,
 	}
+	server.Flags(cmd.Flags())
 	return cmd
 }
 
 func run(cmd *cobra.Command, args []string) (err error) {
-	var handler server.Handler
+	handler, err := server.New(cmd.Flags())
+	if err != nil {
+		return err
+	}
+
 	return handler.ServeAscii(cmd.OutOrStdout())
 }
