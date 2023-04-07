@@ -5,6 +5,7 @@ import (
 	_ "github.com/fatih/color"
 	"math"
 	"strings"
+	"time"
 )
 
 var colorLightBlack = color.New(38).SprintFunc()
@@ -21,7 +22,7 @@ var parts = []rune{
 	'█',
 }
 
-func progressBar(n, total, width int) string {
+func progressBar(n, total time.Duration, width int) string {
 	percent := float64(n) / float64(total)
 	fullWidth := percent * float64(width)
 	part := parts[int(math.Round(math.Mod(fullWidth, 1.0)*8))]

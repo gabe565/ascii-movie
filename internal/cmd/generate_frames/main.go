@@ -46,13 +46,14 @@ func main() {
 	}
 
 	var frameCap int
-	var f *frame.Frame
+	var frames []frame.Frame
+	var f frame.Frame
 	var i int
 	scan := bufio.NewScanner(in)
 	for scan.Scan() {
 		j := i % config.FrameHeight
 		if j == 0 {
-			f = &frame.Frame{
+			f = frame.Frame{
 				Num:  i / config.FrameHeight,
 				Data: strings.Repeat("\n", config.PadTop-1),
 			}
@@ -68,21 +69,32 @@ func main() {
 		}
 
 		if j == config.FrameHeight-1 {
-			f.Data += strings.Repeat("\n", config.PadBottom)
-			f.Data += strings.Repeat(" ", config.PadLeft-1)
-			f.Data += progressBar(i, totalLines, config.Width)
-			f.Data += strings.Repeat(" ", config.PadLeft-1)
-			f.Data += strings.Repeat("\n", config.PadBottom)
-			f.Height = strings.Count(f.Data, "\n")
-			if frameCap < len(f.Data) {
-				frameCap = len(f.Data)
-			}
-			if err := writeFrame(*f); err != nil {
-				log.Fatal(err)
-			}
+			frames = append(frames, f)
 		}
 
 		i += 1
+	}
+
+	var totalDuration time.Duration
+	for _, f := range frames {
+		totalDuration += f.Sleep
+	}
+
+	var currentPosition time.Duration
+	for _, f := range frames {
+		f.Data += strings.Repeat("\n", config.PadBottom)
+		f.Data += strings.Repeat(" ", config.PadLeft-1)
+		f.Data += progressBar(currentPosition, totalDuration, config.Width)
+		f.Data += strings.Repeat(" ", config.PadLeft-1)
+		f.Data += strings.Repeat("\n", config.PadBottom)
+		f.Height = strings.Count(f.Data, "\n")
+		if frameCap < len(f.Data) {
+			frameCap = len(f.Data)
+		}
+		if err := writeFrame(f); err != nil {
+			log.Fatal(err)
+		}
+		currentPosition += f.Sleep
 	}
 
 	if err := writeFrameList(totalLines/config.FrameHeight, frameCap); err != nil {
