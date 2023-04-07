@@ -9,6 +9,8 @@ import (
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "ascii-movie",
+
+		DisableAutoGenTag: true,
 	}
 	cmd.AddCommand(
 		play.NewCommand(),

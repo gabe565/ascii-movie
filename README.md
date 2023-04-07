@@ -25,6 +25,8 @@ See it in action by running `telnet gabecook.com` or `nc gabecook.com 23`.
 
 The app supports building locally or in a Docker container at `ghcr.io/gabe565/ascii-movie`.
 
+See generated [docs](./docs/ascii-movie.md) for command line usage.
+
 ### Local
 ```shell
 # Generate the movie frames
