@@ -41,12 +41,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Get the movie's line count
-	totalLines, err := countNewlines(in)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	var frameCap int
 	var frames []frame.Frame
 	var f frame.Frame
@@ -107,7 +101,7 @@ func main() {
 	}
 
 	// Write frame list
-	if err := writeFrameList(totalLines/config.FrameHeight, frameCap); err != nil {
+	if err := writeFrameList(len(frames), frameCap); err != nil {
 		log.Fatal(err)
 	}
 }
