@@ -21,8 +21,8 @@ var allTmpl string
 var frameTmpl string
 
 func main() {
+	// Open the source movie file
 	filename := filepath.Join("movies", filepath.Base(config.MovieFile))
-
 	in, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
@@ -31,6 +31,7 @@ func main() {
 		_ = in.Close()
 	}(in)
 
+	// Remove existing frames
 	if err := filepath.Walk(config.OutputDir, func(path string, info fs.FileInfo, err error) error {
 		if filepath.Ext(path) == ".go" && filepath.Base(path) != "stub.go" {
 			return os.Remove(path)
@@ -40,6 +41,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Get the movie's line count
 	totalLines, err := countNewlines(in)
 	if err != nil {
 		log.Fatal(err)
@@ -50,6 +52,8 @@ func main() {
 	var f frame.Frame
 	var lineNum int
 	scan := bufio.NewScanner(in)
+
+	// Build part of every frame, excluding progress bar and bottom padding
 	for scan.Scan() {
 		frameLineNum := lineNum % config.FrameHeight
 		if frameLineNum == 0 {
@@ -78,11 +82,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Compute the total duration
 	var totalDuration time.Duration
 	for _, f := range frames {
 		totalDuration += f.Sleep
 	}
 
+	// Build the rest of every frame and write to disk
 	var currentPosition time.Duration
 	for _, f := range frames {
 		f.Data += strings.Repeat("\n", config.PadBottom)
@@ -100,6 +106,7 @@ func main() {
 		currentPosition += f.Sleep
 	}
 
+	// Write frame list
 	if err := writeFrameList(totalLines/config.FrameHeight, frameCap); err != nil {
 		log.Fatal(err)
 	}
