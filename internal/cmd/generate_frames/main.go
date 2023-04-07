@@ -84,7 +84,7 @@ func main() {
 	for _, f := range frames {
 		f.Data += strings.Repeat("\n", config.PadBottom)
 		f.Data += strings.Repeat(" ", config.PadLeft-1)
-		f.Data += progressBar(currentPosition, totalDuration, config.Width)
+		f.Data += progressBar(currentPosition+f.Sleep/2, totalDuration, config.Width)
 		f.Data += strings.Repeat(" ", config.PadLeft-1)
 		f.Data += strings.Repeat("\n", config.PadBottom)
 		f.Height = strings.Count(f.Data, "\n")
