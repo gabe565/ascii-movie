@@ -29,4 +29,4 @@ Sleep 250ms
 Enter
 
 # Total movie time, plus a few seconds, divided by 2.
-Sleep 532s
+Sleep 536s

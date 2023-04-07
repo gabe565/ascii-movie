@@ -19,20 +19,25 @@ The app supports building locally or in a Docker container at `ghcr.io/gabe565/a
 
 ### Local
 ```shell
-$ # To build and run in one step
-$ go run . 
-INFO[0000] listening for connections                     address=":23"
-$ # You can now run `telnet localhost` to see the movie.
-$
-$ # To get a release binary:
-$ go build -ldflags='-w -s'
-$ # The binary will be available at ./ascii-telnet-go.
+# Generate the movie frames
+go generate
+
+# Build the app
+go build -ldflags='-w -s' -o ascii-telnet
+
+# Run the app in your terminal
+./ascii-telnet play
+
+# Or run it as a server
+./ascii-telnet serve
+
+# Now, run `telnet localhost` to watch the movie!
 ```
 
 ### Docker
+An image is available at [`ghcr.io/gabe565/ascii-telnet-go`](ghcr.io/gabe565/ascii-telnet-go).
 ```shell
-$ # An image is available at `ghcr.io/gabe565/ascii-telnet-go`
-$ docker run --rm -it -p '23:23' ghcr.io/gabe565/ascii-telnet-go
+docker run --rm -it -p '23:23' ghcr.io/gabe565/ascii-telnet-go
 ```
 
 ### Kubernetes
