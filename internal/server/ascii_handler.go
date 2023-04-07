@@ -3,7 +3,6 @@ package server
 import (
 	"bytes"
 	_ "embed"
-	"errors"
 	"fmt"
 	"github.com/ahmetb/go-cursor"
 	"github.com/gabe565/ascii-telnet-go/generated_frames"
@@ -12,28 +11,7 @@ import (
 	"time"
 )
 
-var (
-	ClearExtraLinesFlag = "clear-extra-lines"
-
-	SpeedFlag = "speed"
-
-	ErrInvalidSpeed = errors.New("speed must be greater than 0")
-)
-
-func Flags(flags *flag.FlagSet) {
-	flags.Int(
-		ClearExtraLinesFlag,
-		0,
-		"Clears extra lines between each frame. Should typically be ignored.",
-	)
-	flags.Float64(
-		SpeedFlag,
-		1,
-		"Playback speed multiplier. Must be greater than 0.",
-	)
-}
-
-func New(flags *flag.FlagSet) (handler Handler, err error) {
+func New(flags *flag.FlagSet, serveFlags bool) (handler Handler, err error) {
 	handler.ClearExtraLines, err = flags.GetInt(ClearExtraLinesFlag)
 	if err != nil {
 		return handler, err
@@ -47,6 +25,26 @@ func New(flags *flag.FlagSet) (handler Handler, err error) {
 		return handler, fmt.Errorf("%w: %f", ErrInvalidSpeed, handler.Speed)
 	}
 
+	if serveFlags {
+		handler.SSHConfig.Enabled, err = flags.GetBool(SSHEnabledFlag)
+		if err != nil {
+			return handler, err
+		}
+		handler.SSHConfig.Address, err = flags.GetString(SSHAddressFlag)
+		if err != nil {
+			return handler, err
+		}
+
+		handler.TelnetConfig.Enabled, err = flags.GetBool(TelnetEnabledFlag)
+		if err != nil {
+			return handler, err
+		}
+		handler.TelnetConfig.Address, err = flags.GetString(TelnetAddressFlag)
+		if err != nil {
+			return handler, err
+		}
+	}
+
 	return handler, nil
 }
 
@@ -54,6 +52,9 @@ type Handler struct {
 	ClearExtraLines int
 
 	Speed float64
+
+	SSHConfig    ServerConfig
+	TelnetConfig ServerConfig
 }
 
 func (s *Handler) ServeAscii(w io.Writer) error {

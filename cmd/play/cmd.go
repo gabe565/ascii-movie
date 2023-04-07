@@ -11,12 +11,12 @@ func NewCommand() *cobra.Command {
 		Short: "Play the movie locally",
 		RunE:  run,
 	}
-	server.Flags(cmd.Flags())
+	server.PlayFlags(cmd.Flags())
 	return cmd
 }
 
 func run(cmd *cobra.Command, args []string) (err error) {
-	handler, err := server.New(cmd.Flags())
+	handler, err := server.New(cmd.Flags(), false)
 	if err != nil {
 		return err
 	}

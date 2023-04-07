@@ -1,9 +1,14 @@
 package serve
 
 import (
+	"context"
 	"github.com/gabe565/ascii-telnet-go/internal/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"golang.org/x/sync/errgroup"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func NewCommand() *cobra.Command {
@@ -14,28 +19,49 @@ func NewCommand() *cobra.Command {
 		RunE:    run,
 	}
 
-	cmd.Flags().StringP("address", "a", ":23", "Listen address")
-	server.Flags(cmd.Flags())
+	server.PlayFlags(cmd.Flags())
+	server.ServeFlags(cmd.Flags())
 
 	return cmd
 }
 
 func run(cmd *cobra.Command, args []string) (err error) {
-	handler, err := server.New(cmd.Flags())
+	handler, err := server.New(cmd.Flags(), true)
 	if err != nil {
 		return err
 	}
 
-	log.WithField("duration", handler.MovieDuration()).Info("total movie duration")
+	log.WithField("duration", handler.MovieDuration()).Info("Movie info")
 
-	addr, err := cmd.Flags().GetString("address")
-	if err != nil {
-		return err
-	}
+	ctx, cancel := context.WithCancel(cmd.Context())
+	group, ctx := errgroup.WithContext(ctx)
 
-	if err := handler.Listen(cmd.Context(), addr); err != nil {
-		return err
-	}
+	group.Go(func() error {
+		sig := make(chan os.Signal, 1)
+		signal.Notify(sig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
-	return nil
+		select {
+		case <-ctx.Done():
+		case <-sig:
+			// Trigger shutdown
+			cancel()
+		}
+		return nil
+	})
+
+	group.Go(func() error {
+		if handler.SSHConfig.Enabled {
+			return handler.ListenSSH(ctx)
+		}
+		return nil
+	})
+
+	group.Go(func() error {
+		if handler.TelnetConfig.Enabled {
+			return handler.ListenTelnet(ctx)
+		}
+		return nil
+	})
+
+	return group.Wait()
 }
