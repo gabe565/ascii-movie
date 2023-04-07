@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	_ "embed"
 	"github.com/gabe565/ascii-telnet-go/config"
 	"github.com/gabe565/ascii-telnet-go/internal/frame"
@@ -21,16 +22,6 @@ var allTmpl string
 var frameTmpl string
 
 func main() {
-	// Open the source movie file
-	filename := filepath.Join(config.MovieDir, config.MovieFile)
-	in, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer func(in *os.File) {
-		_ = in.Close()
-	}(in)
-
 	// Remove existing frames
 	if err := filepath.Walk(config.OutputDir, func(path string, info fs.FileInfo, err error) error {
 		if filepath.Ext(path) == ".go" && filepath.Base(path) != "stub.go" {
@@ -44,7 +35,7 @@ func main() {
 	var frameCap int
 	var frames []frame.Frame
 	var f frame.Frame
-	scanner := bufio.NewScanner(in)
+	scanner := bufio.NewScanner(bytes.NewReader(config.Movie))
 
 	// Build part of every frame, excluding progress bar and bottom padding
 	for lineNum := 0; scanner.Scan(); lineNum += 1 {
