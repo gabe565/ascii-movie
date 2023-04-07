@@ -2,6 +2,7 @@ package serve
 
 import (
 	"github.com/gabe565/ascii-telnet-go/internal/server"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -24,6 +25,8 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	if err != nil {
 		return err
 	}
+
+	log.WithField("duration", handler.MovieDuration()).Info("total movie duration")
 
 	addr, err := cmd.Flags().GetString("address")
 	if err != nil {

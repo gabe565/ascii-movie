@@ -50,3 +50,11 @@ func (s *Handler) ServeAscii(w io.Writer) error {
 	}
 	return nil
 }
+
+func (s *Handler) MovieDuration() time.Duration {
+	var totalDuration time.Duration
+	for _, f := range generated_frames.List {
+		totalDuration += f.Sleep
+	}
+	return totalDuration
+}
