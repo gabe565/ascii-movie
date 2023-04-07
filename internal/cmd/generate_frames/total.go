@@ -6,12 +6,12 @@ import (
 )
 
 func countNewlines(r io.ReadSeeker) (int, error) {
-	scan := bufio.NewScanner(r)
+	scanner := bufio.NewScanner(r)
 	var total int
-	for scan.Scan() {
+	for scanner.Scan() {
 		total += 1
 	}
-	if err := scan.Err(); err != nil {
+	if err := scanner.Err(); err != nil {
 		return total, err
 	}
 

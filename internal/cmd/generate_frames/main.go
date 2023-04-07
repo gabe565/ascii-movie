@@ -51,10 +51,10 @@ func main() {
 	var frames []frame.Frame
 	var f frame.Frame
 	var lineNum int
-	scan := bufio.NewScanner(in)
+	scanner := bufio.NewScanner(in)
 
 	// Build part of every frame, excluding progress bar and bottom padding
-	for scan.Scan() {
+	for scanner.Scan() {
 		frameLineNum := lineNum % config.FrameHeight
 		if frameLineNum == 0 {
 			f = frame.Frame{
@@ -62,14 +62,14 @@ func main() {
 				Data: strings.Repeat("\n", config.PadTop-1),
 			}
 
-			v, err := strconv.Atoi(scan.Text())
+			v, err := strconv.Atoi(scanner.Text())
 			if err != nil {
 				log.Fatal(err)
 			}
 
 			f.Sleep = time.Duration(float64(v)*(1000.0/15.0)) * time.Millisecond
 		} else {
-			f.Data += "\n" + strings.Repeat(" ", config.PadLeft) + scan.Text()
+			f.Data += "\n" + strings.Repeat(" ", config.PadLeft) + scanner.Text()
 		}
 
 		if frameLineNum == config.FrameHeight-1 {
@@ -78,7 +78,7 @@ func main() {
 
 		lineNum += 1
 	}
-	if err := scan.Err(); err != nil {
+	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 
