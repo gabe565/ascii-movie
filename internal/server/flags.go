@@ -17,7 +17,7 @@ func PlayFlags(flags *flag.FlagSet) {
 	flags.Int(
 		ClearExtraLinesFlag,
 		0,
-		"Clears extra lines between each movie. Should typically be ignored.",
+		"Clears extra lines between each frame. Should typically be ignored.",
 	)
 	if err := flags.MarkHidden(ClearExtraLinesFlag); err != nil {
 		panic(err)
