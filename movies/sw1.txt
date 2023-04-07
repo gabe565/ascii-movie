@@ -12,20 +12,6 @@
 
 
 
-60
-
-  Original Work: Simon Jansen ( http://www.asciimation.co.nz/ )
-
-  Telnetification: Martin W. Kirst
-                   https://github.com/nitram509/ascii-telnet-server
-
-          Go Port: Gabe Cook
-                   https://github.com/gabe565/ascii-telnet-go
-
-  The hard work was done by Simon,
-  I just wrote the telnet player
-  and placed it online using Simon's movie sources.
-
 30
 
 
