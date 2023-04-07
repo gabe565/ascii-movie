@@ -98,7 +98,7 @@ func main() {
 	}
 
 	// Write frame list
-	if err := writeFrameList(len(frames), frameCap); err != nil {
+	if err := writeFrameList(frames, frameCap); err != nil {
 		log.Fatal(err)
 	}
 }

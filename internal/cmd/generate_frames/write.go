@@ -53,7 +53,7 @@ func writeFrame(f frame.Frame) error {
 	return nil
 }
 
-func writeFrameList(n, cap int) error {
+func writeFrameList(frames []frame.Frame, cap int) error {
 	filename := filepath.Join(config.OutputDir, "0_frame_list.go")
 
 	out, err := os.Create(filename)
@@ -68,8 +68,6 @@ func writeFrameList(n, cap int) error {
 	if err != nil {
 		return err
 	}
-
-	frames := make([]struct{}, n)
 
 	var buf bytes.Buffer
 
