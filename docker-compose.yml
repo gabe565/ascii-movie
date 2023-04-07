@@ -8,3 +8,4 @@ services:
       target: debug
     ports:
       - "23:23"
+      - "2222:22"

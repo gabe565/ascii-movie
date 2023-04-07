@@ -44,8 +44,10 @@ go build -ldflags='-w -s'
 
 ### Docker
 An image is available at [`ghcr.io/gabe565/ascii-movie`](ghcr.io/gabe565/ascii-movie).
+
+The following command would run a Telnet server on port `23` and an SSH server on port `2222`.
 ```shell
-docker run --rm -it -p '23:23' ghcr.io/gabe565/ascii-movie
+docker run --rm -it -p 23:23 -p 2222:22 ghcr.io/gabe565/ascii-movie
 ```
 
 ### Kubernetes
