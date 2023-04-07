@@ -12,15 +12,13 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          cache: true
           go-version-file: go.mod
+          cache: false
       - run: go generate
       - name: Lint
         uses: golangci/golangci-lint-action@v3
         with:
           args: --timeout=5m
-          skip-build-cache: true
-          skip-pkg-cache: true
 
   test:
     name: Test
@@ -31,7 +29,6 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          cache: true
           go-version-file: go.mod
       - run: go generate
       - name: Test
