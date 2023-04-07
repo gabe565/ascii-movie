@@ -5,7 +5,7 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/ahmetb/go-cursor"
-	"github.com/gabe565/ascii-movie/generated_frames"
+	"github.com/gabe565/ascii-movie/internal/generated_movie"
 	flag "github.com/spf13/pflag"
 	"io"
 	"time"
@@ -59,9 +59,9 @@ type Handler struct {
 
 func (s *Handler) ServeAscii(w io.Writer) error {
 	var buf bytes.Buffer
-	buf.Grow(generated_frames.Cap)
+	buf.Grow(generated_movie.Movie.Cap)
 
-	for _, f := range generated_frames.List {
+	for _, f := range generated_movie.Movie.Frames {
 		buf.WriteString(f.Data)
 
 		if _, err := io.Copy(w, &buf); err != nil {
@@ -74,12 +74,4 @@ func (s *Handler) ServeAscii(w io.Writer) error {
 		buf.WriteString(cursor.MoveUp(f.Height+s.ClearExtraLines) + cursor.ClearScreenDown())
 	}
 	return nil
-}
-
-func (s *Handler) MovieDuration() time.Duration {
-	var totalDuration time.Duration
-	for _, f := range generated_frames.List {
-		totalDuration += f.CalcDuration(s.Speed)
-	}
-	return totalDuration
 }

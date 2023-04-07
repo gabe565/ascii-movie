@@ -2,6 +2,7 @@ package serve
 
 import (
 	"context"
+	"github.com/gabe565/ascii-movie/internal/generated_movie"
 	"github.com/gabe565/ascii-movie/internal/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -31,7 +32,8 @@ func run(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	log.WithField("duration", handler.MovieDuration()).Info("Movie info")
+	log.WithField("duration", generated_movie.Movie.Duration(handler.Speed)).
+		Info("Movie info")
 
 	ctx, cancel := context.WithCancel(cmd.Context())
 	group, ctx := errgroup.WithContext(ctx)

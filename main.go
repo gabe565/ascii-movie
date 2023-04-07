@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-//go:generate go run ./internal/cmd/generate_frames
+//go:generate go run ./internal/cmd/generate_movie
 
 func main() {
 	if err := cmd.NewCommand().Execute(); err != nil {
