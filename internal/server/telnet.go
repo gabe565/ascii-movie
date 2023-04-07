@@ -57,10 +57,22 @@ func (s *Handler) Serve(conn net.Conn) {
 	remoteIP := RemoteIp(conn.RemoteAddr().String())
 	sessionLog = sessionLog.WithField("remote_ip", remoteIP)
 
+	go func() {
+		// Exit on user input
+		b := make([]byte, 1)
+		_, _ = conn.Read(b)
+		if err := conn.Close(); err != nil {
+			if errors.Is(err, net.ErrClosed) {
+				return
+			} else {
+				log.WithError(err).Warn("failed to close session on user input")
+			}
+		}
+		sessionLog.Info("Disconnected early")
+	}()
+
 	if err := s.ServeAscii(conn); err != nil {
-		if errors.Is(err, syscall.EPIPE) {
-			sessionLog.Info("Disconnected early")
-		} else {
+		if !errors.Is(err, net.ErrClosed) && !errors.Is(err, syscall.EPIPE) {
 			sessionLog.WithError(err).Error("Failed to serve")
 		}
 		return
