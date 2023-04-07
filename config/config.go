@@ -12,4 +12,4 @@ const PadTop = 3
 const PadLeft = 6
 const PadBottom = 3
 
-var OutputDir = filepath.Join("internal", "generated_movie")
+var OutputDir = filepath.Join("internal", "movie")

@@ -4,17 +4,38 @@ import (
 	"context"
 	"errors"
 	"github.com/gabe565/ascii-movie/internal/log_hooks"
+	"github.com/gabe565/ascii-movie/internal/movie"
 	log "github.com/sirupsen/logrus"
+	flag "github.com/spf13/pflag"
 	"net"
 	"syscall"
 )
 
-var telnetLog = log.WithField("server", "telnet")
+type Telnet Config
 
-func (s *Handler) ListenTelnet(ctx context.Context) error {
-	telnetLog.WithField("address", s.TelnetConfig.Address).Info("Starting Telnet server")
+func TelnetEnabled(flags *flag.FlagSet) bool {
+	enabled, err := flags.GetBool(TelnetEnabledFlag)
+	if err != nil {
+		panic(err)
+	}
+	return enabled
+}
 
-	listen, err := net.Listen("tcp", s.TelnetConfig.Address)
+func NewTelnet(flags *flag.FlagSet) (telnet Telnet, err error) {
+	telnet.Address, err = flags.GetString(TelnetAddressFlag)
+	if err != nil {
+		return telnet, err
+	}
+
+	telnet.Log = log.WithField("server", "telnet")
+
+	return telnet, nil
+}
+
+func (t *Telnet) Listen(ctx context.Context, m *movie.Movie) error {
+	t.Log.WithField("address", t.Address).Info("Starting Telnet server")
+
+	listen, err := net.Listen("tcp", t.Address)
 	if err != nil {
 		return err
 	}
@@ -30,27 +51,27 @@ func (s *Handler) ListenTelnet(ctx context.Context) error {
 				case <-ctx.Done():
 					return
 				default:
-					telnetLog.WithError(err).Error("Failed to accept connection")
+					t.Log.WithError(err).Error("Failed to accept connection")
 					continue
 				}
 			}
 
-			go s.Serve(conn)
+			go t.ServeTelnet(conn, m)
 		}
 	}()
 
 	<-ctx.Done()
-	telnetLog.Info("Stopping Telnet server")
-	defer telnetLog.Info("Stopped Telnet server")
+	t.Log.Info("Stopping Telnet server")
+	defer t.Log.Info("Stopped Telnet server")
 	return listen.Close()
 }
 
-func (s *Handler) Serve(conn net.Conn) {
+func (t *Telnet) ServeTelnet(conn net.Conn, m *movie.Movie) {
 	defer func(conn net.Conn) {
 		_ = conn.Close()
 	}(conn)
 
-	sessionLog := telnetLog.WithFields(log.Fields{
+	sessionLog := t.Log.WithFields(log.Fields{
 		"duration": log_hooks.NewDuration(),
 	})
 
@@ -71,7 +92,7 @@ func (s *Handler) Serve(conn net.Conn) {
 		sessionLog.Info("Disconnected early")
 	}()
 
-	if err := s.ServeAscii(conn); err != nil {
+	if err := m.Stream(conn); err != nil {
 		if !errors.Is(err, net.ErrClosed) && !errors.Is(err, syscall.EPIPE) {
 			sessionLog.WithError(err).Error("Failed to serve")
 		}

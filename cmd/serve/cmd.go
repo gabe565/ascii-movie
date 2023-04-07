@@ -2,7 +2,8 @@ package serve
 
 import (
 	"context"
-	"github.com/gabe565/ascii-movie/internal/generated_movie"
+	"fmt"
+	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -20,23 +21,52 @@ func NewCommand() *cobra.Command {
 		RunE:    run,
 	}
 
-	server.PlayFlags(cmd.Flags())
-	server.ServeFlags(cmd.Flags())
+	movie.Flags(cmd.Flags())
+	server.Flags(cmd.Flags())
 
 	return cmd
 }
 
 func run(cmd *cobra.Command, args []string) (err error) {
-	handler, err := server.New(cmd.Flags(), true)
+	m, err := movie.FromFlags(cmd.Flags())
 	if err != nil {
 		return err
 	}
 
-	log.WithField("duration", generated_movie.Movie.Duration(handler.Speed)).
+	log.WithField("duration", m.Duration()).
 		Info("Movie info")
 
 	ctx, cancel := context.WithCancel(cmd.Context())
+	defer cancel()
 	group, ctx := errgroup.WithContext(ctx)
+
+	var serving bool
+
+	if server.SSHEnabled(cmd.Flags()) {
+		serving = true
+		group.Go(func() error {
+			ssh, err := server.NewSSH(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			return ssh.Listen(ctx, m)
+		})
+	}
+
+	if server.TelnetEnabled(cmd.Flags()) {
+		serving = true
+		group.Go(func() error {
+			telnet, err := server.NewTelnet(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			return telnet.Listen(ctx, m)
+		})
+	}
+
+	if !serving {
+		return fmt.Errorf("all server types were disabled")
+	}
 
 	group.Go(func() error {
 		sig := make(chan os.Signal, 1)
@@ -47,20 +77,6 @@ func run(cmd *cobra.Command, args []string) (err error) {
 		case <-sig:
 			// Trigger shutdown
 			cancel()
-		}
-		return nil
-	})
-
-	group.Go(func() error {
-		if handler.SSHConfig.Enabled {
-			return handler.ListenSSH(ctx)
-		}
-		return nil
-	})
-
-	group.Go(func() error {
-		if handler.TelnetConfig.Enabled {
-			return handler.ListenTelnet(ctx)
 		}
 		return nil
 	})

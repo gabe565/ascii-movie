@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/gabe565/ascii-movie/config"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"go/format"
@@ -12,8 +13,7 @@ import (
 )
 
 func writeMovie(m *movie.Movie) error {
-	filename := strings.TrimSuffix(m.Filename, filepath.Ext(m.Filename))
-	filename = filepath.Join(config.OutputDir, filename+".go")
+	filename := filepath.Join(config.OutputDir, "generated_movie.go")
 
 	out, err := os.Create(filename)
 	if err != nil {
@@ -28,11 +28,14 @@ func writeMovie(m *movie.Movie) error {
 		return err
 	}
 
+	movieStr := fmt.Sprintf("%#v", m)
+	movieStr = strings.ReplaceAll(movieStr, "movie.", "")
+
 	var buf bytes.Buffer
 
 	err = tmpl.Execute(&buf, map[string]any{
 		"Package": filepath.Base(config.OutputDir),
-		"Movie":   m,
+		"Movie":   movieStr,
 	})
 	if err != nil {
 		return err
