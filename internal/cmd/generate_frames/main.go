@@ -74,6 +74,9 @@ func main() {
 
 		lineNum += 1
 	}
+	if err := scan.Err(); err != nil {
+		log.Fatal(err)
+	}
 
 	var totalDuration time.Duration
 	for _, f := range frames {
