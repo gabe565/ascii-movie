@@ -11,6 +11,16 @@ import (
 	"text/template"
 )
 
+var frameTemplate *template.Template
+
+func init() {
+	var err error
+
+	if frameTemplate, err = template.New("").Parse(frameTmpl); err != nil {
+		panic(err)
+	}
+}
+
 func writeFrame(f frame.Frame) error {
 	filename := filepath.Join(config.OutputDir, fmt.Sprintf("frame%d.go", f.Num))
 
@@ -22,14 +32,9 @@ func writeFrame(f frame.Frame) error {
 		_ = out.Close()
 	}(out)
 
-	tmpl, err := template.New("").Parse(frameTmpl)
-	if err != nil {
-		return err
-	}
-
 	var buf bytes.Buffer
 
-	err = tmpl.Execute(&buf, map[string]any{
+	err = frameTemplate.Execute(&buf, map[string]any{
 		"Package": config.OutputDir,
 		"Frame":   f,
 	})
