@@ -8,3 +8,7 @@ type Frame struct {
 	Height int
 	Data   string
 }
+
+func (f *Frame) ComputeSleep(multiplier float64) time.Duration {
+	return time.Duration(float64(f.Sleep) / multiplier)
+}
