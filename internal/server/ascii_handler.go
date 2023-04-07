@@ -67,7 +67,7 @@ func (s *Handler) ServeAscii(w io.Writer) error {
 			return err
 		}
 
-		time.Sleep(f.ComputeSleep(s.Speed))
+		time.Sleep(f.CalcDuration(s.Speed))
 
 		buf.Reset()
 		buf.WriteString(cursor.MoveUp(f.Height+s.ClearExtraLines) + cursor.ClearScreenDown())
@@ -78,7 +78,7 @@ func (s *Handler) ServeAscii(w io.Writer) error {
 func (s *Handler) MovieDuration() time.Duration {
 	var totalDuration time.Duration
 	for _, f := range generated_frames.List {
-		totalDuration += f.ComputeSleep(s.Speed)
+		totalDuration += f.CalcDuration(s.Speed)
 	}
 	return totalDuration
 }

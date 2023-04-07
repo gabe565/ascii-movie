@@ -60,7 +60,7 @@ func main() {
 				log.Fatal(err)
 			}
 
-			f.Sleep = time.Duration(float64(v)*(1000.0/15.0)) * time.Millisecond
+			f.Duration = time.Duration(float64(v)*(1000.0/15.0)) * time.Millisecond
 		} else {
 			f.Data += "\n" + strings.Repeat(" ", config.PadLeft) + scanner.Text()
 		}
@@ -76,7 +76,7 @@ func main() {
 	// Compute the total duration
 	var totalDuration time.Duration
 	for _, f := range frames {
-		totalDuration += f.Sleep
+		totalDuration += f.Duration
 	}
 
 	// Build the rest of every frame and write to disk
@@ -84,7 +84,7 @@ func main() {
 	for _, f := range frames {
 		f.Data += strings.Repeat("\n", config.PadBottom)
 		f.Data += strings.Repeat(" ", config.PadLeft-1)
-		f.Data += progressBar(currentPosition+f.Sleep/2, totalDuration, config.Width)
+		f.Data += progressBar(currentPosition+f.Duration/2, totalDuration, config.Width)
 		f.Data += strings.Repeat(" ", config.PadLeft-1)
 		f.Data += strings.Repeat("\n", config.PadBottom)
 		f.Height = strings.Count(f.Data, "\n")
@@ -94,7 +94,7 @@ func main() {
 		if err := writeFrame(f); err != nil {
 			log.Fatal(err)
 		}
-		currentPosition += f.Sleep
+		currentPosition += f.Duration
 	}
 
 	// Write frame list
