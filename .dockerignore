@@ -7,5 +7,6 @@
 Dockerfile
 data/
 docker-compose.yml
+ascii-telnet
 ascii-telnet-go
 vendor/

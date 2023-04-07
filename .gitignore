@@ -1,5 +1,6 @@
 .DS_Store
 vendor
+ascii-telnet
 ascii-telnet-go
 
 # local env files
