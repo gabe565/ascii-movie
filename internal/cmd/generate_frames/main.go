@@ -48,17 +48,17 @@ func main() {
 	var frameCap int
 	var frames []frame.Frame
 	var f frame.Frame
-	var i int
+	var lineNum int
 	scan := bufio.NewScanner(in)
 	for scan.Scan() {
-		j := i % config.FrameHeight
-		if j == 0 {
+		frameLineNum := lineNum % config.FrameHeight
+		if frameLineNum == 0 {
 			f = frame.Frame{
-				Num:  i / config.FrameHeight,
+				Num:  lineNum / config.FrameHeight,
 				Data: strings.Repeat("\n", config.PadTop-1),
 			}
 
-			v, err := strconv.ParseInt(scan.Text(), 0, 32)
+			v, err := strconv.Atoi(scan.Text())
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -68,11 +68,11 @@ func main() {
 			f.Data += "\n" + strings.Repeat(" ", config.PadLeft) + scan.Text()
 		}
 
-		if j == config.FrameHeight-1 {
+		if frameLineNum == config.FrameHeight-1 {
 			frames = append(frames, f)
 		}
 
-		i += 1
+		lineNum += 1
 	}
 
 	var totalDuration time.Duration
