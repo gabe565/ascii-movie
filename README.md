@@ -21,13 +21,34 @@ See it in action by running `telnet gabecook.com` or `nc gabecook.com 23`.
   </p>
 </details>
 
-## Running
+## Usage
 
-The app supports building locally or in a Docker container at `ghcr.io/gabe565/ascii-movie`.
+The app can play a movie directly on your terminal with the [`play`](docs/ascii-movie_play.md) subcommand, or it can host an SSH and Telnet stream server with the [`serve`](docs/ascii-movie_serve.md) subcommand.
 
-See generated [docs](./docs/ascii-movie.md) for command line usage.
+See generated [docs](./docs/ascii-movie.md) for command line usage information.
 
-### Local
+### Docker (Suggested)
+An image is available at [`ghcr.io/gabe565/ascii-movie`](ghcr.io/gabe565/ascii-movie).
+
+#### Watch Locally
+The following command will run a container that plays the movie directly in your terminal.
+
+```shell
+docker run --rm -it ghcr.io/gabe565/ascii-movie play
+```
+
+#### Serve Movie over Telnet and SSH
+The following command will run a Telnet server on port `23` and an SSH server on port `2222`.
+```shell
+docker run --rm -it -p 23:23 -p 2222:22 ghcr.io/gabe565/ascii-movie serve
+```
+
+### Kubernetes
+A Helm chart is available for Kubernetes deployments.
+See [charts.gabe565.com](https://charts.gabe565.com/charts/ascii-telnet/) or
+[gabe565/charts](https://github.com/gabe565/charts/tree/main/charts/ascii-telnet) for details.
+
+### Local Build
 ```shell
 # Generate the movie frames
 go generate
@@ -41,20 +62,5 @@ go build -ldflags='-w -s'
 # Or run it as a server
 ./ascii-movie serve
 
-# Now, run `telnet localhost` to watch the movie!
+# Now, run `telnet localhost` or `nc localhost 23` to watch the movie!
 ```
-
-### Docker
-An image is available at [`ghcr.io/gabe565/ascii-movie`](ghcr.io/gabe565/ascii-movie).
-
-The following command would run a Telnet server on port `23` and an SSH server on port `2222`.
-```shell
-docker run --rm -it -p 23:23 -p 2222:22 ghcr.io/gabe565/ascii-movie
-```
-
-### Kubernetes
-
-A Helm chart is available for Kubernetes deployment.
-For more information, go to
-[Artifact Hub](https://artifacthub.io/packages/helm/gabe565/ascii-telnet) or
-[gabe565/charts](https://github.com/gabe565/charts/tree/main/charts/ascii-telnet).
