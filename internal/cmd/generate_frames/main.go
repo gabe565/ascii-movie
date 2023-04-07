@@ -44,11 +44,10 @@ func main() {
 	var frameCap int
 	var frames []frame.Frame
 	var f frame.Frame
-	var lineNum int
 	scanner := bufio.NewScanner(in)
 
 	// Build part of every frame, excluding progress bar and bottom padding
-	for scanner.Scan() {
+	for lineNum := 0; scanner.Scan(); lineNum += 1 {
 		frameLineNum := lineNum % config.FrameHeight
 		if frameLineNum == 0 {
 			f = frame.Frame{
@@ -69,8 +68,6 @@ func main() {
 		if frameLineNum == config.FrameHeight-1 {
 			frames = append(frames, f)
 		}
-
-		lineNum += 1
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
