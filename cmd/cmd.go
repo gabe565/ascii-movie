@@ -8,7 +8,8 @@ import (
 
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "ascii-movie",
+		Use:   "ascii-movie",
+		Short: "Command line ASCII movie player.",
 
 		DisableAutoGenTag: true,
 	}

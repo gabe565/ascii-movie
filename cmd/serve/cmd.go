@@ -16,7 +16,7 @@ func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "serve",
 		Aliases: []string{"server", "listen"},
-		Short:   "Serve movie to telnet clients",
+		Short:   "Serve an ASCII movie over Telnet and SSH.",
 		RunE:    run,
 	}
 

@@ -1,6 +1,6 @@
 ## ascii-movie play
 
-Play the movie locally
+Play an ASCII movie locally.
 
 ```
 ascii-movie play [flags]
@@ -15,5 +15,5 @@ ascii-movie play [flags]
 
 ### SEE ALSO
 
-* [ascii-movie](ascii-movie.md)	 - 
+* [ascii-movie](ascii-movie.md)	 - Command line ASCII movie player.
 

@@ -1,6 +1,6 @@
 ## ascii-movie
 
-
+Command line ASCII movie player.
 
 ### Options
 
@@ -10,6 +10,6 @@
 
 ### SEE ALSO
 
-* [ascii-movie play](ascii-movie_play.md)	 - Play the movie locally
-* [ascii-movie serve](ascii-movie_serve.md)	 - Serve movie to telnet clients
+* [ascii-movie play](ascii-movie_play.md)	 - Play an ASCII movie locally.
+* [ascii-movie serve](ascii-movie_serve.md)	 - Serve an ASCII movie over Telnet and SSH.
 

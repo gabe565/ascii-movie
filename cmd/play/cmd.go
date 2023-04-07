@@ -8,7 +8,7 @@ import (
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "play",
-		Short: "Play the movie locally",
+		Short: "Play an ASCII movie locally.",
 		RunE:  run,
 	}
 	server.PlayFlags(cmd.Flags())

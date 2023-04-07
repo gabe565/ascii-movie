@@ -1,6 +1,6 @@
 ## ascii-movie serve
 
-Serve movie to telnet clients
+Serve an ASCII movie over Telnet and SSH.
 
 ```
 ascii-movie serve [flags]
@@ -19,5 +19,5 @@ ascii-movie serve [flags]
 
 ### SEE ALSO
 
-* [ascii-movie](ascii-movie.md)	 - 
+* [ascii-movie](ascii-movie.md)	 - Command line ASCII movie player.
 
