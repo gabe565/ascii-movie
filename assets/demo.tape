@@ -1,10 +1,10 @@
-Output demo.mp4
+Output ascii-movie.mp4
 
 # Full video is almost 18 min, so record at 2x speed, then output at 1/2 speed
 # so that recordings only take ~9 min.
 Set Framerate 30
 Set PlaybackSpeed 0.5
-Set TypingSpeed 25ms
+Set TypingSpeed 20ms
 
 Set FontSize 17
 Set Width 980
