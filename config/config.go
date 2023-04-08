@@ -1,9 +1,12 @@
 package config
 
-import "path/filepath"
+import (
+	_ "embed"
+	"path/filepath"
+)
 
-var MovieDir = "config/movies"
-var MovieFile = "sw1.txt"
+//go:embed movies/sw1.txt
+var DefaultMovie []byte
 
 const FrameHeight = 14
 const Width = 67

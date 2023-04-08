@@ -50,11 +50,8 @@ See [charts.gabe565.com](https://charts.gabe565.com/charts/ascii-telnet/) or
 
 ### Local Build
 ```shell
-# Generate the movie frames
-go generate
-
-# Build the app
-go build -ldflags='-w -s'
+# Compile the app
+go install github.com/gabe565/ascii-movie@latest
 
 # Run the app in your terminal
 ./ascii-movie play

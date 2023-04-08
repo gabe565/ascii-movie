@@ -6,8 +6,6 @@ RUN go mod download
 
 COPY . .
 
-RUN go generate
-
 ARG TARGETPLATFORM
 # Set Golang build envs based on Docker platform string
 RUN --mount=type=cache,target=/root/.cache \

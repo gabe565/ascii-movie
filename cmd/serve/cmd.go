@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/server"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 	"os"
@@ -32,9 +31,6 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	if err != nil {
 		return err
 	}
-
-	log.WithField("duration", m.Duration()).
-		Info("Movie info")
 
 	ctx, cancel := context.WithCancel(cmd.Context())
 	defer cancel()

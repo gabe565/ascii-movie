@@ -2,6 +2,7 @@ package play
 
 import (
 	"github.com/gabe565/ascii-movie/internal/movie"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +19,8 @@ func NewCommand() *cobra.Command {
 }
 
 func run(cmd *cobra.Command, args []string) (err error) {
+	log.SetLevel(log.WarnLevel)
+
 	m, err := movie.FromFlags(cmd.Flags())
 	if err != nil {
 		return err

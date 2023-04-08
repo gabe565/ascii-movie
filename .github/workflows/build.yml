@@ -14,7 +14,6 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
-      - run: go generate
       - name: Lint
         uses: golangci/golangci-lint-action@v3
         with:
@@ -30,7 +29,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version-file: go.mod
-      - run: go generate
       - name: Test
         run: go test ./...
 

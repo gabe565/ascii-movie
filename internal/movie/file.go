@@ -4,23 +4,16 @@ import (
 	"bufio"
 	"github.com/gabe565/ascii-movie/config"
 	"github.com/gabe565/ascii-movie/internal/progressbar"
-	"os"
+	"io"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func NewFromFile(path string) (*Movie, error) {
-	src, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer func(src *os.File) {
-		_ = src.Close()
-	}(src)
-
+func NewFromFile(path string, src io.Reader) (*Movie, error) {
 	m := Movie{
-		Filename: config.MovieFile,
+		Filename: filepath.Base(path),
 		Speed:    1,
 	}
 	var f Frame
