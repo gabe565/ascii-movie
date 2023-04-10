@@ -26,5 +26,5 @@ func run(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	return m.Stream(cmd.OutOrStdout())
+	return m.Stream(cmd.Context(), cmd.OutOrStdout())
 }

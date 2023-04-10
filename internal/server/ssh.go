@@ -11,7 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	"golang.org/x/sync/errgroup"
-	"io"
 )
 
 type SSH struct {
@@ -95,24 +94,23 @@ func (s *SSH) ServeSSH(m *movie.Movie) wish.Middleware {
 				"duration":  log_hooks.NewDuration(),
 			})
 
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+
 			go func() {
 				// Exit on user input
 				b := make([]byte, 1)
-				if _, err := session.Read(b); err == nil {
-					sessionLog.Info("Disconnected early")
-					if err := session.Close(); err != nil {
-						log.WithError(err).Warn("failed to close session on user input")
-					}
-				}
+				_, _ = session.Read(b)
+				cancel()
 			}()
 
-			err := m.Stream(session)
-			if err != nil {
-				if !errors.Is(err, io.EOF) {
-					sessionLog.WithError(err).Error("Failed to serve")
-				}
-			} else {
+			if err := m.Stream(ctx, session); err == nil {
 				sessionLog.Info("Finished movie")
+			} else {
+				if errors.Is(err, context.Canceled) {
+					sessionLog.Info("Disconnected early")
+				}
+				return
 			}
 
 			handle(session)

@@ -8,7 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	"net"
-	"syscall"
 )
 
 type Telnet Config
@@ -77,26 +76,26 @@ func (t *Telnet) ServeTelnet(conn net.Conn, m *movie.Movie) {
 		"duration":  log_hooks.NewDuration(),
 	})
 
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	go func() {
 		// Exit on user input
 		b := make([]byte, 1)
-		_, _ = conn.Read(b)
-		if err := conn.Close(); err != nil {
-			if errors.Is(err, net.ErrClosed) {
+		for {
+			if _, err := conn.Read(b); err != nil {
+				cancel()
 				return
-			} else {
-				log.WithError(err).Warn("failed to close session on user input")
 			}
 		}
-		sessionLog.Info("Disconnected early")
 	}()
 
-	if err := m.Stream(conn); err != nil {
-		if !errors.Is(err, net.ErrClosed) && !errors.Is(err, syscall.EPIPE) {
-			sessionLog.WithError(err).Error("Failed to serve")
+	if err := m.Stream(ctx, conn); err == nil {
+		sessionLog.Info("Finished movie")
+	} else {
+		if errors.Is(err, context.Canceled) {
+			sessionLog.Info("Disconnected early")
 		}
 		return
 	}
-
-	sessionLog.Info("Finished movie")
 }

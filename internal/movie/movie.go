@@ -2,6 +2,7 @@ package movie
 
 import (
 	"bytes"
+	"context"
 	"github.com/ahmetb/go-cursor"
 	"io"
 	"time"
@@ -25,7 +26,7 @@ func (m Movie) Duration() time.Duration {
 	return totalDuration
 }
 
-func (m *Movie) Stream(w io.Writer) error {
+func (m *Movie) Stream(ctx context.Context, w io.Writer) error {
 	var buf bytes.Buffer
 	buf.Grow(m.Cap)
 
@@ -33,11 +34,15 @@ func (m *Movie) Stream(w io.Writer) error {
 	for _, f := range m.Frames {
 		buf.WriteString(f.Data)
 
-		<-timer.C
-		if _, err := io.Copy(w, &buf); err != nil {
-			return err
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-timer.C:
+			if _, err := io.Copy(w, &buf); err != nil {
+				return err
+			}
+			timer.Reset(f.CalcDuration(m.Speed))
 		}
-		timer.Reset(f.CalcDuration(m.Speed))
 
 		buf.Reset()
 		buf.WriteString(cursor.MoveUp(f.Height+m.ClearExtraLines) + cursor.ClearScreenDown())
