@@ -25,7 +25,7 @@ func NewFromFile(path string, src io.Reader, frameHeight int, pad Padding, progr
 		if frameLineNum == 0 {
 			f = Frame{
 				Num:  lineNum / frameHeight,
-				Data: strings.Repeat("\n", pad.Top-1),
+				Data: strings.Repeat("\n", pad.Top),
 			}
 
 			v, err := strconv.Atoi(scanner.Text())
@@ -38,7 +38,7 @@ func NewFromFile(path string, src io.Reader, frameHeight int, pad Padding, progr
 			if len(scanner.Bytes()) > maxWidth {
 				maxWidth = len(scanner.Bytes())
 			}
-			f.Data += "\n" + strings.Repeat(" ", pad.Left) + scanner.Text()
+			f.Data += strings.Repeat(" ", pad.Left) + scanner.Text() + "\n"
 		}
 
 		if frameLineNum == frameHeight-1 {
@@ -58,7 +58,9 @@ func NewFromFile(path string, src io.Reader, frameHeight int, pad Padding, progr
 	var currentPosition time.Duration
 	for i, f := range m.Frames {
 		f.Data += strings.Repeat("\n", pad.Bottom)
-		f.Data += strings.Repeat(" ", pad.Left-1)
+		if pad.Left != 0 {
+			f.Data += strings.Repeat(" ", pad.Left-1)
+		}
 		f.Data += bar.Generate(currentPosition+f.Duration/2, totalDuration, maxWidth)
 		f.Data += strings.Repeat("\n", progressPad.Bottom)
 		f.Height = strings.Count(f.Data, "\n")

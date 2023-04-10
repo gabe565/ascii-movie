@@ -12,7 +12,7 @@ ascii-movie play [flags]
   -f, --file string               Movie file path. If left blank, Star Wars will be played.
       --frame-height int          Height of the movie frames (default 14)
   -h, --help                      help for play
-      --pad-bottom int            Padding below the movie (default 3)
+      --pad-bottom int            Padding below the movie (default 2)
       --pad-left int              Padding left of the movie (default 6)
       --pad-top int               Padding above the movie (default 3)
       --progress-pad-bottom int   Padding below the progress bar (default 3)

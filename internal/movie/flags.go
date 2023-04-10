@@ -53,7 +53,7 @@ func Flags(flags *flag.FlagSet) {
 	flags.Int(FrameHeightFlag, 14, "Height of the movie frames")
 
 	flags.Int(PadTopFlag, 3, "Padding above the movie")
-	flags.Int(PadBottomFlag, 3, "Padding below the movie")
+	flags.Int(PadBottomFlag, 2, "Padding below the movie")
 	flags.Int(PadLeftFlag, 6, "Padding left of the movie")
 	flags.Int(ProgressPadBottomFlag, 3, "Padding below the progress bar")
 }
