@@ -38,24 +38,16 @@ func run(cmd *cobra.Command, args []string) (err error) {
 
 	var serving bool
 
-	if server.SSHEnabled(cmd.Flags()) {
+	if ssh := server.NewSSH(cmd.Flags()); ssh.Enabled {
 		serving = true
 		group.Go(func() error {
-			ssh, err := server.NewSSH(cmd.Flags())
-			if err != nil {
-				return err
-			}
 			return ssh.Listen(ctx, m)
 		})
 	}
 
-	if server.TelnetEnabled(cmd.Flags()) {
+	if telnet := server.NewTelnet(cmd.Flags()); telnet.Enabled {
 		serving = true
 		group.Go(func() error {
-			telnet, err := server.NewTelnet(cmd.Flags())
-			if err != nil {
-				return err
-			}
 			return telnet.Listen(ctx, m)
 		})
 	}

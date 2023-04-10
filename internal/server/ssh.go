@@ -20,33 +20,29 @@ type SSH struct {
 	HostKeyPath string
 }
 
-func SSHEnabled(flags *flag.FlagSet) bool {
-	enabled, err := flags.GetBool(SSHEnabledFlag)
-	if err != nil {
+func NewSSH(flags *flag.FlagSet) SSH {
+	var ssh SSH
+	var err error
+
+	if ssh.Enabled, err = flags.GetBool(SSHEnabledFlag); err != nil {
 		panic(err)
 	}
-	return enabled
-}
 
-func NewSSH(flags *flag.FlagSet) (ssh SSH, err error) {
-	ssh.Address, err = flags.GetString(SSHAddressFlag)
-	if err != nil {
-		return ssh, err
+	if ssh.Address, err = flags.GetString(SSHAddressFlag); err != nil {
+		panic(err)
 	}
 
-	ssh.HostKeyPath, err = flags.GetString(SSHHostKeyPathFlag)
-	if err != nil {
-		return ssh, err
+	if ssh.HostKeyPath, err = flags.GetString(SSHHostKeyPathFlag); err != nil {
+		panic(err)
 	}
 
-	ssh.HostKeyPEM, err = flags.GetString(SSHHostKeyFlag)
-	if err != nil {
-		return ssh, err
+	if ssh.HostKeyPEM, err = flags.GetString(SSHHostKeyFlag); err != nil {
+		panic(err)
 	}
 
 	ssh.Log = log.WithField("server", "ssh")
 
-	return ssh, nil
+	return ssh
 }
 
 func (s *SSH) Listen(ctx context.Context, m *movie.Movie) error {

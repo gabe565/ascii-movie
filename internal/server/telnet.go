@@ -13,23 +13,23 @@ import (
 
 type Telnet Config
 
-func TelnetEnabled(flags *flag.FlagSet) bool {
-	enabled, err := flags.GetBool(TelnetEnabledFlag)
+func NewTelnet(flags *flag.FlagSet) Telnet {
+	var telnet Telnet
+	var err error
+
+	telnet.Enabled, err = flags.GetBool(TelnetEnabledFlag)
 	if err != nil {
 		panic(err)
 	}
-	return enabled
-}
 
-func NewTelnet(flags *flag.FlagSet) (telnet Telnet, err error) {
 	telnet.Address, err = flags.GetString(TelnetAddressFlag)
 	if err != nil {
-		return telnet, err
+		panic(err)
 	}
 
 	telnet.Log = log.WithField("server", "telnet")
 
-	return telnet, nil
+	return telnet
 }
 
 func (t *Telnet) Listen(ctx context.Context, m *movie.Movie) error {
