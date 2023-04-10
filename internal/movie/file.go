@@ -60,7 +60,6 @@ func NewFromFile(path string, src io.Reader, frameHeight int, pad Padding, progr
 		f.Data += strings.Repeat("\n", pad.Bottom)
 		f.Data += strings.Repeat(" ", pad.Left-1)
 		f.Data += bar.Generate(currentPosition+f.Duration/2, totalDuration, maxWidth)
-		f.Data += strings.Repeat(" ", pad.Left-1)
 		f.Data += strings.Repeat("\n", progressPad.Bottom)
 		f.Height = strings.Count(f.Data, "\n")
 		m.Frames[i] = f
