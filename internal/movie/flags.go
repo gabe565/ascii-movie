@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/gabe565/ascii-movie/config"
+	"github.com/gabe565/ascii-movie/movies"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	"io"
@@ -18,6 +18,8 @@ var (
 
 	SpeedFlag       = "speed"
 	ErrInvalidSpeed = errors.New("speed must be greater than 0")
+
+	FrameHeightFlag = "frame-height"
 
 	PadTopFlag            = "pad-top"
 	PadBottomFlag         = "pad-bottom"
@@ -48,6 +50,8 @@ func Flags(flags *flag.FlagSet) {
 		"Playback speed multiplier. Must be greater than 0.",
 	)
 
+	flags.Int(FrameHeightFlag, 14, "Height of the movie frames")
+
 	flags.Int(PadTopFlag, 3, "Padding above the movie")
 	flags.Int(PadBottomFlag, 3, "Padding below the movie")
 	flags.Int(PadLeftFlag, 6, "Padding left of the movie")
@@ -68,7 +72,7 @@ func FromFlags(flags *flag.FlagSet) (*Movie, error) {
 
 	var src io.Reader
 	if fileFlag == "" {
-		src = bytes.NewReader(config.DefaultMovie)
+		src = bytes.NewReader(movies.Default)
 	} else {
 		f, err := os.Open(fileFlag)
 		if err != nil {
@@ -97,7 +101,12 @@ func FromFlags(flags *flag.FlagSet) (*Movie, error) {
 		panic(err)
 	}
 
-	movie, err = NewFromFile(fileFlag, src, pad, progressPad)
+	frameHeight, err := flags.GetInt(FrameHeightFlag)
+	if err != nil {
+		panic(err)
+	}
+
+	movie, err = NewFromFile(fileFlag, src, frameHeight, pad, progressPad)
 	if err != nil {
 		return movie, err
 	}

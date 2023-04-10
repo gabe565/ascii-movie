@@ -10,6 +10,7 @@ ascii-movie serve [flags]
 
 ```
   -f, --file string                Movie file path. If left blank, Star Wars will be played.
+      --frame-height int           Height of the movie frames (default 14)
   -h, --help                       help for serve
       --pad-bottom int             Padding below the movie (default 3)
       --pad-left int               Padding left of the movie (default 6)

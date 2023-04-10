@@ -2,7 +2,6 @@ package movie
 
 import (
 	"bufio"
-	"github.com/gabe565/ascii-movie/config"
 	"github.com/gabe565/ascii-movie/internal/progressbar"
 	"io"
 	"path/filepath"
@@ -11,20 +10,21 @@ import (
 	"time"
 )
 
-func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (*Movie, error) {
+func NewFromFile(path string, src io.Reader, frameHeight int, pad Padding, progressPad Padding) (*Movie, error) {
 	m := Movie{
 		Filename: filepath.Base(path),
 		Speed:    1,
 	}
 	var f Frame
+	var maxWidth int
 	scanner := bufio.NewScanner(src)
 
 	// Build part of every frame, excluding progress bar and bottom padding
 	for lineNum := 0; scanner.Scan(); lineNum += 1 {
-		frameLineNum := lineNum % config.FrameHeight
+		frameLineNum := lineNum % frameHeight
 		if frameLineNum == 0 {
 			f = Frame{
-				Num:  lineNum / config.FrameHeight,
+				Num:  lineNum / frameHeight,
 				Data: strings.Repeat("\n", pad.Top-1),
 			}
 
@@ -35,10 +35,13 @@ func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (
 
 			f.Duration = time.Duration(float64(v)*(1000.0/15.0)) * time.Millisecond
 		} else {
+			if len(scanner.Bytes()) > maxWidth {
+				maxWidth = len(scanner.Bytes())
+			}
 			f.Data += "\n" + strings.Repeat(" ", pad.Left) + scanner.Text()
 		}
 
-		if frameLineNum == config.FrameHeight-1 {
+		if frameLineNum == frameHeight-1 {
 			m.Frames = append(m.Frames, f)
 		}
 	}
@@ -56,7 +59,7 @@ func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (
 	for i, f := range m.Frames {
 		f.Data += strings.Repeat("\n", pad.Bottom)
 		f.Data += strings.Repeat(" ", pad.Left-1)
-		f.Data += bar.Generate(currentPosition+f.Duration/2, totalDuration, config.Width)
+		f.Data += bar.Generate(currentPosition+f.Duration/2, totalDuration, maxWidth)
 		f.Data += strings.Repeat(" ", pad.Left-1)
 		f.Data += strings.Repeat("\n", progressPad.Bottom)
 		f.Height = strings.Count(f.Data, "\n")
