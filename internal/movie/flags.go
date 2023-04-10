@@ -16,9 +16,13 @@ var (
 
 	ClearExtraLinesFlag = "clear-extra-lines"
 
-	SpeedFlag = "speed"
-
+	SpeedFlag       = "speed"
 	ErrInvalidSpeed = errors.New("speed must be greater than 0")
+
+	PadTopFlag            = "pad-top"
+	PadBottomFlag         = "pad-bottom"
+	PadLeftFlag           = "pad-left"
+	ProgressPadBottomFlag = "progress-pad-bottom"
 )
 
 func Flags(flags *flag.FlagSet) {
@@ -43,6 +47,11 @@ func Flags(flags *flag.FlagSet) {
 		1,
 		"Playback speed multiplier. Must be greater than 0.",
 	)
+
+	flags.Int(PadTopFlag, 3, "Padding above the movie")
+	flags.Int(PadBottomFlag, 3, "Padding below the movie")
+	flags.Int(PadLeftFlag, 6, "Padding left of the movie")
+	flags.Int(ProgressPadBottomFlag, 3, "Padding below the progress bar")
 }
 
 func FromFlags(flags *flag.FlagSet) (*Movie, error) {
@@ -72,7 +81,23 @@ func FromFlags(flags *flag.FlagSet) (*Movie, error) {
 		src = f
 	}
 
-	movie, err = NewFromFile(fileFlag, src)
+	var pad Padding
+	if pad.Top, err = flags.GetInt(PadTopFlag); err != nil {
+		panic(err)
+	}
+	if pad.Bottom, err = flags.GetInt(PadBottomFlag); err != nil {
+		panic(err)
+	}
+	if pad.Left, err = flags.GetInt(PadLeftFlag); err != nil {
+		panic(err)
+	}
+
+	progressPad := pad
+	if progressPad.Bottom, err = flags.GetInt(ProgressPadBottomFlag); err != nil {
+		panic(err)
+	}
+
+	movie, err = NewFromFile(fileFlag, src, pad, progressPad)
 	if err != nil {
 		return movie, err
 	}

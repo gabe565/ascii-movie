@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func NewFromFile(path string, src io.Reader) (*Movie, error) {
+func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (*Movie, error) {
 	m := Movie{
 		Filename: filepath.Base(path),
 		Speed:    1,
@@ -25,7 +25,7 @@ func NewFromFile(path string, src io.Reader) (*Movie, error) {
 		if frameLineNum == 0 {
 			f = Frame{
 				Num:  lineNum / config.FrameHeight,
-				Data: strings.Repeat("\n", config.PadTop-1),
+				Data: strings.Repeat("\n", pad.Top-1),
 			}
 
 			v, err := strconv.Atoi(scanner.Text())
@@ -35,7 +35,7 @@ func NewFromFile(path string, src io.Reader) (*Movie, error) {
 
 			f.Duration = time.Duration(float64(v)*(1000.0/15.0)) * time.Millisecond
 		} else {
-			f.Data += "\n" + strings.Repeat(" ", config.PadLeft) + scanner.Text()
+			f.Data += "\n" + strings.Repeat(" ", pad.Left) + scanner.Text()
 		}
 
 		if frameLineNum == config.FrameHeight-1 {
@@ -54,11 +54,11 @@ func NewFromFile(path string, src io.Reader) (*Movie, error) {
 	// Build the rest of every frame and write to disk
 	var currentPosition time.Duration
 	for i, f := range m.Frames {
-		f.Data += strings.Repeat("\n", config.PadBottom)
-		f.Data += strings.Repeat(" ", config.PadLeft-1)
+		f.Data += strings.Repeat("\n", pad.Bottom)
+		f.Data += strings.Repeat(" ", pad.Left-1)
 		f.Data += bar.Generate(currentPosition+f.Duration/2, totalDuration, config.Width)
-		f.Data += strings.Repeat(" ", config.PadLeft-1)
-		f.Data += strings.Repeat("\n", config.PadBottom)
+		f.Data += strings.Repeat(" ", pad.Left-1)
+		f.Data += strings.Repeat("\n", progressPad.Bottom)
 		f.Height = strings.Count(f.Data, "\n")
 		m.Frames[i] = f
 		if frameCap < len(f.Data) {

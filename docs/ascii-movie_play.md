@@ -9,9 +9,13 @@ ascii-movie play [flags]
 ### Options
 
 ```
-  -f, --file string   Movie file path. If left blank, Star Wars will be played.
-  -h, --help          help for play
-      --speed float   Playback speed multiplier. Must be greater than 0. (default 1)
+  -f, --file string               Movie file path. If left blank, Star Wars will be played.
+  -h, --help                      help for play
+      --pad-bottom int            Padding below the movie (default 3)
+      --pad-left int              Padding left of the movie (default 6)
+      --pad-top int               Padding above the movie (default 3)
+      --progress-pad-bottom int   Padding below the progress bar (default 3)
+      --speed float               Playback speed multiplier. Must be greater than 0. (default 1)
 ```
 
 ### SEE ALSO
