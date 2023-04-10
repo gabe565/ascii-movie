@@ -29,14 +29,15 @@ func (m *Movie) Stream(w io.Writer) error {
 	var buf bytes.Buffer
 	buf.Grow(m.Cap)
 
+	timer := time.NewTimer(0)
 	for _, f := range m.Frames {
 		buf.WriteString(f.Data)
 
+		<-timer.C
 		if _, err := io.Copy(w, &buf); err != nil {
 			return err
 		}
-
-		time.Sleep(f.CalcDuration(m.Speed))
+		timer.Reset(f.CalcDuration(m.Speed))
 
 		buf.Reset()
 		buf.WriteString(cursor.MoveUp(f.Height+m.ClearExtraLines) + cursor.ClearScreenDown())
