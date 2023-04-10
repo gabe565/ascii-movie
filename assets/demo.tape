@@ -8,7 +8,7 @@ Set TypingSpeed 20ms
 
 Set FontSize 17
 Set Width 980
-Set Height 620
+Set Height 580
 Set Padding 40
 Set Margin 20
 Set WindowBar Colorful
@@ -18,7 +18,7 @@ Set BorderRadius 10
 # Use a shell alias to hide the cursor after typing
 # and set --speed=2 flag.
 Hide
-Type@0 "alias ascii-movie='sleep 0.1 && tput civis && ./ascii-movie --speed=2' && clear"
+Type@0 'ascii-movie() ( sleep 0.1 && tput civis && ./ascii-movie --speed=2 --progress-pad-bottom=1 "$@" && tput cnorm ); clear'
 Enter
 Sleep 100ms
 Show
