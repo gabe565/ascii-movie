@@ -14,8 +14,10 @@ type Config struct {
 }
 
 var (
-	SSHEnabledFlag = "ssh-enabled"
-	SSHAddressFlag = "ssh-address"
+	SSHEnabledFlag     = "ssh-enabled"
+	SSHAddressFlag     = "ssh-address"
+	SSHHostKeyFlag     = "ssh-host-key"
+	SSHHostKeyPathFlag = "ssh-host-key-path"
 
 	TelnetEnabledFlag = "telnet-enabled"
 	TelnetAddressFlag = "telnet-address"
@@ -24,6 +26,8 @@ var (
 func Flags(flags *flag.FlagSet) {
 	flags.Bool(SSHEnabledFlag, true, "Enables SSH listener")
 	flags.String(SSHAddressFlag, ":22", "SSH listen address")
+	flags.String(SSHHostKeyFlag, "", "SSH host key PEM")
+	flags.String(SSHHostKeyPathFlag, "", "SSH host key file path")
 
 	flags.Bool(TelnetEnabledFlag, true, "Enables Telnet listener")
 	flags.String(TelnetAddressFlag, ":23", "Telnet listen address")

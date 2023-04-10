@@ -14,7 +14,11 @@ import (
 	"io"
 )
 
-type SSH Config
+type SSH struct {
+	Config
+	HostKeyPEM  string
+	HostKeyPath string
+}
 
 func SSHEnabled(flags *flag.FlagSet) bool {
 	enabled, err := flags.GetBool(SSHEnabledFlag)
@@ -30,6 +34,16 @@ func NewSSH(flags *flag.FlagSet) (ssh SSH, err error) {
 		return ssh, err
 	}
 
+	ssh.HostKeyPath, err = flags.GetString(SSHHostKeyPathFlag)
+	if err != nil {
+		return ssh, err
+	}
+
+	ssh.HostKeyPEM, err = flags.GetString(SSHHostKeyFlag)
+	if err != nil {
+		return ssh, err
+	}
+
 	ssh.Log = log.WithField("server", "ssh")
 
 	return ssh, nil
@@ -38,12 +52,21 @@ func NewSSH(flags *flag.FlagSet) (ssh SSH, err error) {
 func (s *SSH) Listen(ctx context.Context, m *movie.Movie) error {
 	s.Log.WithField("address", s.Address).Info("Starting SSH server")
 
-	server, err := wish.NewServer(
+	sshOptions := []ssh.Option{
 		wish.WithAddress(s.Address),
 		wish.WithMiddleware(
 			s.ServeSSH(m),
 		),
-	)
+	}
+
+	switch {
+	case s.HostKeyPEM != "":
+		sshOptions = append(sshOptions, wish.WithHostKeyPEM([]byte(s.HostKeyPEM)))
+	case s.HostKeyPath != "":
+		sshOptions = append(sshOptions, wish.WithHostKeyPath(s.HostKeyPath))
+	}
+
+	server, err := wish.NewServer(sshOptions...)
 	if err != nil {
 		return err
 	}

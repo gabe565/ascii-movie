@@ -9,13 +9,15 @@ ascii-movie serve [flags]
 ### Options
 
 ```
-      --file string             Movie file path. If left blank, Star Wars will be played.
-  -h, --help                    help for serve
-      --speed float             Playback speed multiplier. Must be greater than 0. (default 1)
-      --ssh-address string      SSH listen address (default ":22")
-      --ssh-enabled             Enables SSH listener (default true)
-      --telnet-address string   Telnet listen address (default ":23")
-      --telnet-enabled          Enables Telnet listener (default true)
+      --file string                Movie file path. If left blank, Star Wars will be played.
+  -h, --help                       help for serve
+      --speed float                Playback speed multiplier. Must be greater than 0. (default 1)
+      --ssh-address string         SSH listen address (default ":22")
+      --ssh-enabled                Enables SSH listener (default true)
+      --ssh-host-key string        SSH host key PEM
+      --ssh-host-key-path string   SSH host key file path
+      --telnet-address string      Telnet listen address (default ":23")
+      --telnet-enabled             Enables Telnet listener (default true)
 ```
 
 ### SEE ALSO
