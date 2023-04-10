@@ -22,8 +22,9 @@ var (
 )
 
 func Flags(flags *flag.FlagSet) {
-	flags.String(
+	flags.StringP(
 		FileFlag,
+		"f",
 		"",
 		"Movie file path. If left blank, Star Wars will be played.",
 	)

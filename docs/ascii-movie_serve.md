@@ -9,7 +9,7 @@ ascii-movie serve [flags]
 ### Options
 
 ```
-      --file string                Movie file path. If left blank, Star Wars will be played.
+  -f, --file string                Movie file path. If left blank, Star Wars will be played.
   -h, --help                       help for serve
       --speed float                Playback speed multiplier. Must be greater than 0. (default 1)
       --ssh-address string         SSH listen address (default ":22")
