@@ -71,12 +71,11 @@ func (t *Telnet) ServeTelnet(conn net.Conn, m *movie.Movie) {
 		_ = conn.Close()
 	}(conn)
 
-	sessionLog := t.Log.WithFields(log.Fields{
-		"duration": log_hooks.NewDuration(),
-	})
-
 	remoteIP := RemoteIp(conn.RemoteAddr().String())
-	sessionLog = sessionLog.WithField("remote_ip", remoteIP)
+	sessionLog := t.Log.WithFields(log.Fields{
+		"remote_ip": remoteIP,
+		"duration":  log_hooks.NewDuration(),
+	})
 
 	go func() {
 		// Exit on user input

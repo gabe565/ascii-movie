@@ -90,7 +90,6 @@ func (s *SSH) ServeSSH(m *movie.Movie) wish.Middleware {
 	return func(handle ssh.Handler) ssh.Handler {
 		return func(session ssh.Session) {
 			remoteIP := RemoteIp(session.RemoteAddr().String())
-
 			sessionLog := s.Log.WithFields(log.Fields{
 				"remote_ip": remoteIP,
 				"duration":  log_hooks.NewDuration(),
