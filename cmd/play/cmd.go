@@ -8,8 +8,9 @@ import (
 
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "play",
+		Use:   "play [movie]",
 		Short: "Play an ASCII movie locally.",
+		Args:  cobra.MaximumNArgs(1),
 		RunE:  run,
 	}
 
@@ -21,7 +22,12 @@ func NewCommand() *cobra.Command {
 func run(cmd *cobra.Command, args []string) (err error) {
 	log.SetLevel(log.WarnLevel)
 
-	m, err := movie.FromFlags(cmd.Flags())
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	}
+
+	m, err := movie.FromFlags(cmd.Flags(), path)
 	if err != nil {
 		return err
 	}

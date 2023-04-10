@@ -14,8 +14,9 @@ import (
 
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "serve",
+		Use:     "serve [movie]",
 		Aliases: []string{"server", "listen"},
+		Args:    cobra.MaximumNArgs(1),
 		Short:   "Serve an ASCII movie over Telnet and SSH.",
 		RunE:    run,
 	}
@@ -27,7 +28,12 @@ func NewCommand() *cobra.Command {
 }
 
 func run(cmd *cobra.Command, args []string) (err error) {
-	m, err := movie.FromFlags(cmd.Flags())
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	}
+
+	m, err := movie.FromFlags(cmd.Flags(), path)
 	if err != nil {
 		return err
 	}

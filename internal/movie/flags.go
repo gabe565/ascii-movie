@@ -1,7 +1,6 @@
 package movie
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"github.com/gabe565/ascii-movie/movies"
@@ -9,11 +8,10 @@ import (
 	flag "github.com/spf13/pflag"
 	"io"
 	"os"
+	"strings"
 )
 
 var (
-	FileFlag = "file"
-
 	ClearExtraLinesFlag = "clear-extra-lines"
 
 	SpeedFlag       = "speed"
@@ -28,13 +26,6 @@ var (
 )
 
 func Flags(flags *flag.FlagSet) {
-	flags.StringP(
-		FileFlag,
-		"f",
-		"",
-		"Movie file path. If left blank, Star Wars will be played.",
-	)
-
 	flags.Int(
 		ClearExtraLinesFlag,
 		0,
@@ -58,31 +49,38 @@ func Flags(flags *flag.FlagSet) {
 	flags.Int(ProgressPadBottomFlag, 3, "Padding below the progress bar")
 }
 
-func FromFlags(flags *flag.FlagSet) (*Movie, error) {
+func FromFlags(flags *flag.FlagSet, path string) (*Movie, error) {
 	var err error
 
 	log.Info("Loading movie...")
 
-	fileFlag, err := flags.GetString(FileFlag)
-	if err != nil {
-		return nil, err
-	}
-
 	var movie *Movie
 
 	var src io.Reader
-	if fileFlag == "" {
-		src = bytes.NewReader(movies.Default)
-	} else {
-		f, err := os.Open(fileFlag)
-		if err != nil {
+	if path == "" {
+		// Use default embedded movie
+		path = movies.Default
+	}
+	// Load embedded movie
+	embeddedPath := path
+	if !strings.HasSuffix(embeddedPath, ".txt") {
+		embeddedPath += ".txt"
+	}
+	if src, err = movies.Movies.Open(embeddedPath); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			// Fallback to loading file
+			f, err := os.Open(path)
+			if err != nil {
+				return movie, err
+			}
+
+			src = f
+			defer func(f *os.File) {
+				_ = f.Close()
+			}(f)
+		} else {
 			return movie, err
 		}
-		defer func(f *os.File) {
-			_ = f.Close()
-		}(f)
-
-		src = f
 	}
 
 	var pad Padding
@@ -106,7 +104,7 @@ func FromFlags(flags *flag.FlagSet) (*Movie, error) {
 		panic(err)
 	}
 
-	movie, err = NewFromFile(fileFlag, src, frameHeight, pad, progressPad)
+	movie, err = NewFromFile(path, src, frameHeight, pad, progressPad)
 	if err != nil {
 		return movie, err
 	}

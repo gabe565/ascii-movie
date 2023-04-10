@@ -3,13 +3,12 @@
 Serve an ASCII movie over Telnet and SSH.
 
 ```
-ascii-movie serve [flags]
+ascii-movie serve [movie] [flags]
 ```
 
 ### Options
 
 ```
-  -f, --file string                Movie file path. If left blank, Star Wars will be played.
       --frame-height int           Height of the movie frames (default 14)
   -h, --help                       help for serve
       --pad-bottom int             Padding below the movie (default 2)

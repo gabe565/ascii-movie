@@ -3,13 +3,12 @@
 Play an ASCII movie locally.
 
 ```
-ascii-movie play [flags]
+ascii-movie play [movie] [flags]
 ```
 
 ### Options
 
 ```
-  -f, --file string               Movie file path. If left blank, Star Wars will be played.
       --frame-height int          Height of the movie frames (default 14)
   -h, --help                      help for play
       --pad-bottom int            Padding below the movie (default 2)
