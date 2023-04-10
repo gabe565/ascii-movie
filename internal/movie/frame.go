@@ -3,7 +3,6 @@ package movie
 import "time"
 
 type Frame struct {
-	Num      int
 	Duration time.Duration
 	Height   int
 	Data     string

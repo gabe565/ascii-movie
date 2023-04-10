@@ -24,7 +24,6 @@ func NewFromFile(path string, src io.Reader, frameHeight int, pad Padding, progr
 		frameLineNum := lineNum % frameHeight
 		if frameLineNum == 0 {
 			f = Frame{
-				Num:  lineNum / frameHeight,
 				Data: strings.Repeat("\n", pad.Top),
 			}
 
