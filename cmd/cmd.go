@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"github.com/gabe565/ascii-movie/cmd/ls_embedded"
 	"github.com/gabe565/ascii-movie/cmd/play"
 	"github.com/gabe565/ascii-movie/cmd/serve"
 	"github.com/gabe565/ascii-movie/internal/config"
@@ -22,6 +23,7 @@ func NewCommand() *cobra.Command {
 	cmd.AddCommand(
 		play.NewCommand(),
 		serve.NewCommand(),
+		ls_embedded.NewCommand(),
 	)
 	config.RegisterLogFlags(cmd.PersistentFlags())
 	return cmd
