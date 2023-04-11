@@ -13,7 +13,7 @@ type ProgressBar struct {
 
 func New() ProgressBar {
 	return ProgressBar{
-		Formatter: color.New(38).SprintFunc(),
+		Formatter: color.New(color.Faint).SprintFunc(),
 		Phases: []string{
 			" ",
 			"▏",
