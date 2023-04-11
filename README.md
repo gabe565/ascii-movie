@@ -54,10 +54,10 @@ See [charts.gabe565.com](https://charts.gabe565.com/charts/ascii-movie/) or
 go install github.com/gabe565/ascii-movie@latest
 
 # Run the app in your terminal
-./ascii-movie play
+ascii-movie play
 
 # Or run it as a server
-./ascii-movie serve
+ascii-movie serve
 
 # Now, run `telnet localhost` or `nc localhost 23` to watch the movie!
 ```
