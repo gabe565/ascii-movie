@@ -97,12 +97,7 @@ func (s *SSH) ServeSSH(m *movie.Movie) wish.Middleware {
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 
-			go func() {
-				// Exit on user input
-				b := make([]byte, 1)
-				_, _ = session.Read(b)
-				cancel()
-			}()
+			go ListenForExit(ctx, cancel, session)
 
 			if err := m.Stream(ctx, session); err == nil {
 				sessionLog.Info("Finished movie")
