@@ -66,13 +66,17 @@ func FromFlags(flags *flag.FlagSet, path string) (*Movie, error) {
 	if !strings.HasSuffix(embeddedPath, ".txt") {
 		embeddedPath += ".txt"
 	}
-	if src, err = movies.Movies.Open(embeddedPath); err != nil {
+	if src, err = movies.Movies.Open(embeddedPath); err == nil {
+		log.WithField("name", embeddedPath).Debug("Using embedded movie")
+	} else {
 		if errors.Is(err, os.ErrNotExist) {
 			// Fallback to loading file
+			log.WithField("name", embeddedPath).Trace("No embedded movie matches name. Searching filesystem.")
 			f, err := os.Open(path)
 			if err != nil {
 				return movie, err
 			}
+			log.WithField("name", path).Debug("Found movie file")
 
 			src = f
 			defer func(f *os.File) {
