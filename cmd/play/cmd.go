@@ -40,7 +40,7 @@ func run(cmd *cobra.Command, args []string) (err error) {
 
 	ctx, cancel := context.WithCancel(cmd.Context())
 
-	go server.ListenForExit(ctx, cancel, cmd.InOrStdin())
+	go server.HandleInput(ctx, cancel, cmd.InOrStdin(), nil)
 
 	if err := m.Stream(ctx, cmd.OutOrStdout()); err != nil {
 		if !errors.Is(err, context.Canceled) {

@@ -79,13 +79,7 @@ func (t *Telnet) ServeTelnet(conn net.Conn, m *movie.Movie) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go ListenForExit(ctx, cancel, conn)
-
-	// IAC WILL Suppress Go Ahead IAC WON'T X Display Location
-	// https://ibm.com/docs/zos/2.5.0?topic=problems-telnet-commands-options
-	if _, err := conn.Write([]byte{0xFF, 0xFB, 0x3, 0xFF, 0xFC, 0x23}); err != nil {
-		return
-	}
+	go HandleInput(ctx, cancel, conn, conn)
 
 	if err := m.Stream(ctx, conn); err == nil {
 		sessionLog.Info("Finished movie")
