@@ -5,7 +5,9 @@ Command line ASCII movie player.
 ### Options
 
 ```
-  -h, --help   help for ascii-movie
+  -h, --help                help for ascii-movie
+      --log-format string   log formatter (text, json) (default "text")
+  -l, --log-level string    log level (trace, debug, info, warning, error, fatal, panic) (default "info")
 ```
 
 ### SEE ALSO

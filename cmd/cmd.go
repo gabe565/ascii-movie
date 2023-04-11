@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gabe565/ascii-movie/cmd/play"
 	"github.com/gabe565/ascii-movie/cmd/serve"
+	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	"os"
@@ -15,21 +16,30 @@ func NewCommand() *cobra.Command {
 		Use:   "ascii-movie",
 		Short: "Command line ASCII movie player.",
 
-		PersistentPreRunE: FlagEnvs,
+		PersistentPreRunE: preRun,
 		DisableAutoGenTag: true,
 	}
 	cmd.AddCommand(
 		play.NewCommand(),
 		serve.NewCommand(),
 	)
+	config.RegisterLogFlags(cmd.PersistentFlags())
 	return cmd
 }
 
 const EnvPrefix = "ASCII_MOVIE_"
 
-func FlagEnvs(cmd *cobra.Command, args []string) error {
+func preRun(cmd *cobra.Command, args []string) error {
+	if err := loadFlagEnvs(cmd.Flags()); err != nil {
+		return err
+	}
+	config.InitLog(cmd.Flags())
+	return nil
+}
+
+func loadFlagEnvs(flags *flag.FlagSet) error {
 	var errs []error
-	cmd.Flags().VisitAll(func(f *flag.Flag) {
+	flags.VisitAll(func(f *flag.Flag) {
 		optName := strings.ToUpper(f.Name)
 		optName = strings.ReplaceAll(optName, "-", "_")
 		varName := EnvPrefix + optName

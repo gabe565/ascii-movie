@@ -24,6 +24,13 @@ ascii-movie serve [movie] [flags]
       --telnet-enabled             Enables Telnet listener (default true)
 ```
 
+### Options inherited from parent commands
+
+```
+      --log-format string   log formatter (text, json) (default "text")
+  -l, --log-level string    log level (trace, debug, info, warning, error, fatal, panic) (default "info")
+```
+
 ### SEE ALSO
 
 * [ascii-movie](ascii-movie.md)	 - Command line ASCII movie player.
