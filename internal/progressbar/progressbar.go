@@ -29,6 +29,7 @@ func New() ProgressBar {
 }
 
 func (p *ProgressBar) Generate(n, total time.Duration, width int) string {
+	width -= 2
 	percent := float64(n) / float64(total)
 	filledLen := percent * float64(width)
 	filledNum := int(filledLen)

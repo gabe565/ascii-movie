@@ -62,7 +62,7 @@ func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (
 	for i, f := range m.Frames {
 		f.Data += strings.Repeat("\n", pad.Bottom)
 		if pad.Left != 0 {
-			f.Data += strings.Repeat(" ", pad.Left-1)
+			f.Data += strings.Repeat(" ", pad.Left)
 		}
 		f.Data += bar.Generate(currentPosition+f.Duration/2, totalDuration, maxWidth)
 		f.Data += strings.Repeat("\n", progressPad.Bottom)
