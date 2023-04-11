@@ -79,7 +79,7 @@ func (t *Telnet) ServeTelnet(conn net.Conn, m *movie.Movie) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go HandleInput(ctx, cancel, conn, conn)
+	go HandleTelnetInput(ctx, cancel, conn, conn)
 
 	if err := m.Stream(ctx, conn); err == nil {
 		sessionLog.Info("Finished movie")
