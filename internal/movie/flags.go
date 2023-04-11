@@ -42,7 +42,7 @@ func Flags(flags *flag.FlagSet) {
 	flags.Int(PadTopFlag, 3, "Padding above the movie")
 	flags.Int(PadBottomFlag, 2, "Padding below the movie")
 	flags.Int(PadLeftFlag, 6, "Padding left of the movie")
-	flags.Int(ProgressPadBottomFlag, 3, "Padding below the progress bar")
+	flags.Int(ProgressPadBottomFlag, 2, "Padding below the progress bar")
 }
 
 func FromFlags(flags *flag.FlagSet, path string) (*Movie, error) {
