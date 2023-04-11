@@ -3,7 +3,7 @@
 <img src="./assets/icon.svg" alt="ascii-movie logo" width="92" align="right">
 
 [![Build](https://github.com/gabe565/ascii-movie/actions/workflows/build.yml/badge.svg)](https://github.com/gabe565/ascii-movie/actions/workflows/build.yml)
-[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/gabe565)](https://artifacthub.io/packages/helm/gabe565/ascii-telnet)
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/gabe565)](https://artifacthub.io/packages/helm/gabe565/ascii-movie)
 
 The original Star Wars telnet server is currently down, so why not implement it in Go? This server will open a TCP server on `0.0.0.0:23` which streams the original Star Wars ASCII movie over telnet.
 
@@ -45,8 +45,8 @@ docker run --rm -it -p 23:23 -p 2222:22 ghcr.io/gabe565/ascii-movie serve
 
 ### Kubernetes
 A Helm chart is available for Kubernetes deployments.
-See [charts.gabe565.com](https://charts.gabe565.com/charts/ascii-telnet/) or
-[gabe565/charts](https://github.com/gabe565/charts/tree/main/charts/ascii-telnet) for details.
+See [charts.gabe565.com](https://charts.gabe565.com/charts/ascii-movie/) or
+[gabe565/charts](https://github.com/gabe565/charts/tree/main/charts/ascii-movie) for details.
 
 ### Local Build
 ```shell
