@@ -48,7 +48,7 @@ func run(cmd *cobra.Command, args []string) error {
 				return err
 			}
 
-			movie, err := movie.NewFromFile(path, f, 14, movie.Padding{}, movie.Padding{})
+			movie, err := movie.NewFromFile(path, f, movie.Padding{}, movie.Padding{})
 			if err != nil {
 				return err
 			}

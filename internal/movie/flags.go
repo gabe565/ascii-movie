@@ -17,8 +17,6 @@ var (
 	SpeedFlag       = "speed"
 	ErrInvalidSpeed = errors.New("speed must be greater than 0")
 
-	FrameHeightFlag = "frame-height"
-
 	PadTopFlag            = "pad-top"
 	PadBottomFlag         = "pad-bottom"
 	PadLeftFlag           = "pad-left"
@@ -40,8 +38,6 @@ func Flags(flags *flag.FlagSet) {
 		1,
 		"Playback speed multiplier. Must be greater than 0.",
 	)
-
-	flags.Int(FrameHeightFlag, 14, "Height of the movie frames")
 
 	flags.Int(PadTopFlag, 3, "Padding above the movie")
 	flags.Int(PadBottomFlag, 2, "Padding below the movie")
@@ -103,12 +99,7 @@ func FromFlags(flags *flag.FlagSet, path string) (*Movie, error) {
 		panic(err)
 	}
 
-	frameHeight, err := flags.GetInt(FrameHeightFlag)
-	if err != nil {
-		panic(err)
-	}
-
-	movie, err = NewFromFile(path, src, frameHeight, pad, progressPad)
+	movie, err = NewFromFile(path, src, pad, progressPad)
 	if err != nil {
 		return movie, err
 	}

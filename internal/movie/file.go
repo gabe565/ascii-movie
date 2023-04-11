@@ -5,12 +5,13 @@ import (
 	"github.com/gabe565/ascii-movie/internal/progressbar"
 	"io"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func NewFromFile(path string, src io.Reader, frameHeight int, pad Padding, progressPad Padding) (*Movie, error) {
+func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (*Movie, error) {
 	m := Movie{
 		Filename: filepath.Base(path),
 		Speed:    1,
@@ -20,9 +21,15 @@ func NewFromFile(path string, src io.Reader, frameHeight int, pad Padding, progr
 	scanner := bufio.NewScanner(src)
 
 	// Build part of every frame, excluding progress bar and bottom padding
-	for lineNum := 0; scanner.Scan(); lineNum += 1 {
-		frameLineNum := lineNum % frameHeight
-		if frameLineNum == 0 {
+	frameNum := -1
+	frameHeadRe := regexp.MustCompile(`^\d+$`)
+	for scanner.Scan() {
+		if frameHeadRe.Match(scanner.Bytes()) {
+			frameNum += 1
+			if frameNum != 0 {
+				m.Frames = append(m.Frames, f)
+			}
+
 			f = Frame{
 				Data: strings.Repeat("\n", pad.Top),
 			}
@@ -39,11 +46,8 @@ func NewFromFile(path string, src io.Reader, frameHeight int, pad Padding, progr
 			}
 			f.Data += strings.Repeat(" ", pad.Left) + scanner.Text() + "\n"
 		}
-
-		if frameLineNum == frameHeight-1 {
-			m.Frames = append(m.Frames, f)
-		}
 	}
+	m.Frames = append(m.Frames, f)
 	if err := scanner.Err(); err != nil {
 		return nil, err
 	}

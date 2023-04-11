@@ -9,7 +9,6 @@ ascii-movie serve [movie] [flags]
 ### Options
 
 ```
-      --frame-height int           Height of the movie frames (default 14)
   -h, --help                       help for serve
       --pad-bottom int             Padding below the movie (default 2)
       --pad-left int               Padding left of the movie (default 6)
