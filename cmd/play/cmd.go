@@ -1,8 +1,11 @@
 package play
 
 import (
+	"context"
+	"errors"
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/gabe565/ascii-movie/internal/movie"
+	"github.com/gabe565/ascii-movie/internal/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -35,5 +38,15 @@ func run(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	return m.Stream(cmd.Context(), cmd.OutOrStdout())
+	ctx, cancel := context.WithCancel(cmd.Context())
+
+	go server.ListenForExit(ctx, cancel, cmd.InOrStdin())
+
+	if err := m.Stream(ctx, cmd.OutOrStdout()); err != nil {
+		if !errors.Is(err, context.Canceled) {
+			return err
+		}
+	}
+
+	return nil
 }
