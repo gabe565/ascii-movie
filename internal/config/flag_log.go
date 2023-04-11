@@ -5,7 +5,7 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-var (
+const (
 	LogLevelFlag  = "log-level"
 	LogFormatFlag = "log-format"
 )

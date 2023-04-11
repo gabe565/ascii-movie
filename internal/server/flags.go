@@ -13,7 +13,7 @@ type Config struct {
 	Movie   *movie.Movie
 }
 
-var (
+const (
 	SSHEnabledFlag     = "ssh-enabled"
 	SSHAddressFlag     = "ssh-address"
 	SSHHostKeyFlag     = "ssh-host-key"
