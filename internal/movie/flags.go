@@ -45,12 +45,12 @@ func Flags(flags *flag.FlagSet) {
 	flags.Int(ProgressPadBottomFlag, 2, "Padding below the progress bar")
 }
 
-func FromFlags(flags *flag.FlagSet, path string) (*Movie, error) {
+func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	var err error
 
 	log.Info("Loading movie...")
 
-	var movie *Movie
+	var movie Movie
 
 	var src io.Reader
 	if path == "" {

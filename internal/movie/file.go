@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (*Movie, error) {
+func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (Movie, error) {
 	m := Movie{
 		Filename: filepath.Base(path),
 		Speed:    1,
@@ -36,7 +36,7 @@ func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (
 
 			v, err := strconv.Atoi(scanner.Text())
 			if err != nil {
-				return nil, err
+				return m, err
 			}
 
 			f.Duration = time.Duration(float64(v)*(1000.0/15.0)) * time.Millisecond
@@ -49,7 +49,7 @@ func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (
 	}
 	m.Frames = append(m.Frames, f)
 	if err := scanner.Err(); err != nil {
-		return nil, err
+		return m, err
 	}
 
 	// Compute the total duration
@@ -76,5 +76,5 @@ func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (
 
 	m.Cap = frameCap
 
-	return &m, nil
+	return m, nil
 }
