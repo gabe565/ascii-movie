@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/gabe565/ascii-movie/cmd"
 	"os"
+
+	"github.com/gabe565/ascii-movie/cmd"
 )
 
 //go:generate go run -tags generate ./internal/cmd/generate_movie

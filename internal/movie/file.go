@@ -2,13 +2,14 @@ package movie
 
 import (
 	"bufio"
-	"github.com/gabe565/ascii-movie/internal/progressbar"
 	"io"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gabe565/ascii-movie/internal/progressbar"
 )
 
 func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (Movie, error) {

@@ -2,16 +2,17 @@ package ls_embedded
 
 import (
 	"fmt"
-	"github.com/dustin/go-humanize"
-	"github.com/gabe565/ascii-movie/internal/movie"
-	"github.com/gabe565/ascii-movie/movies"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"io/fs"
 	"path/filepath"
 	"strings"
 	"text/tabwriter"
 	"time"
+
+	"github.com/dustin/go-humanize"
+	"github.com/gabe565/ascii-movie/internal/movie"
+	"github.com/gabe565/ascii-movie/movies"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
 func NewCommand() *cobra.Command {

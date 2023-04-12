@@ -3,6 +3,7 @@ package play
 import (
 	"context"
 	"errors"
+
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/server"

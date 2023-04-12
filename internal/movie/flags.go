@@ -3,12 +3,13 @@ package movie
 import (
 	"errors"
 	"fmt"
-	"github.com/gabe565/ascii-movie/movies"
-	log "github.com/sirupsen/logrus"
-	flag "github.com/spf13/pflag"
 	"io"
 	"os"
 	"strings"
+
+	"github.com/gabe565/ascii-movie/movies"
+	log "github.com/sirupsen/logrus"
+	flag "github.com/spf13/pflag"
 )
 
 var (

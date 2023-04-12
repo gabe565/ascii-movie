@@ -3,11 +3,12 @@ package server
 import (
 	"context"
 	"errors"
+	"net"
+
 	"github.com/gabe565/ascii-movie/internal/log_hooks"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
-	"net"
 )
 
 type Telnet Config

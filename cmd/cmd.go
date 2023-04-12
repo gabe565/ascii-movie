@@ -2,14 +2,15 @@ package cmd
 
 import (
 	"errors"
+	"os"
+	"strings"
+
 	"github.com/gabe565/ascii-movie/cmd/ls_embedded"
 	"github.com/gabe565/ascii-movie/cmd/play"
 	"github.com/gabe565/ascii-movie/cmd/serve"
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
-	"os"
-	"strings"
 )
 
 func NewCommand() *cobra.Command {

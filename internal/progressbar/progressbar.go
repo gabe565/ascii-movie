@@ -1,9 +1,10 @@
 package progressbar
 
 import (
-	"github.com/fatih/color"
 	"strings"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 type ProgressBar struct {

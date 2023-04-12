@@ -3,9 +3,10 @@ package movie
 import (
 	"bytes"
 	"context"
-	"github.com/ahmetb/go-cursor"
 	"io"
 	"time"
+
+	"github.com/ahmetb/go-cursor"
 )
 
 type Movie struct {
