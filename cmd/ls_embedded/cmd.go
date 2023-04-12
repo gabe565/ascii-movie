@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/movies"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"io/fs"
 	"path/filepath"
@@ -43,21 +44,24 @@ func run(cmd *cobra.Command, args []string) error {
 				return nil
 			}
 
+			movieLog := log.WithField("path", path)
+
 			f, err := movies.Movies.Open(path)
 			if err != nil {
-				return err
+				movieLog.WithError(err).Warn("Failed to open movie")
+				return nil
 			}
 
-			movie, err := movie.NewFromFile(path, f, movie.Padding{}, movie.Padding{})
+			m, err := movie.NewFromFile(path, f, movie.Padding{}, movie.Padding{})
 			if err != nil {
-				return err
+				movieLog.WithError(err).Warn("Failed to parse movie")
 			}
 
 			movieInfos = append(movieInfos, MovieInfo{
 				Name:      strings.TrimSuffix(path, filepath.Ext(path)),
-				Duration:  movie.Duration(),
+				Duration:  m.Duration(),
 				Default:   path == movies.Default,
-				NumFrames: len(movie.Frames),
+				NumFrames: len(m.Frames),
 			})
 			return nil
 		},
