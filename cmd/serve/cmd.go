@@ -20,6 +20,8 @@ func NewCommand() *cobra.Command {
 		Args:    cobra.MaximumNArgs(1),
 		Short:   "Serve an ASCII movie over Telnet and SSH.",
 		RunE:    run,
+
+		ValidArgsFunction: movie.CompleteMovieName,
 	}
 
 	movie.Flags(cmd.Flags())

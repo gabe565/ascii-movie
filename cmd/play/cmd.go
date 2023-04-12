@@ -17,6 +17,8 @@ func NewCommand() *cobra.Command {
 		Short: "Play an ASCII movie locally.",
 		Args:  cobra.MaximumNArgs(1),
 		RunE:  run,
+
+		ValidArgsFunction: movie.CompleteMovieName,
 	}
 
 	movie.Flags(cmd.Flags())
