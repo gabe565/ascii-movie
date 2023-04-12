@@ -2,6 +2,7 @@ package config
 
 import (
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 )
 
@@ -10,15 +11,39 @@ const (
 	LogFormatFlag = "log-format"
 )
 
-func RegisterLogFlags(flags *flag.FlagSet) {
-	flags.StringP(
+func RegisterLogFlags(cmd *cobra.Command) {
+	cmd.PersistentFlags().StringP(
 		LogLevelFlag,
 		"l",
 		log.InfoLevel.String(),
 		"log level (trace, debug, info, warning, error, fatal, panic)",
 	)
+	if err := cmd.RegisterFlagCompletionFunc(
+		LogLevelFlag,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{
+				log.TraceLevel.String(),
+				log.DebugLevel.String(),
+				log.InfoLevel.String(),
+				log.WarnLevel.String(),
+				log.ErrorLevel.String(),
+				log.FatalLevel.String(),
+				log.PanicLevel.String(),
+			}, cobra.ShellCompDirectiveNoFileComp
+		},
+	); err != nil {
+		panic(err)
+	}
 
-	flags.String(LogFormatFlag, "text", "log formatter (text, json)")
+	cmd.PersistentFlags().String(LogFormatFlag, "text", "log formatter (text, json)")
+	if err := cmd.RegisterFlagCompletionFunc(
+		LogFormatFlag,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{"text", "json"}, cobra.ShellCompDirectiveNoFileComp
+		},
+	); err != nil {
+		panic(err)
+	}
 }
 
 func InitLog(flags *flag.FlagSet) {

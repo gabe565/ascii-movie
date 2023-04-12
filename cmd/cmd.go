@@ -26,7 +26,7 @@ func NewCommand() *cobra.Command {
 		serve.NewCommand(),
 		ls_embedded.NewCommand(),
 	)
-	config.RegisterLogFlags(cmd.PersistentFlags())
+	config.RegisterLogFlags(cmd)
 	return cmd
 }
 
