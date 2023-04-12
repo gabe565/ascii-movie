@@ -66,7 +66,7 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 3, ' ', 0)
-	if _, err := fmt.Fprintln(w, "NAME\tDURATION\tDEFAULT\tFRAME COUNT\t"); err != nil {
+	if _, err := fmt.Fprintln(w, "NAME\tDEFAULT\tDURATION\tFRAME COUNT\t"); err != nil {
 		return err
 	}
 	for _, info := range movieInfos {
