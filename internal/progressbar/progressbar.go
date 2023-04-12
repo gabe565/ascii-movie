@@ -12,20 +12,25 @@ type ProgressBar struct {
 	Phases    []string
 }
 
+var (
+	DefaultFormatter = color.New(color.Faint).SprintFunc()
+	DefaultPhases    = []string{
+		" ",
+		"▏",
+		"▎",
+		"▍",
+		"▌",
+		"▋",
+		"▊",
+		"▉",
+		"█",
+	}
+)
+
 func New() ProgressBar {
 	return ProgressBar{
-		Formatter: color.New(color.Faint).SprintFunc(),
-		Phases: []string{
-			" ",
-			"▏",
-			"▎",
-			"▍",
-			"▌",
-			"▋",
-			"▊",
-			"▉",
-			"█",
-		},
+		Formatter: DefaultFormatter,
+		Phases:    DefaultPhases,
 	}
 }
 

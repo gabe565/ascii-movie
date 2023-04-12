@@ -7,15 +7,18 @@ import (
 )
 
 const (
-	LogLevelFlag  = "log-level"
-	LogFormatFlag = "log-format"
+	LogLevelFlag    = "log-level"
+	DefaultLogLevel = log.InfoLevel
+
+	LogFormatFlag    = "log-format"
+	DefaultLogFormat = "text"
 )
 
 func RegisterLogFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringP(
 		LogLevelFlag,
 		"l",
-		log.InfoLevel.String(),
+		DefaultLogLevel.String(),
 		"log level (trace, debug, info, warning, error, fatal, panic)",
 	)
 	if err := cmd.RegisterFlagCompletionFunc(
@@ -35,7 +38,7 @@ func RegisterLogFlags(cmd *cobra.Command) {
 		panic(err)
 	}
 
-	cmd.PersistentFlags().String(LogFormatFlag, "text", "log formatter (text, json)")
+	cmd.PersistentFlags().String(LogFormatFlag, DefaultLogFormat, "log formatter (text, json)")
 	if err := cmd.RegisterFlagCompletionFunc(
 		LogFormatFlag,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
