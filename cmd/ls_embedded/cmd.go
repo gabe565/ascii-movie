@@ -2,6 +2,7 @@ package ls_embedded
 
 import (
 	"fmt"
+	"github.com/dustin/go-humanize"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/movies"
 	log "github.com/sirupsen/logrus"
@@ -27,6 +28,7 @@ type MovieInfo struct {
 	Duration  time.Duration
 	Default   bool
 	NumFrames int
+	Size      int64
 }
 
 func run(cmd *cobra.Command, args []string) error {
@@ -57,11 +59,17 @@ func run(cmd *cobra.Command, args []string) error {
 				movieLog.WithError(err).Warn("Failed to parse movie")
 			}
 
+			info, err := d.Info()
+			if err != nil {
+				log.WithError(err).Warn("Failed to fetch file info")
+			}
+
 			movieInfos = append(movieInfos, MovieInfo{
 				Name:      strings.TrimSuffix(path, filepath.Ext(path)),
 				Duration:  m.Duration(),
 				Default:   path == movies.Default,
 				NumFrames: len(m.Frames),
+				Size:      info.Size(),
 			})
 			return nil
 		},
@@ -70,14 +78,15 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 3, ' ', 0)
-	if _, err := fmt.Fprintln(w, "NAME\tDEFAULT\tDURATION\tFRAME COUNT\t"); err != nil {
+	if _, err := fmt.Fprintln(w, "NAME\tSIZE\tDEFAULT\tDURATION\tFRAME COUNT\t"); err != nil {
 		return err
 	}
 	for _, info := range movieInfos {
 		if _, err := fmt.Fprintf(
 			w,
-			"%s\t%t\t%s\t%d\t\n",
+			"%s\t%s\t%t\t%s\t%d\t\n",
 			info.Name,
+			humanize.Bytes(uint64(info.Size)),
 			info.Default,
 			info.Duration.Round(time.Second),
 			info.NumFrames,
