@@ -39,7 +39,7 @@ func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (
 				return m, err
 			}
 
-			f.Duration = time.Duration(float64(v)*(1000.0/15.0)) * time.Millisecond
+			f.Duration = time.Duration(v) * time.Second / 15
 		} else {
 			if len(scanner.Bytes()) > maxWidth {
 				maxWidth = len(scanner.Bytes())
