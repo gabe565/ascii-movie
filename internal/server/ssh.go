@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
@@ -54,6 +55,11 @@ func NewSSH(flags *flag.FlagSet) SSH {
 		} else {
 			ssh.Log.Warn("Failed to discover default gateway")
 		}
+	}
+
+	ssh.LogExcludeFaster, err = flags.GetDuration(LogExcludeFaster)
+	if err != nil {
+		panic(err)
 	}
 
 	return ssh
@@ -112,9 +118,10 @@ func (s *SSH) ServeSSH(m *movie.Movie) wish.Middleware {
 	return func(handle ssh.Handler) ssh.Handler {
 		return func(session ssh.Session) {
 			remoteIP := RemoteIp(session.RemoteAddr().String())
+			durationHook := log_hooks.NewDuration()
 			sessionLog := s.Log.WithFields(log.Fields{
 				"remote_ip": remoteIP,
-				"duration":  log_hooks.NewDuration(),
+				"duration":  durationHook,
 			})
 
 			ctx, cancel := context.WithCancel(context.Background())
@@ -126,9 +133,11 @@ func (s *SSH) ServeSSH(m *movie.Movie) wish.Middleware {
 				sessionLog.Info("Finished movie")
 			} else {
 				if errors.Is(err, context.Canceled) {
-					if remoteIP == s.DefaultGateway {
+					switch {
+					case remoteIP == s.DefaultGateway,
+						time.Since(durationHook.GetStart()) < s.LogExcludeFaster:
 						sessionLog.Trace("Disconnected early")
-					} else {
+					default:
 						sessionLog.Info("Disconnected early")
 					}
 				}

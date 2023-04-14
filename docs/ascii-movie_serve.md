@@ -9,19 +9,20 @@ ascii-movie serve [movie] [flags]
 ### Options
 
 ```
-  -h, --help                        help for serve
-      --log-exclude-gateway         Makes default gateway early disconnect logs be trace level. Useful for excluding health checks from logs.
-      --pad-bottom int              Padding below the movie (default 2)
-      --pad-left int                Padding left of the movie (default 6)
-      --pad-top int                 Padding above the movie (default 3)
-      --progress-pad-bottom int     Padding below the progress bar (default 2)
-      --speed float                 Playback speed multiplier. Must be greater than 0. (default 1)
-      --ssh-address string          SSH listen address (default ":22")
-      --ssh-enabled                 Enables SSH listener (default true)
-      --ssh-host-key strings        SSH host key file path
-      --ssh-host-key-data strings   SSH host key PEM data
-      --telnet-address string       Telnet listen address (default ":23")
-      --telnet-enabled              Enables Telnet listener (default true)
+  -h, --help                          help for serve
+      --log-exclude-faster duration   Makes early disconnect logs faster than the value be trace level. Useful for excluding health checks from logs.
+      --log-exclude-gateway           Makes default gateway early disconnect logs be trace level. Useful for excluding health checks from logs.
+      --pad-bottom int                Padding below the movie (default 2)
+      --pad-left int                  Padding left of the movie (default 6)
+      --pad-top int                   Padding above the movie (default 3)
+      --progress-pad-bottom int       Padding below the progress bar (default 2)
+      --speed float                   Playback speed multiplier. Must be greater than 0. (default 1)
+      --ssh-address string            SSH listen address (default ":22")
+      --ssh-enabled                   Enables SSH listener (default true)
+      --ssh-host-key strings          SSH host key file path
+      --ssh-host-key-data strings     SSH host key PEM data
+      --telnet-address string         Telnet listen address (default ":23")
+      --telnet-enabled                Enables Telnet listener (default true)
 ```
 
 ### Options inherited from parent commands

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net"
+	"time"
 
 	"github.com/gabe565/ascii-movie/internal/log_hooks"
 	"github.com/gabe565/ascii-movie/internal/movie"
@@ -40,6 +41,11 @@ func NewTelnet(flags *flag.FlagSet) Telnet {
 		} else {
 			telnet.Log.Warn("Failed to discover default gateway")
 		}
+	}
+
+	telnet.LogExcludeFaster, err = flags.GetDuration(LogExcludeFaster)
+	if err != nil {
+		panic(err)
 	}
 
 	return telnet
@@ -85,9 +91,10 @@ func (t *Telnet) ServeTelnet(conn net.Conn, m *movie.Movie) {
 	}(conn)
 
 	remoteIP := RemoteIp(conn.RemoteAddr().String())
+	durationHook := log_hooks.NewDuration()
 	sessionLog := t.Log.WithFields(log.Fields{
 		"remote_ip": remoteIP,
-		"duration":  log_hooks.NewDuration(),
+		"duration":  durationHook,
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -99,9 +106,11 @@ func (t *Telnet) ServeTelnet(conn net.Conn, m *movie.Movie) {
 		sessionLog.Info("Finished movie")
 	} else {
 		if errors.Is(err, context.Canceled) {
-			if remoteIP == t.DefaultGateway {
+			switch {
+			case remoteIP == t.DefaultGateway,
+				time.Since(durationHook.GetStart()) < t.LogExcludeFaster:
 				sessionLog.Trace("Disconnected early")
-			} else {
+			default:
 				sessionLog.Info("Disconnected early")
 			}
 		}

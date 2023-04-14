@@ -19,3 +19,7 @@ type Duration struct {
 func (d Duration) String() string {
 	return time.Since(d.start).Truncate(d.trunc).String()
 }
+
+func (d Duration) GetStart() time.Time {
+	return d.start
+}

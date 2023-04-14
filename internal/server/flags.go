@@ -1,21 +1,25 @@
 package server
 
 import (
+	"time"
+
 	"github.com/gabe565/ascii-movie/internal/movie"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 )
 
 type Config struct {
-	Enabled        bool
-	Address        string
-	Log            *log.Entry
-	Movie          *movie.Movie
-	DefaultGateway string
+	Enabled          bool
+	Address          string
+	Log              *log.Entry
+	Movie            *movie.Movie
+	DefaultGateway   string
+	LogExcludeFaster time.Duration
 }
 
 const (
 	LogExcludeGatewayFlag = "log-exclude-gateway"
+	LogExcludeFaster      = "log-exclude-faster"
 
 	SSHEnabledFlag     = "ssh-enabled"
 	SSHAddressFlag     = "ssh-address"
@@ -28,6 +32,7 @@ const (
 
 func Flags(flags *flag.FlagSet) {
 	flags.Bool(LogExcludeGatewayFlag, false, "Makes default gateway early disconnect logs be trace level. Useful for excluding health checks from logs.")
+	flags.Duration(LogExcludeFaster, 0, "Makes early disconnect logs faster than the value be trace level. Useful for excluding health checks from logs.")
 
 	flags.Bool(SSHEnabledFlag, true, "Enables SSH listener")
 	flags.String(SSHAddressFlag, ":22", "SSH listen address")
