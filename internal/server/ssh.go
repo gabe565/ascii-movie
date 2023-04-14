@@ -17,8 +17,8 @@ import (
 
 type SSH struct {
 	Config
-	HostKeyPEM  string
-	HostKeyPath string
+	HostKeyPEM  []string
+	HostKeyPath []string
 }
 
 func NewSSH(flags *flag.FlagSet) SSH {
@@ -33,11 +33,11 @@ func NewSSH(flags *flag.FlagSet) SSH {
 		panic(err)
 	}
 
-	if ssh.HostKeyPath, err = flags.GetString(SSHHostKeyPathFlag); err != nil {
+	if ssh.HostKeyPath, err = flags.GetStringSlice(SSHHostKeyPathFlag); err != nil {
 		panic(err)
 	}
 
-	if ssh.HostKeyPEM, err = flags.GetString(SSHHostKeyFlag); err != nil {
+	if ssh.HostKeyPEM, err = flags.GetStringSlice(SSHHostKeyFlag); err != nil {
 		panic(err)
 	}
 
@@ -56,11 +56,12 @@ func (s *SSH) Listen(ctx context.Context, m *movie.Movie) error {
 		),
 	}
 
-	switch {
-	case s.HostKeyPEM != "":
-		sshOptions = append(sshOptions, wish.WithHostKeyPEM([]byte(s.HostKeyPEM)))
-	case s.HostKeyPath != "":
-		sshOptions = append(sshOptions, wish.WithHostKeyPath(s.HostKeyPath))
+	for _, pem := range s.HostKeyPEM {
+		sshOptions = append(sshOptions, wish.WithHostKeyPEM([]byte(pem)))
+	}
+
+	for _, path := range s.HostKeyPath {
+		sshOptions = append(sshOptions, wish.WithHostKeyPath(path))
 	}
 
 	server, err := wish.NewServer(sshOptions...)

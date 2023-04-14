@@ -26,8 +26,8 @@ const (
 func Flags(flags *flag.FlagSet) {
 	flags.Bool(SSHEnabledFlag, true, "Enables SSH listener")
 	flags.String(SSHAddressFlag, ":22", "SSH listen address")
-	flags.String(SSHHostKeyFlag, "", "SSH host key PEM")
-	flags.String(SSHHostKeyPathFlag, "", "SSH host key file path")
+	flags.StringSlice(SSHHostKeyFlag, []string{}, "SSH host key PEM")
+	flags.StringSlice(SSHHostKeyPathFlag, []string{}, "SSH host key file path")
 
 	flags.Bool(TelnetEnabledFlag, true, "Enables Telnet listener")
 	flags.String(TelnetAddressFlag, ":23", "Telnet listen address")
