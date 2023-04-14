@@ -7,13 +7,16 @@ import (
 )
 
 type Config struct {
-	Enabled bool
-	Address string
-	Log     *log.Entry
-	Movie   *movie.Movie
+	Enabled        bool
+	Address        string
+	Log            *log.Entry
+	Movie          *movie.Movie
+	DefaultGateway string
 }
 
 const (
+	LogExcludeGatewayFlag = "log-exclude-gateway"
+
 	SSHEnabledFlag     = "ssh-enabled"
 	SSHAddressFlag     = "ssh-address"
 	SSHHostKeyPathFlag = "ssh-host-key"
@@ -24,6 +27,8 @@ const (
 )
 
 func Flags(flags *flag.FlagSet) {
+	flags.Bool(LogExcludeGatewayFlag, false, "Makes default gateway early disconnect logs be trace level. Useful for excluding health checks from logs.")
+
 	flags.Bool(SSHEnabledFlag, true, "Enables SSH listener")
 	flags.String(SSHAddressFlag, ":22", "SSH listen address")
 	flags.StringSlice(SSHHostKeyPathFlag, []string{}, "SSH host key file path")

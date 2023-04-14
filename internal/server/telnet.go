@@ -7,6 +7,7 @@ import (
 
 	"github.com/gabe565/ascii-movie/internal/log_hooks"
 	"github.com/gabe565/ascii-movie/internal/movie"
+	"github.com/jackpal/gateway"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 )
@@ -28,6 +29,18 @@ func NewTelnet(flags *flag.FlagSet) Telnet {
 	}
 
 	telnet.Log = log.WithField("server", "telnet")
+
+	logExcludeGateway, err := flags.GetBool(LogExcludeGatewayFlag)
+	if err != nil {
+		panic(err)
+	}
+	if logExcludeGateway {
+		if defaultGateway, err := gateway.DiscoverGateway(); err == nil {
+			telnet.DefaultGateway = defaultGateway.String()
+		} else {
+			telnet.Log.Warn("Failed to discover default gateway")
+		}
+	}
 
 	return telnet
 }
@@ -86,7 +99,11 @@ func (t *Telnet) ServeTelnet(conn net.Conn, m *movie.Movie) {
 		sessionLog.Info("Finished movie")
 	} else {
 		if errors.Is(err, context.Canceled) {
-			sessionLog.Info("Disconnected early")
+			if remoteIP == t.DefaultGateway {
+				sessionLog.Trace("Disconnected early")
+			} else {
+				sessionLog.Info("Disconnected early")
+			}
 		}
 		return
 	}

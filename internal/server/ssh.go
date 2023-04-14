@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/wish"
 	"github.com/gabe565/ascii-movie/internal/log_hooks"
 	"github.com/gabe565/ascii-movie/internal/movie"
+	"github.com/jackpal/gateway"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	gossh "golang.org/x/crypto/ssh"
@@ -42,6 +43,18 @@ func NewSSH(flags *flag.FlagSet) SSH {
 	}
 
 	ssh.Log = log.WithField("server", "ssh")
+
+	logExcludeGateway, err := flags.GetBool(LogExcludeGatewayFlag)
+	if err != nil {
+		panic(err)
+	}
+	if logExcludeGateway {
+		if defaultGateway, err := gateway.DiscoverGateway(); err == nil {
+			ssh.DefaultGateway = defaultGateway.String()
+		} else {
+			ssh.Log.Warn("Failed to discover default gateway")
+		}
+	}
 
 	return ssh
 }
@@ -113,7 +126,11 @@ func (s *SSH) ServeSSH(m *movie.Movie) wish.Middleware {
 				sessionLog.Info("Finished movie")
 			} else {
 				if errors.Is(err, context.Canceled) {
-					sessionLog.Info("Disconnected early")
+					if remoteIP == s.DefaultGateway {
+						sessionLog.Trace("Disconnected early")
+					} else {
+						sessionLog.Info("Disconnected early")
+					}
 				}
 				return
 			}
