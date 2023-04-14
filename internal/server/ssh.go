@@ -121,6 +121,7 @@ func (s *SSH) ServeSSH(m *movie.Movie) wish.Middleware {
 			durationHook := log_hooks.NewDuration()
 			sessionLog := s.Log.WithFields(log.Fields{
 				"remote_ip": remoteIP,
+				"user":      session.User(),
 				"duration":  durationHook,
 			})
 
