@@ -17,8 +17,8 @@ import (
 
 type SSH struct {
 	Config
-	HostKeyPEM  []string
 	HostKeyPath []string
+	HostKeyPEM  []string
 }
 
 func NewSSH(flags *flag.FlagSet) SSH {
@@ -37,7 +37,7 @@ func NewSSH(flags *flag.FlagSet) SSH {
 		panic(err)
 	}
 
-	if ssh.HostKeyPEM, err = flags.GetStringSlice(SSHHostKeyFlag); err != nil {
+	if ssh.HostKeyPEM, err = flags.GetStringSlice(SSHHostKeyDataFlag); err != nil {
 		panic(err)
 	}
 

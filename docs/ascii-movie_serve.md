@@ -17,8 +17,8 @@ ascii-movie serve [movie] [flags]
       --speed float                 Playback speed multiplier. Must be greater than 0. (default 1)
       --ssh-address string          SSH listen address (default ":22")
       --ssh-enabled                 Enables SSH listener (default true)
-      --ssh-host-key strings        SSH host key PEM
-      --ssh-host-key-path strings   SSH host key file path
+      --ssh-host-key strings        SSH host key file path
+      --ssh-host-key-data strings   SSH host key PEM data
       --telnet-address string       Telnet listen address (default ":23")
       --telnet-enabled              Enables Telnet listener (default true)
 ```
