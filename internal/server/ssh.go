@@ -137,10 +137,14 @@ func (s *SSH) ServeSSH(m *movie.Movie) wish.Middleware {
 				status = StreamSuccess
 			} else {
 				if errors.Is(err, context.Canceled) {
-					status = StreamDisconnect
 					if remoteIP == s.DefaultGateway || time.Since(durationHook.GetStart()) < s.LogExcludeFaster {
 						level = log.TraceLevel
 					}
+					status = StreamDisconnect
+				} else {
+					sessionLog = sessionLog.WithError(err)
+					level = log.ErrorLevel
+					status = StreamFailed
 				}
 			}
 

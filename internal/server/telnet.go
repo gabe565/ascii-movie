@@ -109,10 +109,14 @@ func (t *Telnet) ServeTelnet(conn net.Conn, m *movie.Movie) {
 		status = StreamSuccess
 	} else {
 		if errors.Is(err, context.Canceled) {
-			status = StreamDisconnect
 			if remoteIP == t.DefaultGateway || time.Since(durationHook.GetStart()) < t.LogExcludeFaster {
 				level = log.TraceLevel
 			}
+			status = StreamDisconnect
+		} else {
+			sessionLog = sessionLog.WithError(err)
+			level = log.ErrorLevel
+			status = StreamFailed
 		}
 	}
 

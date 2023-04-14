@@ -13,6 +13,7 @@ type StreamStatus string
 const (
 	StreamSuccess    StreamStatus = "Finished movie"
 	StreamDisconnect StreamStatus = "Disconnected early"
+	StreamFailed     StreamStatus = "Stream failed"
 )
 
 func RemoteIp(remoteIpPort string) string {
