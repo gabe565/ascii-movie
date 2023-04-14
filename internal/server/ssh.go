@@ -11,6 +11,7 @@ import (
 	"github.com/gabe565/ascii-movie/internal/movie"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
+	gossh "golang.org/x/crypto/ssh"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -65,6 +66,13 @@ func (s *SSH) Listen(ctx context.Context, m *movie.Movie) error {
 	server, err := wish.NewServer(sshOptions...)
 	if err != nil {
 		return err
+	}
+
+	for _, signer := range server.HostSigners {
+		log.WithFields(log.Fields{
+			"type":        signer.PublicKey().Type(),
+			"fingerprint": gossh.FingerprintSHA256(signer.PublicKey()),
+		}).Debug("Using SSH host key")
 	}
 
 	group, ctx := errgroup.WithContext(ctx)
