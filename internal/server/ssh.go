@@ -83,10 +83,10 @@ func (s *SSH) Listen(ctx context.Context, m *movie.Movie) error {
 	}
 
 	for _, signer := range server.HostSigners {
-		log.WithFields(log.Fields{
+		s.Log.WithFields(log.Fields{
 			"type":        signer.PublicKey().Type(),
 			"fingerprint": gossh.FingerprintSHA256(signer.PublicKey()),
-		}).Debug("Using SSH host key")
+		}).Debug("Using host key")
 	}
 
 	group, ctx := errgroup.WithContext(ctx)
