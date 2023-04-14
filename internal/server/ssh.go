@@ -130,21 +130,21 @@ func (s *SSH) ServeSSH(m *movie.Movie) wish.Middleware {
 
 			go HandleInput(ctx, cancel, session, nil)
 
+			level := log.InfoLevel
+			var status StreamStatus
+
 			if err := m.Stream(ctx, session); err == nil {
-				sessionLog.Info("Finished movie")
+				status = StreamSuccess
 			} else {
 				if errors.Is(err, context.Canceled) {
-					switch {
-					case remoteIP == s.DefaultGateway,
-						time.Since(durationHook.GetStart()) < s.LogExcludeFaster:
-						sessionLog.Trace("Disconnected early")
-					default:
-						sessionLog.Info("Disconnected early")
+					status = StreamDisconnect
+					if remoteIP == s.DefaultGateway || time.Since(durationHook.GetStart()) < s.LogExcludeFaster {
+						level = log.TraceLevel
 					}
 				}
-				return
 			}
 
+			sessionLog.Log(level, status)
 			handle(session)
 		}
 	}

@@ -102,18 +102,19 @@ func (t *Telnet) ServeTelnet(conn net.Conn, m *movie.Movie) {
 
 	go HandleTelnetInput(ctx, cancel, conn, conn)
 
+	level := log.InfoLevel
+	var status StreamStatus
+
 	if err := m.Stream(ctx, conn); err == nil {
-		sessionLog.Info("Finished movie")
+		status = StreamSuccess
 	} else {
 		if errors.Is(err, context.Canceled) {
-			switch {
-			case remoteIP == t.DefaultGateway,
-				time.Since(durationHook.GetStart()) < t.LogExcludeFaster:
-				sessionLog.Trace("Disconnected early")
-			default:
-				sessionLog.Info("Disconnected early")
+			status = StreamDisconnect
+			if remoteIP == t.DefaultGateway || time.Since(durationHook.GetStart()) < t.LogExcludeFaster {
+				level = log.TraceLevel
 			}
 		}
-		return
 	}
+
+	sessionLog.Log(level, status)
 }

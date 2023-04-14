@@ -8,6 +8,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type StreamStatus string
+
+const (
+	StreamSuccess    StreamStatus = "Finished movie"
+	StreamDisconnect StreamStatus = "Disconnected early"
+)
+
 func RemoteIp(remoteIpPort string) string {
 	remoteIP, _, err := net.SplitHostPort(remoteIpPort)
 	if err != nil {
