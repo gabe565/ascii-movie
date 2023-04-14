@@ -10,7 +10,6 @@ import (
 	"github.com/charmbracelet/wish"
 	"github.com/gabe565/ascii-movie/internal/log_hooks"
 	"github.com/gabe565/ascii-movie/internal/movie"
-	"github.com/jackpal/gateway"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	gossh "golang.org/x/crypto/ssh"
@@ -24,41 +23,14 @@ type SSH struct {
 }
 
 func NewSSH(flags *flag.FlagSet) SSH {
-	var ssh SSH
+	ssh := SSH{Config: NewConfig(flags, SSHFlagPrefix)}
 	var err error
-
-	if ssh.Enabled, err = flags.GetBool(SSHEnabledFlag); err != nil {
-		panic(err)
-	}
-
-	if ssh.Address, err = flags.GetString(SSHAddressFlag); err != nil {
-		panic(err)
-	}
 
 	if ssh.HostKeyPath, err = flags.GetStringSlice(SSHHostKeyPathFlag); err != nil {
 		panic(err)
 	}
 
 	if ssh.HostKeyPEM, err = flags.GetStringSlice(SSHHostKeyDataFlag); err != nil {
-		panic(err)
-	}
-
-	ssh.Log = log.WithField("server", "ssh")
-
-	logExcludeGateway, err := flags.GetBool(LogExcludeGatewayFlag)
-	if err != nil {
-		panic(err)
-	}
-	if logExcludeGateway {
-		if defaultGateway, err := gateway.DiscoverGateway(); err == nil {
-			ssh.DefaultGateway = defaultGateway.String()
-		} else {
-			ssh.Log.Warn("Failed to discover default gateway")
-		}
-	}
-
-	ssh.LogExcludeFaster, err = flags.GetDuration(LogExcludeFaster)
-	if err != nil {
 		panic(err)
 	}
 

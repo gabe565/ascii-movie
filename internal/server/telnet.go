@@ -8,47 +8,16 @@ import (
 
 	"github.com/gabe565/ascii-movie/internal/log_hooks"
 	"github.com/gabe565/ascii-movie/internal/movie"
-	"github.com/jackpal/gateway"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 )
 
-type Telnet Config
+type Telnet struct {
+	Config
+}
 
 func NewTelnet(flags *flag.FlagSet) Telnet {
-	var telnet Telnet
-	var err error
-
-	telnet.Enabled, err = flags.GetBool(TelnetEnabledFlag)
-	if err != nil {
-		panic(err)
-	}
-
-	telnet.Address, err = flags.GetString(TelnetAddressFlag)
-	if err != nil {
-		panic(err)
-	}
-
-	telnet.Log = log.WithField("server", "telnet")
-
-	logExcludeGateway, err := flags.GetBool(LogExcludeGatewayFlag)
-	if err != nil {
-		panic(err)
-	}
-	if logExcludeGateway {
-		if defaultGateway, err := gateway.DiscoverGateway(); err == nil {
-			telnet.DefaultGateway = defaultGateway.String()
-		} else {
-			telnet.Log.Warn("Failed to discover default gateway")
-		}
-	}
-
-	telnet.LogExcludeFaster, err = flags.GetDuration(LogExcludeFaster)
-	if err != nil {
-		panic(err)
-	}
-
-	return telnet
+	return Telnet{Config: NewConfig(flags, TelnetFlagPrefix)}
 }
 
 func (t *Telnet) Listen(ctx context.Context, m *movie.Movie) error {
