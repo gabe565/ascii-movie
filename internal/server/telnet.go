@@ -20,10 +20,10 @@ func NewTelnet(flags *flag.FlagSet) TelnetServer {
 	return TelnetServer{Server: NewServer(flags, TelnetFlagPrefix)}
 }
 
-func (t *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
-	t.Log.WithField("address", t.Address).Info("Starting Telnet server")
+func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
+	s.Log.WithField("address", s.Address).Info("Starting Telnet server")
 
-	listen, err := net.Listen("tcp", t.Address)
+	listen, err := net.Listen("tcp", s.Address)
 	if err != nil {
 		return err
 	}
@@ -39,29 +39,29 @@ func (t *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 				case <-ctx.Done():
 					return
 				default:
-					t.Log.WithError(err).Error("Failed to accept connection")
+					s.Log.WithError(err).Error("Failed to accept connection")
 					continue
 				}
 			}
 
-			go t.ServeTelnet(conn, m)
+			go s.ServeTelnet(conn, m)
 		}
 	}()
 
 	<-ctx.Done()
-	t.Log.Info("Stopping Telnet server")
-	defer t.Log.Info("Stopped Telnet server")
+	s.Log.Info("Stopping Telnet server")
+	defer s.Log.Info("Stopped Telnet server")
 	return listen.Close()
 }
 
-func (t *TelnetServer) ServeTelnet(conn net.Conn, m *movie.Movie) {
+func (s *TelnetServer) ServeTelnet(conn net.Conn, m *movie.Movie) {
 	defer func(conn net.Conn) {
 		_ = conn.Close()
 	}(conn)
 
 	remoteIP := RemoteIp(conn.RemoteAddr().String())
 	durationHook := log_hooks.NewDuration()
-	sessionLog := t.Log.WithFields(log.Fields{
+	sessionLog := s.Log.WithFields(log.Fields{
 		"remote_ip": remoteIP,
 		"duration":  durationHook,
 	})
@@ -78,7 +78,7 @@ func (t *TelnetServer) ServeTelnet(conn net.Conn, m *movie.Movie) {
 		status = StreamSuccess
 	} else {
 		if errors.Is(err, context.Canceled) {
-			if remoteIP == t.DefaultGateway || time.Since(durationHook.GetStart()) < t.LogExcludeFaster {
+			if remoteIP == s.DefaultGateway || time.Since(durationHook.GetStart()) < s.LogExcludeFaster {
 				level = log.TraceLevel
 			}
 			status = StreamDisconnect
