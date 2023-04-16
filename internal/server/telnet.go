@@ -12,15 +12,15 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-type Telnet struct {
-	Config
+type TelnetServer struct {
+	Server
 }
 
-func NewTelnet(flags *flag.FlagSet) Telnet {
-	return Telnet{Config: NewConfig(flags, TelnetFlagPrefix)}
+func NewTelnet(flags *flag.FlagSet) TelnetServer {
+	return TelnetServer{Server: NewServer(flags, TelnetFlagPrefix)}
 }
 
-func (t *Telnet) Listen(ctx context.Context, m *movie.Movie) error {
+func (t *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 	t.Log.WithField("address", t.Address).Info("Starting Telnet server")
 
 	listen, err := net.Listen("tcp", t.Address)
@@ -54,7 +54,7 @@ func (t *Telnet) Listen(ctx context.Context, m *movie.Movie) error {
 	return listen.Close()
 }
 
-func (t *Telnet) ServeTelnet(conn net.Conn, m *movie.Movie) {
+func (t *TelnetServer) ServeTelnet(conn net.Conn, m *movie.Movie) {
 	defer func(conn net.Conn) {
 		_ = conn.Close()
 	}(conn)

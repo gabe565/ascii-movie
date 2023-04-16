@@ -9,7 +9,7 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-type Config struct {
+type Server struct {
 	Enabled          bool
 	Address          string
 	Log              *log.Entry
@@ -18,8 +18,8 @@ type Config struct {
 	LogExcludeFaster time.Duration
 }
 
-func NewConfig(flags *flag.FlagSet, prefix string) Config {
-	var config Config
+func NewServer(flags *flag.FlagSet, prefix string) Server {
+	var config Server
 	var err error
 
 	config.Log = log.WithField("server", prefix)

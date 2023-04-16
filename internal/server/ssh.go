@@ -16,14 +16,14 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type SSH struct {
-	Config
+type SSHServer struct {
+	Server
 	HostKeyPath []string
 	HostKeyPEM  []string
 }
 
-func NewSSH(flags *flag.FlagSet) SSH {
-	ssh := SSH{Config: NewConfig(flags, SSHFlagPrefix)}
+func NewSSH(flags *flag.FlagSet) SSHServer {
+	ssh := SSHServer{Server: NewServer(flags, SSHFlagPrefix)}
 	var err error
 
 	if ssh.HostKeyPath, err = flags.GetStringSlice(SSHHostKeyPathFlag); err != nil {
@@ -37,7 +37,7 @@ func NewSSH(flags *flag.FlagSet) SSH {
 	return ssh
 }
 
-func (s *SSH) Listen(ctx context.Context, m *movie.Movie) error {
+func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 	s.Log.WithField("address", s.Address).Info("Starting SSH server")
 
 	sshOptions := []ssh.Option{
@@ -86,7 +86,7 @@ func (s *SSH) Listen(ctx context.Context, m *movie.Movie) error {
 	return group.Wait()
 }
 
-func (s *SSH) ServeSSH(m *movie.Movie) wish.Middleware {
+func (s *SSHServer) ServeSSH(m *movie.Movie) wish.Middleware {
 	return func(handle ssh.Handler) ssh.Handler {
 		return func(session ssh.Session) {
 			remoteIP := RemoteIp(session.RemoteAddr().String())
