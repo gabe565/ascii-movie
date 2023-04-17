@@ -7,7 +7,9 @@
 
 The original Star Wars telnet server is currently down, so why not implement it in Go? This server will open a TCP server on `0.0.0.0:23` which streams the original Star Wars ASCII movie over telnet.
 
-See it in action by running `telnet gabecook.com` or `nc gabecook.com 23`.
+See it in action:
+- **SSH:** Run `ssh gabecook.com`
+- **Telnet:** Run `telnet gabecook.com` or `nc gabecook.com 23`
 
 <div align="center">
   <video src="https://user-images.githubusercontent.com/7717888/230992596-3f952de2-9acc-42fb-b0f9-87f1bf7fec45.mp4"></video>
