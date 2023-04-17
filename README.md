@@ -31,7 +31,7 @@ The app can play a movie directly on your terminal with the [`play`](docs/ascii-
 See generated [docs](./docs/ascii-movie.md) for command line usage information.
 
 ### Docker (Suggested)
-An image is available at [`ghcr.io/gabe565/ascii-movie`](ghcr.io/gabe565/ascii-movie).
+An image is available at [`ghcr.io/gabe565/ascii-movie`](https://ghcr.io/gabe565/ascii-movie).
 
 #### Watch Locally
 The following command will run a container that plays the movie directly in your terminal.
