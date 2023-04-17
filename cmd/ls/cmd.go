@@ -2,8 +2,6 @@ package ls
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 	"text/tabwriter"
 	"time"
 
@@ -33,7 +31,7 @@ func run(cmd *cobra.Command, args []string) (err error) {
 
 	if len(args) > 0 {
 		for _, arg := range args {
-			movieInfo, err := movie.GetInfo(os.DirFS(filepath.Dir(arg)), filepath.Base(arg))
+			movieInfo, err := movie.GetInfo(nil, arg)
 			if err != nil {
 				log.WithError(err).WithField("path", arg).Warn("failed to get movie info")
 				continue
@@ -48,18 +46,19 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 3, ' ', 0)
-	if _, err := fmt.Fprintln(w, "NAME\tSIZE\tDEFAULT\tDURATION\tFRAME COUNT\t"); err != nil {
+	if _, err := fmt.Fprintln(w, "NAME\tSIZE\tDEFAULT\tDURATION\tFRAME COUNT\tPATH\t"); err != nil {
 		return err
 	}
 	for _, info := range movieInfos {
 		if _, err := fmt.Fprintf(
 			w,
-			"%s\t%s\t%t\t%s\t%d\t\n",
+			"%s\t%s\t%t\t%s\t%d\t%s\t\n",
 			info.Name,
 			humanize.Bytes(uint64(info.Size)),
 			info.Default,
 			info.Duration.Round(time.Second),
 			info.NumFrames,
+			info.Path,
 		); err != nil {
 			return err
 		}

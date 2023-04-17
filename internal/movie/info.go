@@ -3,6 +3,7 @@ package movie
 import (
 	"fmt"
 	"io/fs"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -12,11 +13,19 @@ import (
 )
 
 func GetInfo(fsys fs.FS, path string) (Info, error) {
+	name := filepath.Base(path)
+	name = strings.TrimSuffix(name, filepath.Ext(name))
+
 	info := Info{
-		Name:    strings.TrimSuffix(path, filepath.Ext(path)),
+		Path:    filepath.Clean(path),
+		Name:    name,
 		Default: path == movies.Default,
 	}
 
+	if fsys == nil {
+		fsys = os.DirFS(filepath.Dir(path))
+		path = filepath.Base(path)
+	}
 	f, err := fsys.Open(path)
 	if err != nil {
 		return info, fmt.Errorf("failed to open movie: %w", err)
@@ -42,6 +51,7 @@ func GetInfo(fsys fs.FS, path string) (Info, error) {
 }
 
 type Info struct {
+	Path      string
 	Name      string
 	Duration  time.Duration
 	Default   bool
