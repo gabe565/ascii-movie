@@ -11,6 +11,7 @@ See it in action:
 - **SSH:** Run `ssh gabecook.com`
 - **Telnet:** Run `telnet gabecook.com` or `nc gabecook.com 23`
 
+## Demo
 <div align="center">
   <video src="https://user-images.githubusercontent.com/7717888/230992596-3f952de2-9acc-42fb-b0f9-87f1bf7fec45.mp4"></video>
 </div>
