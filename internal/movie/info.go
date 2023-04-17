@@ -1,6 +1,7 @@
 package movie
 
 import (
+	"fmt"
 	"io/fs"
 	"path/filepath"
 	"strings"
@@ -9,6 +10,36 @@ import (
 	"github.com/gabe565/ascii-movie/movies"
 	log "github.com/sirupsen/logrus"
 )
+
+func GetInfo(fsys fs.FS, path string) (Info, error) {
+	info := Info{
+		Name:    strings.TrimSuffix(path, filepath.Ext(path)),
+		Default: path == movies.Default,
+	}
+
+	f, err := fsys.Open(path)
+	if err != nil {
+		return info, fmt.Errorf("failed to open movie: %w", err)
+	}
+	defer func(f fs.File) {
+		_ = f.Close()
+	}(f)
+
+	m, err := NewFromFile(path, f, Padding{}, Padding{})
+	if err != nil {
+		return info, fmt.Errorf("failed to parse movie: %w", err)
+	}
+	info.Duration = m.Duration()
+	info.NumFrames = len(m.Frames)
+
+	fileInfo, err := f.Stat()
+	if err != nil {
+		return info, fmt.Errorf("failed to fetch file info: %w", err)
+	}
+	info.Size = fileInfo.Size()
+
+	return info, nil
+}
 
 type Info struct {
 	Name      string
@@ -33,31 +64,13 @@ func ListEmbedded() ([]Info, error) {
 				return nil
 			}
 
-			movieLog := log.WithField("path", path)
-
-			f, err := movies.Movies.Open(path)
+			info, err := GetInfo(movies.Movies, path)
 			if err != nil {
-				movieLog.WithError(err).Warn("Failed to open movie")
+				log.WithError(err).WithField("path", path).Warn("failed to get movie info")
 				return nil
 			}
 
-			m, err := NewFromFile(path, f, Padding{}, Padding{})
-			if err != nil {
-				movieLog.WithError(err).Warn("Failed to parse movie")
-			}
-
-			info, err := d.Info()
-			if err != nil {
-				log.WithError(err).Warn("Failed to fetch file info")
-			}
-
-			movieInfos = append(movieInfos, Info{
-				Name:      strings.TrimSuffix(path, filepath.Ext(path)),
-				Duration:  m.Duration(),
-				Default:   path == movies.Default,
-				NumFrames: len(m.Frames),
-				Size:      info.Size(),
-			})
+			movieInfos = append(movieInfos, info)
 			return nil
 		},
 	); err != nil {

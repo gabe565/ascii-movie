@@ -9,6 +9,10 @@ import (
 )
 
 func CompleteMovieName(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if len(args) > 0 {
+		return []string{}, cobra.ShellCompDirectiveNoFileComp
+	}
+
 	infos, err := ListEmbedded()
 	if err != nil {
 		return []string{}, cobra.ShellCompDirectiveDefault

@@ -1,15 +1,20 @@
-## ascii-movie ls-embedded
+## ascii-movie ls
 
-Lists embedded movies.
+Lists movie files and metadata.
+
+### Synopsis
+
+Lists movie files and metadata.
+If no path is given, embedded movies are listed.
 
 ```
-ascii-movie ls-embedded [flags]
+ascii-movie ls [PATH]... [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for ls-embedded
+  -h, --help   help for ls
 ```
 
 ### Options inherited from parent commands
