@@ -17,7 +17,7 @@ RUN --mount=type=cache,target=/root/.cache \
         'linux/arm64' | 'linux/arm64/v8') export GOARCH=arm64 ;; \
         *) echo "Unsupported target: $TARGETPLATFORM" && exit 1 ;; \
     esac \
-    && CGO_ENABLED=0 go build -ldflags='-w -s'
+    && CGO_ENABLED=0 go build -ldflags='-w -s' -trimpath
 
 
 FROM gcr.io/distroless/static-debian11:debug-nonroot as debug
