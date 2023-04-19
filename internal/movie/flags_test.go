@@ -9,8 +9,9 @@ import (
 
 func TestFromFlags(t *testing.T) {
 	testMovie := func(t *testing.T, path string) {
-		flags := flag.NewFlagSet("FromFlags", flag.ContinueOnError)
+		flags := flag.NewFlagSet(t.Name(), flag.PanicOnError)
 		Flags(flags)
+
 		movie, err := FromFlags(flags, path)
 		if !assert.NoError(t, err) {
 			return
@@ -60,7 +61,7 @@ func TestFromFlags(t *testing.T) {
 	t.Run("invalid speed", func(t *testing.T) {
 		t.Parallel()
 
-		flags := flag.NewFlagSet("FromFlags", flag.ContinueOnError)
+		flags := flag.NewFlagSet(t.Name(), flag.PanicOnError)
 		Flags(flags)
 
 		if err := flags.Set(SpeedFlag, "-1"); !assert.NoError(t, err) {
