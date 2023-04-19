@@ -15,8 +15,6 @@ type Movie struct {
 	Frames   []Frame
 
 	Speed float64
-
-	ClearExtraLines int
 }
 
 func (m Movie) Duration() time.Duration {
@@ -46,7 +44,7 @@ func (m *Movie) Stream(ctx context.Context, w io.Writer) error {
 		}
 
 		buf.Reset()
-		buf.WriteString(cursor.MoveUp(f.Height+m.ClearExtraLines) + cursor.ClearScreenDown())
+		buf.WriteString(cursor.MoveUp(f.Height) + cursor.ClearScreenDown())
 	}
 	return nil
 }

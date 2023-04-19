@@ -17,12 +17,6 @@ func TestFromFlags(t *testing.T) {
 			return
 		}
 
-		clearExtraLines, err := flags.GetInt(ClearExtraLinesFlag)
-		if !assert.NoError(t, err) {
-			return
-		}
-		assert.EqualValues(t, clearExtraLines, movie.ClearExtraLines)
-
 		speed, err := flags.GetFloat64(SpeedFlag)
 		if !assert.NoError(t, err) {
 			return

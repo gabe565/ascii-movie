@@ -13,8 +13,6 @@ import (
 )
 
 var (
-	ClearExtraLinesFlag = "clear-extra-lines"
-
 	SpeedFlag       = "speed"
 	ErrInvalidSpeed = errors.New("speed must be greater than 0")
 
@@ -25,15 +23,6 @@ var (
 )
 
 func Flags(flags *flag.FlagSet) {
-	flags.Int(
-		ClearExtraLinesFlag,
-		0,
-		"Clears extra lines between each frame. Should typically be ignored.",
-	)
-	if err := flags.MarkHidden(ClearExtraLinesFlag); err != nil {
-		panic(err)
-	}
-
 	flags.Float64(
 		SpeedFlag,
 		1,
@@ -101,11 +90,6 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	}
 
 	movie, err = NewFromFile(path, src, pad, progressPad)
-	if err != nil {
-		return movie, err
-	}
-
-	movie.ClearExtraLines, err = flags.GetInt(ClearExtraLinesFlag)
 	if err != nil {
 		return movie, err
 	}

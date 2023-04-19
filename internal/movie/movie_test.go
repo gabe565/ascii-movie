@@ -12,11 +12,10 @@ import (
 
 func TestMovie_Duration(t *testing.T) {
 	type fields struct {
-		Filename        string
-		Cap             int
-		Frames          []Frame
-		Speed           float64
-		ClearExtraLines int
+		Filename string
+		Cap      int
+		Frames   []Frame
+		Speed    float64
 	}
 	tests := []struct {
 		name   string
@@ -31,11 +30,10 @@ func TestMovie_Duration(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := Movie{
-				Filename:        tt.fields.Filename,
-				Cap:             tt.fields.Cap,
-				Frames:          tt.fields.Frames,
-				Speed:           tt.fields.Speed,
-				ClearExtraLines: tt.fields.ClearExtraLines,
+				Filename: tt.fields.Filename,
+				Cap:      tt.fields.Cap,
+				Frames:   tt.fields.Frames,
+				Speed:    tt.fields.Speed,
 			}
 			assert.Equal(t, tt.want, m.Duration())
 		})
