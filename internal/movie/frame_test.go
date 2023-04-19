@@ -10,7 +10,6 @@ import (
 func TestFrame_CalcDuration(t *testing.T) {
 	type fields struct {
 		Duration time.Duration
-		Height   int
 		Data     string
 	}
 	type args struct {
@@ -31,7 +30,6 @@ func TestFrame_CalcDuration(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			f := &Frame{
 				Duration: tt.fields.Duration,
-				Height:   tt.fields.Height,
 				Data:     tt.fields.Data,
 			}
 			assert.Equal(t, tt.want, f.CalcDuration(tt.args.multiplier))

@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
-	"github.com/gabe565/ascii-movie/internal/log_hooks"
+	"github.com/charmbracelet/wish/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
@@ -43,7 +43,7 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 	sshOptions := []ssh.Option{
 		wish.WithAddress(s.Address),
 		wish.WithMiddleware(
-			s.ServeSSH(m),
+			bubbletea.Middleware(s.Handler(m)),
 		),
 	}
 
@@ -86,42 +86,15 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 	return group.Wait()
 }
 
-func (s *SSHServer) ServeSSH(m *movie.Movie) wish.Middleware {
-	return func(handle ssh.Handler) ssh.Handler {
-		return func(session ssh.Session) {
-			remoteIP := RemoteIp(session.RemoteAddr().String())
-			durationHook := log_hooks.NewDuration()
-			sessionLog := s.Log.WithFields(log.Fields{
-				"remote_ip": remoteIP,
-				"user":      session.User(),
-				"duration":  durationHook,
-			})
-
-			ctx, cancel := context.WithCancel(context.Background())
-			defer cancel()
-
-			go HandleInput(ctx, cancel, session, nil)
-
-			level := log.InfoLevel
-			var status StreamStatus
-
-			if err := m.Stream(ctx, session); err == nil {
-				status = StreamSuccess
-			} else {
-				if errors.Is(err, context.Canceled) {
-					if time.Since(durationHook.GetStart()) < s.LogExcludeFaster {
-						level = log.TraceLevel
-					}
-					status = StreamDisconnect
-				} else {
-					sessionLog = sessionLog.WithError(err)
-					level = log.ErrorLevel
-					status = StreamFailed
-				}
-			}
-
-			sessionLog.Log(level, status)
-			handle(session)
-		}
+func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
+	return func(session ssh.Session) (tea.Model, []tea.ProgramOption) {
+		remoteIP := RemoteIp(session.RemoteAddr().String())
+		logger := s.Log.WithFields(log.Fields{
+			"remote_ip": remoteIP,
+			"user":      session.User(),
+		})
+		player := movie.NewPlayer(m, logger)
+		player.LogExcludeFaster = s.LogExcludeFaster
+		return player, []tea.ProgramOption{}
 	}
 }

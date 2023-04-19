@@ -34,8 +34,8 @@ func GetInfo(fsys fs.FS, path string) (Info, error) {
 		_ = f.Close()
 	}(f)
 
-	m, err := NewFromFile(path, f, Padding{}, Padding{})
-	if err != nil {
+	m := NewMovie()
+	if err := m.LoadFile(path, f, 1); err != nil {
 		return info, fmt.Errorf("failed to parse movie: %w", err)
 	}
 	info.Duration = m.Duration()

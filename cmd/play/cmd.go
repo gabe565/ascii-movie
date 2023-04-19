@@ -1,12 +1,9 @@
 package play
 
 import (
-	"context"
-	"errors"
-
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/gabe565/ascii-movie/internal/movie"
-	"github.com/gabe565/ascii-movie/internal/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -41,15 +38,9 @@ func run(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	ctx, cancel := context.WithCancel(cmd.Context())
-
-	go server.HandleInput(ctx, cancel, cmd.InOrStdin(), nil)
-
-	if err := m.Stream(ctx, cmd.OutOrStdout()); err != nil {
-		if !errors.Is(err, context.Canceled) {
-			return err
-		}
+	program := tea.NewProgram(movie.NewPlayer(&m, nil))
+	if _, err := program.Run(); err != nil {
+		return err
 	}
-
 	return nil
 }

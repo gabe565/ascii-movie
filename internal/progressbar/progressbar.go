@@ -3,34 +3,27 @@ package progressbar
 import (
 	"strings"
 	"time"
-
-	"github.com/fatih/color"
 )
 
 type ProgressBar struct {
-	Formatter func(...any) string
-	Phases    []string
+	Phases []string
 }
 
-var (
-	DefaultFormatter = color.New(color.Faint).SprintFunc()
-	DefaultPhases    = []string{
-		" ",
-		"▏",
-		"▎",
-		"▍",
-		"▌",
-		"▋",
-		"▊",
-		"▉",
-		"█",
-	}
-)
+var DefaultPhases = []string{
+	" ",
+	"▏",
+	"▎",
+	"▍",
+	"▌",
+	"▋",
+	"▊",
+	"▉",
+	"█",
+}
 
 func New() ProgressBar {
 	return ProgressBar{
-		Formatter: DefaultFormatter,
-		Phases:    DefaultPhases,
+		Phases: DefaultPhases,
 	}
 }
 
@@ -50,5 +43,5 @@ func (p *ProgressBar) Generate(n, total time.Duration, width int) string {
 	}
 	result += strings.Repeat(p.Phases[0], emptyNum)
 	result += "]"
-	return p.Formatter(result)
+	return result
 }

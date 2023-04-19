@@ -12,11 +12,9 @@ import (
 	"github.com/gabe565/ascii-movie/internal/progressbar"
 )
 
-func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (Movie, error) {
-	m := Movie{
-		Filename: filepath.Base(path),
-		Speed:    1,
-	}
+func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
+	m.Filename = filepath.Base(path)
+
 	var f Frame
 	var maxWidth int
 	scanner := bufio.NewScanner(src)
@@ -31,26 +29,25 @@ func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (
 				m.Frames = append(m.Frames, f)
 			}
 
-			f = Frame{
-				Data: strings.Repeat("\n", pad.Top),
-			}
+			f = Frame{}
 
 			v, err := strconv.Atoi(scanner.Text())
 			if err != nil {
-				return m, err
+				return err
 			}
 
 			f.Duration = time.Duration(v) * time.Second / 15
+			f.Duration = time.Duration(float64(f.Duration) / speed)
 		} else {
 			if len(scanner.Bytes()) > maxWidth {
 				maxWidth = len(scanner.Bytes())
 			}
-			f.Data += strings.Repeat(" ", pad.Left) + scanner.Text() + "\n"
+			f.Data += scanner.Text() + "\n"
 		}
 	}
 	m.Frames = append(m.Frames, f)
 	if err := scanner.Err(); err != nil {
-		return m, err
+		return err
 	}
 
 	// Compute the total duration
@@ -61,13 +58,8 @@ func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (
 	// Build the rest of every frame and write to disk
 	var currentPosition time.Duration
 	for i, f := range m.Frames {
-		f.Data += strings.Repeat("\n", pad.Bottom)
-		if pad.Left != 0 {
-			f.Data += strings.Repeat(" ", pad.Left)
-		}
-		f.Data += bar.Generate(currentPosition+f.Duration/2, totalDuration, maxWidth) + "\n"
-		f.Data += strings.Repeat("\n", progressPad.Bottom)
-		f.Height = strings.Count(f.Data, "\n")
+		f.Data = strings.TrimSuffix(f.Data, "\n")
+		f.Progress += bar.Generate(currentPosition+f.Duration/2, totalDuration, maxWidth)
 		m.Frames[i] = f
 		if frameCap < len(f.Data) {
 			frameCap = len(f.Data)
@@ -77,5 +69,5 @@ func NewFromFile(path string, src io.Reader, pad Padding, progressPad Padding) (
 
 	m.Cap = frameCap
 
-	return m, nil
+	return nil
 }

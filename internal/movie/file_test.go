@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewFromFile(t *testing.T) {
+func TestLoadFile(t *testing.T) {
 	const TestFile = "short_intro.txt"
 
 	f, err := movies.Movies.Open(TestFile)
@@ -20,11 +20,10 @@ func TestNewFromFile(t *testing.T) {
 		_ = f.Close()
 	}(f)
 
-	movie, err := NewFromFile(TestFile, f, Padding{}, Padding{})
-	if !assert.NoError(t, err) {
+	movie := NewMovie()
+	if err := movie.LoadFile(TestFile, f, 1); !assert.NoError(t, err) {
 		return
 	}
-	movie.Speed = 1
 
 	assert.Equal(t, TestFile, movie.Filename)
 	assert.EqualValues(t, 3*time.Second, movie.Duration().Truncate(time.Second))

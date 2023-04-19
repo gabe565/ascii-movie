@@ -1,7 +1,6 @@
 package movie
 
 import (
-	"strings"
 	"testing"
 
 	flag "github.com/spf13/pflag"
@@ -17,59 +16,30 @@ func TestFromFlags(t *testing.T) {
 			return
 		}
 
-		speed, err := flags.GetFloat64(SpeedFlag)
-		if !assert.NoError(t, err) {
-			return
-		}
-		assert.EqualValues(t, speed, movie.Speed)
-
 		padTop, err := flags.GetInt(PadTopFlag)
 		if !assert.NoError(t, err) {
 			return
 		}
+		assert.Equal(t, movie.BodyStyle.GetPaddingTop(), padTop)
 
 		padLeft, err := flags.GetInt(PadLeftFlag)
 		if !assert.NoError(t, err) {
 			return
 		}
+		assert.Equal(t, movie.BodyStyle.GetPaddingLeft(), padLeft)
 
 		padBottom, err := flags.GetInt(PadBottomFlag)
 		if !assert.NoError(t, err) {
 			return
 		}
+		assert.Equal(t, movie.BodyStyle.GetPaddingBottom(), padBottom)
 
 		progressPadBottom, err := flags.GetInt(ProgressPadBottomFlag)
 		if !assert.NoError(t, err) {
 			return
 		}
-
-		for _, frame := range movie.Frames {
-			var numPadTop, numPadBottom, numProgressPadBottom int
-			for i, line := range strings.Split(frame.Data, "\n") {
-				if i < padTop {
-					// Line is above frame data. Count the top padding.
-					numPadTop += 1
-				} else if i < frame.Height-padBottom-progressPadBottom-1 {
-					// Line is within frame data. Count the left padding.
-					assert.True(t, strings.HasPrefix(line, strings.Repeat(" ", padLeft)), "Incorrect left padding in frame contents")
-				} else if i < frame.Height-progressPadBottom-1 {
-					// Line is before frame data. Count the bottom padding.
-					numPadBottom += 1
-				} else if i < frame.Height-progressPadBottom {
-					// Line is progress bar. Count the left padding.
-					assert.True(t, strings.HasPrefix(line, strings.Repeat(" ", padLeft)), "Incorrect left padding in progress bar")
-				} else if i <= frame.Height {
-					// Line is below progress bar. Count the progress bottom padding.
-					numProgressPadBottom += 1
-				} else {
-					// This should never be hit
-					assert.LessOrEqual(t, i, frame.Height, "Frame data had more lines than the height indicated")
-				}
-			}
-			assert.Equal(t, padTop, numPadTop, "Incorrect top padding")
-			assert.Equal(t, padBottom, numPadBottom, "Incorrect bottom padding")
-			assert.Equal(t, progressPadBottom, numProgressPadBottom-1, "Incorrect progress bottom padding")
-		}
+		assert.Equal(t, movie.ProgressStyle.GetPaddingBottom(), progressPadBottom)
+		assert.Equal(t, movie.ProgressStyle.GetPaddingLeft(), padLeft)
 	}
 
 	t.Run("default embedded", func(t *testing.T) {

@@ -40,7 +40,7 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 
 	log.Info("Loading movie...")
 
-	var movie Movie
+	movie := NewMovie()
 
 	var src io.Reader
 	if path == "" {
@@ -73,34 +73,37 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 		}
 	}
 
-	var pad Padding
-	if pad.Top, err = flags.GetInt(PadTopFlag); err != nil {
-		panic(err)
-	}
-	if pad.Bottom, err = flags.GetInt(PadBottomFlag); err != nil {
-		panic(err)
-	}
-	if pad.Left, err = flags.GetInt(PadLeftFlag); err != nil {
-		panic(err)
-	}
-
-	progressPad := pad
-	if progressPad.Bottom, err = flags.GetInt(ProgressPadBottomFlag); err != nil {
-		panic(err)
-	}
-
-	movie, err = NewFromFile(path, src, pad, progressPad)
+	speed, err := flags.GetFloat64(SpeedFlag)
 	if err != nil {
 		return movie, err
 	}
+	if speed <= 0 {
+		return movie, fmt.Errorf("%w: %f", ErrInvalidSpeed, speed)
+	}
 
-	movie.Speed, err = flags.GetFloat64(SpeedFlag)
-	if err != nil {
+	if err := movie.LoadFile(path, src, speed); err != nil {
 		return movie, err
 	}
-	if movie.Speed <= 0 {
-		return movie, fmt.Errorf("%w: %f", ErrInvalidSpeed, movie.Speed)
+
+	padTop, err := flags.GetInt(PadTopFlag)
+	if err != nil {
+		panic(err)
 	}
+	padBottom, err := flags.GetInt(PadBottomFlag)
+	if err != nil {
+		panic(err)
+	}
+	padLeft, err := flags.GetInt(PadLeftFlag)
+	if err != nil {
+		panic(err)
+	}
+	movie.BodyStyle = movie.BodyStyle.Padding(padTop, padLeft, padBottom)
+
+	progressPadBottom, err := flags.GetInt(ProgressPadBottomFlag)
+	if err != nil {
+		panic(err)
+	}
+	movie.ProgressStyle = movie.ProgressStyle.Padding(0, padLeft, progressPadBottom)
 
 	log.WithField("duration", movie.Duration()).Info("Movie loaded")
 
