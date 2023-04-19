@@ -9,12 +9,10 @@ ascii-movie serve [movie] [flags]
 ### Options
 
 ```
+      --body-pad ints                 Body padding (default [3,6,2,6])
   -h, --help                          help for serve
       --log-exclude-faster duration   Makes early disconnect logs faster than the value be trace level. Useful for excluding health checks from logs.
-      --pad-bottom int                Padding below the movie (default 2)
-      --pad-left int                  Padding left of the movie (default 6)
-      --pad-top int                   Padding above the movie (default 3)
-      --progress-pad-bottom int       Padding below the progress bar (default 2)
+      --progress-pad ints             Progress bar padding (default [2,0,1,0])
       --speed float                   Playback speed multiplier. Must be greater than 0. (default 1)
       --ssh-address string            SSH listen address (default ":22")
       --ssh-enabled                   Enables SSH listener (default true)

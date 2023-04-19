@@ -17,29 +17,23 @@ func TestFromFlags(t *testing.T) {
 			return
 		}
 
-		padTop, err := flags.GetInt(PadTopFlag)
-		if !assert.NoError(t, err) {
-			return
+		bodyPad, err := flags.GetIntSlice(PadFlag)
+		if err != nil {
+			panic(err)
 		}
-		assert.Equal(t, movie.BodyStyle.GetPaddingTop(), padTop)
+		assert.Equal(t, movie.BodyStyle.GetPaddingTop(), bodyPad[0])
+		assert.Equal(t, movie.BodyStyle.GetPaddingRight(), bodyPad[1])
+		assert.Equal(t, movie.BodyStyle.GetPaddingBottom(), bodyPad[2])
+		assert.Equal(t, movie.BodyStyle.GetPaddingLeft(), bodyPad[1])
 
-		padLeft, err := flags.GetInt(PadLeftFlag)
-		if !assert.NoError(t, err) {
-			return
+		progressPad, err := flags.GetIntSlice(ProgressPadFlag)
+		if err != nil {
+			panic(err)
 		}
-		assert.Equal(t, movie.BodyStyle.GetPaddingLeft(), padLeft)
-
-		padBottom, err := flags.GetInt(PadBottomFlag)
-		if !assert.NoError(t, err) {
-			return
-		}
-		assert.Equal(t, movie.ProgressStyle.GetPaddingTop(), padBottom)
-
-		progressPadBottom, err := flags.GetInt(ProgressPadBottomFlag)
-		if !assert.NoError(t, err) {
-			return
-		}
-		assert.Equal(t, movie.BodyStyle.GetPaddingBottom(), progressPadBottom)
+		assert.Equal(t, movie.ProgressStyle.GetPaddingTop(), progressPad[0])
+		assert.Equal(t, movie.ProgressStyle.GetPaddingRight(), progressPad[1])
+		assert.Equal(t, movie.ProgressStyle.GetPaddingBottom(), progressPad[2])
+		assert.Equal(t, movie.ProgressStyle.GetPaddingLeft(), progressPad[1])
 	}
 
 	t.Run("default embedded", func(t *testing.T) {

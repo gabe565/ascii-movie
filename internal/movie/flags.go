@@ -16,10 +16,8 @@ var (
 	SpeedFlag       = "speed"
 	ErrInvalidSpeed = errors.New("speed must be greater than 0")
 
-	PadTopFlag            = "pad-top"
-	PadBottomFlag         = "pad-bottom"
-	PadLeftFlag           = "pad-left"
-	ProgressPadBottomFlag = "progress-pad-bottom"
+	PadFlag         = "body-pad"
+	ProgressPadFlag = "progress-pad"
 )
 
 func Flags(flags *flag.FlagSet) {
@@ -29,10 +27,8 @@ func Flags(flags *flag.FlagSet) {
 		"Playback speed multiplier. Must be greater than 0.",
 	)
 
-	flags.Int(PadTopFlag, 3, "Padding above the movie")
-	flags.Int(PadBottomFlag, 2, "Padding below the movie")
-	flags.Int(PadLeftFlag, 6, "Padding left of the movie")
-	flags.Int(ProgressPadBottomFlag, 2, "Padding below the progress bar")
+	flags.IntSlice(PadFlag, []int{3, 6, 2, 6}, "Body padding")
+	flags.IntSlice(ProgressPadFlag, []int{2, 0, 1, 0}, "Progress bar padding")
 }
 
 func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
@@ -85,26 +81,17 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 		return movie, err
 	}
 
-	padTop, err := flags.GetInt(PadTopFlag)
+	bodyPad, err := flags.GetIntSlice(PadFlag)
 	if err != nil {
 		panic(err)
 	}
-	padBottom, err := flags.GetInt(PadBottomFlag)
-	if err != nil {
-		panic(err)
-	}
-	padLeft, err := flags.GetInt(PadLeftFlag)
-	if err != nil {
-		panic(err)
-	}
-	progressPadBottom, err := flags.GetInt(ProgressPadBottomFlag)
-	if err != nil {
-		panic(err)
-	}
+	movie.BodyStyle = movie.BodyStyle.Padding(bodyPad...)
 
-	movie.BodyStyle = movie.BodyStyle.Padding(padTop, padLeft, progressPadBottom)
-
-	movie.ProgressStyle = movie.ProgressStyle.Padding(padBottom, 0, 1)
+	progressPad, err := flags.GetIntSlice(ProgressPadFlag)
+	if err != nil {
+		panic(err)
+	}
+	movie.ProgressStyle = movie.ProgressStyle.Padding(progressPad...)
 
 	log.WithField("duration", movie.Duration()).Info("Movie loaded")
 
