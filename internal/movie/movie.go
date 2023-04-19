@@ -9,7 +9,7 @@ import (
 func NewMovie() Movie {
 	return Movie{
 		BodyStyle:     lipgloss.NewStyle(),
-		ProgressStyle: lipgloss.NewStyle().Faint(true),
+		ProgressStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("#626262")),
 	}
 }
 
