@@ -78,7 +78,7 @@ func (s *TelnetServer) ServeTelnet(conn net.Conn, m *movie.Movie) {
 		status = StreamSuccess
 	} else {
 		if errors.Is(err, context.Canceled) {
-			if remoteIP == s.DefaultGateway || time.Since(durationHook.GetStart()) < s.LogExcludeFaster {
+			if time.Since(durationHook.GetStart()) < s.LogExcludeFaster {
 				level = log.TraceLevel
 			}
 			status = StreamDisconnect

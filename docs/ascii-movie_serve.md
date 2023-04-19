@@ -11,7 +11,6 @@ ascii-movie serve [movie] [flags]
 ```
   -h, --help                          help for serve
       --log-exclude-faster duration   Makes early disconnect logs faster than the value be trace level. Useful for excluding health checks from logs.
-      --log-exclude-gateway           Makes default gateway early disconnect logs be trace level. Useful for excluding health checks from logs.
       --pad-bottom int                Padding below the movie (default 2)
       --pad-left int                  Padding left of the movie (default 6)
       --pad-top int                   Padding above the movie (default 3)

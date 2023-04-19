@@ -19,6 +19,13 @@ const (
 
 func Flags(flags *flag.FlagSet) {
 	flags.Bool(LogExcludeGatewayFlag, false, "Makes default gateway early disconnect logs be trace level. Useful for excluding health checks from logs.")
+	if err := flags.MarkDeprecated(
+		LogExcludeGatewayFlag,
+		"please use --log-exclude-faster instead.",
+	); err != nil {
+		panic(err)
+	}
+
 	flags.Duration(LogExcludeFaster, 0, "Makes early disconnect logs faster than the value be trace level. Useful for excluding health checks from logs.")
 
 	flags.Bool(SSHFlagPrefix+EnabledFlag, true, "Enables SSH listener")

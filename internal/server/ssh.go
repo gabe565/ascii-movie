@@ -109,7 +109,7 @@ func (s *SSHServer) ServeSSH(m *movie.Movie) wish.Middleware {
 				status = StreamSuccess
 			} else {
 				if errors.Is(err, context.Canceled) {
-					if remoteIP == s.DefaultGateway || time.Since(durationHook.GetStart()) < s.LogExcludeFaster {
+					if time.Since(durationHook.GetStart()) < s.LogExcludeFaster {
 						level = log.TraceLevel
 					}
 					status = StreamDisconnect
