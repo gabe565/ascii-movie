@@ -3,6 +3,8 @@ package movie
 import (
 	"time"
 
+	"github.com/charmbracelet/bubbles/help"
+	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/gabe565/ascii-movie/internal/log_hooks"
@@ -15,6 +17,10 @@ func NewPlayer(m *Movie, logger *log.Entry) Player {
 		player.durationHook = log_hooks.NewDuration()
 		player.log = logger.WithField("duration", player.durationHook)
 	}
+
+	player.keymap = newKeymap()
+	player.help = help.New()
+
 	return player
 }
 
@@ -24,6 +30,9 @@ type Player struct {
 	log              *log.Entry
 	durationHook     log_hooks.Duration
 	LogExcludeFaster time.Duration
+
+	keymap keymap
+	help   help.Model
 }
 
 func (p Player) Init() tea.Cmd {
@@ -33,8 +42,8 @@ func (p Player) Init() tea.Cmd {
 func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
-		case "q", "ctrl+c", "ctrl+d":
+		switch {
+		case key.Matches(msg, p.keymap.quit):
 			return p, Quit
 		}
 	case quitMsg:
@@ -60,11 +69,16 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (p Player) View() string {
-	return lipgloss.JoinVertical(
+	shortHelp := p.help.ShortHelpView([]key.Binding{
+		p.keymap.quit,
+	})
+
+	return p.movie.BodyStyle.Render(lipgloss.JoinVertical(
 		lipgloss.Left,
-		p.movie.BodyStyle.Render(p.movie.Frames[p.frame].Data),
+		p.movie.Frames[p.frame].Data,
 		p.movie.ProgressStyle.Render(p.movie.Frames[p.frame].Progress),
-	)
+		shortHelp,
+	))
 }
 
 type tickMsg time.Time
@@ -80,4 +94,17 @@ type quitMsg struct{}
 
 func Quit() tea.Msg {
 	return quitMsg{}
+}
+
+type keymap struct {
+	quit key.Binding
+}
+
+func newKeymap() keymap {
+	return keymap{
+		quit: key.NewBinding(
+			key.WithKeys("q", "ctrl+c", "ctrl+d"),
+			key.WithHelp("q", "quit"),
+		),
+	}
 }

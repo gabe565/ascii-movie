@@ -97,13 +97,14 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	if err != nil {
 		panic(err)
 	}
-	movie.BodyStyle = movie.BodyStyle.Padding(padTop, padLeft, padBottom)
-
 	progressPadBottom, err := flags.GetInt(ProgressPadBottomFlag)
 	if err != nil {
 		panic(err)
 	}
-	movie.ProgressStyle = movie.ProgressStyle.Padding(0, padLeft, progressPadBottom)
+
+	movie.BodyStyle = movie.BodyStyle.Padding(padTop, padLeft, progressPadBottom)
+
+	movie.ProgressStyle = movie.ProgressStyle.Padding(padBottom, 0, 1)
 
 	log.WithField("duration", movie.Duration()).Info("Movie loaded")
 

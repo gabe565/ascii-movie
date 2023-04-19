@@ -33,14 +33,13 @@ func TestFromFlags(t *testing.T) {
 		if !assert.NoError(t, err) {
 			return
 		}
-		assert.Equal(t, movie.BodyStyle.GetPaddingBottom(), padBottom)
+		assert.Equal(t, movie.ProgressStyle.GetPaddingTop(), padBottom)
 
 		progressPadBottom, err := flags.GetInt(ProgressPadBottomFlag)
 		if !assert.NoError(t, err) {
 			return
 		}
-		assert.Equal(t, movie.ProgressStyle.GetPaddingBottom(), progressPadBottom)
-		assert.Equal(t, movie.ProgressStyle.GetPaddingLeft(), padLeft)
+		assert.Equal(t, movie.BodyStyle.GetPaddingBottom(), progressPadBottom)
 	}
 
 	t.Run("default embedded", func(t *testing.T) {
