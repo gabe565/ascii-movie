@@ -9,7 +9,7 @@ The original Star Wars telnet server is currently down, so why not implement it 
 
 See it in action:
 - **SSH:** Run `ssh gabecook.com`
-- **Telnet:** Run `telnet gabecook.com` or `nc gabecook.com 23`
+- **Telnet:** Run `telnet gabecook.com`
 
 ## Demo
 <div align="center">
@@ -62,5 +62,5 @@ ascii-movie play
 # Or run it as a server
 ascii-movie serve
 
-# Now, run `telnet localhost` or `nc localhost 23` to watch the movie!
+# Now, run `ssh localhost` or `telnet localhost` to watch the movie!
 ```
