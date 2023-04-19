@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"io"
@@ -95,8 +96,9 @@ func (s *TelnetServer) Handler(conn net.Conn, m *movie.Movie) {
 }
 
 func proxyTelnetInput(ctx context.Context, conn io.ReadWriter, proxy io.Writer) error {
-	b := make([]byte, 1)
-	var skip int8
+	buf := make([]byte, 64)
+	var proxyBuf bytes.Buffer
+	var skip uint8
 	var subNegotiation bool
 	var wroteTelnetCommands bool
 
@@ -112,39 +114,47 @@ func proxyTelnetInput(ctx context.Context, conn io.ReadWriter, proxy io.Writer) 
 		case <-ctx.Done():
 			return nil
 		default:
-			if _, err := conn.Read(b); err != nil {
+			n, err := conn.Read(buf)
+			if err != nil {
 				return err
 			}
 
-			switch b[0] {
-			case 0xFF:
-				// IAC DO LINEMODE IAC WILL Echo IAC WILL Suppress Go Ahead
-				// https://ibm.com/docs/zos/2.5.0?topic=problems-telnet-commands-options
-				if conn != nil && !wroteTelnetCommands {
-					log.Trace("Writing Telnet commands")
-					if _, err := conn.Write([]byte("\xFF\xFD\x22\xFF\xFB\x01\xFF\xFB\x03")); err != nil {
-						log.WithError(err).Error("Failed to write Telnet commands")
+			for _, c := range buf[:n] {
+				switch c {
+				case 0xFF:
+					// IAC DO LINEMODE IAC WILL Echo IAC WILL Suppress Go Ahead
+					// https://ibm.com/docs/zos/2.5.0?topic=problems-telnet-commands-options
+					if conn != nil && !wroteTelnetCommands {
+						log.Trace("Writing Telnet commands")
+						if _, err := conn.Write([]byte("\xFF\xFD\x22\xFF\xFB\x01\xFF\xFB\x03")); err != nil {
+							log.WithError(err).Error("Failed to write Telnet commands")
+						}
+						wroteTelnetCommands = true
 					}
-					wroteTelnetCommands = true
-				}
-				skip = 3
-			case 0xFA:
-				subNegotiation = true
-			case 0xF0:
-				if skip == 2 {
-					skip = 0
-					subNegotiation = false
-				}
-			default:
-				if skip == 0 && !subNegotiation {
-					if _, err := proxy.Write(b); err != nil {
-						return err
+					skip = 3
+				case 0xFA:
+					subNegotiation = true
+				case 0xF0:
+					if skip == 2 {
+						skip = 0
+						subNegotiation = false
 					}
+				default:
+					if skip == 0 && !subNegotiation {
+						proxyBuf.WriteByte(c)
+					}
+				}
+
+				if skip != 0 {
+					skip -= 1
 				}
 			}
 
-			if skip > 0 {
-				skip -= 1
+			if proxyBuf.Len() != 0 {
+				if _, err := proxyBuf.WriteTo(proxy); err != nil {
+					return err
+				}
+				proxyBuf.Reset()
 			}
 		}
 	}
