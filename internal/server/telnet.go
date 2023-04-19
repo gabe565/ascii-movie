@@ -89,10 +89,6 @@ func (s *TelnetServer) Handler(conn net.Conn, m *movie.Movie) {
 		program.Send(movie.Quit())
 	}()
 
-	go func() {
-		program.Send(tea.ShowCursor())
-	}()
-
 	if _, err := program.Run(); err != nil && !errors.Is(err, tea.ErrProgramKilled) {
 		logger.WithError(err).Error("Stream failed")
 	}
@@ -103,6 +99,14 @@ func proxyTelnetInput(ctx context.Context, conn io.ReadWriter, proxy io.Writer) 
 	var skip int8
 	var subNegotiation bool
 	var wroteTelnetCommands bool
+
+	// Gets Telnet to send option negotiation commands if explicit port was given.
+	// IAC DO LINEMODE (Then clear the line in case client isn't Telnet)
+	// https://ibm.com/docs/zos/2.5.0?topic=problems-telnet-commands-options
+	if _, err := conn.Write([]byte("\xFF\xFD\x22\r\x1B[K")); err != nil {
+		return err
+	}
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -114,11 +118,11 @@ func proxyTelnetInput(ctx context.Context, conn io.ReadWriter, proxy io.Writer) 
 
 			switch b[0] {
 			case 0xFF:
-				// IAC DO LINEMODE IAC WILL Suppress Go Ahead
+				// IAC DO LINEMODE IAC WILL Echo IAC WILL Suppress Go Ahead
 				// https://ibm.com/docs/zos/2.5.0?topic=problems-telnet-commands-options
 				if conn != nil && !wroteTelnetCommands {
 					log.Trace("Writing Telnet commands")
-					if _, err := conn.Write([]byte{0xFF, 0xFD, 0x22, 0xFF, 0xFB, 0x3}); err != nil {
+					if _, err := conn.Write([]byte("\xFF\xFD\x22\xFF\xFB\x01\xFF\xFB\x03")); err != nil {
 						log.WithError(err).Error("Failed to write Telnet commands")
 					}
 					wroteTelnetCommands = true
