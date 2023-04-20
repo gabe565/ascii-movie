@@ -67,6 +67,30 @@ func (p Player) Init() tea.Cmd {
 
 func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tickMsg:
+		if p.frame+1 >= len(p.movie.Frames) {
+			if p.log != nil {
+				p.log.Info("Finished movie")
+			}
+			return p, tea.Quit
+		}
+		if p.speed >= 0 {
+			p.frame += 1
+		} else if p.frame == 0 {
+			p.pause()
+			p.speed = 1
+			p.activeOption = 4
+			return p, nil
+		} else {
+			p.frame -= 1
+		}
+		duration := p.movie.Frames[p.frame].Duration
+		speed := p.speed
+		if speed < 0 {
+			speed *= -1
+		}
+		duration = time.Duration(float64(duration) / speed)
+		return p, tick(p.playCtx, duration)
 	case tea.KeyMsg:
 		p.optionViewStale = true
 		switch {
@@ -92,30 +116,6 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 		return p, tea.Quit
-	case tickMsg:
-		if p.frame+1 >= len(p.movie.Frames) {
-			if p.log != nil {
-				p.log.Info("Finished movie")
-			}
-			return p, tea.Quit
-		}
-		if p.speed >= 0 {
-			p.frame += 1
-		} else if p.frame == 0 {
-			p.pause()
-			p.speed = 1
-			p.activeOption = 4
-			return p, nil
-		} else {
-			p.frame -= 1
-		}
-		duration := p.movie.Frames[p.frame].Duration
-		speed := p.speed
-		if speed < 0 {
-			speed *= -1
-		}
-		duration = time.Duration(float64(duration) / speed)
-		return p, tick(p.playCtx, duration)
 	case PlayerOption:
 		p.optionViewStale = true
 		switch msg {
