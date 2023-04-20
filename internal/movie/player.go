@@ -14,7 +14,7 @@ import (
 
 var (
 	appStyle = lipgloss.NewStyle().
-			Padding(2, 4)
+			Margin(2, 4)
 
 	screenStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
