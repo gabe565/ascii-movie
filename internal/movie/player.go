@@ -14,11 +14,12 @@ import (
 
 func NewPlayer(m *Movie, logger *log.Entry) Player {
 	player := Player{
-		movie:          m,
-		speed:          1,
-		selectedOption: 3,
-		activeOption:   4,
-		screenStyle:    screenStyle.Copy().Width(m.Width),
+		movie:           m,
+		speed:           1,
+		selectedOption:  3,
+		activeOption:    4,
+		screenStyle:     screenStyle.Copy().Width(m.Width),
+		optionViewStale: true,
 	}
 	player.playCtx, player.pause = context.WithCancel(context.Background())
 	if logger != nil {
@@ -27,13 +28,13 @@ func NewPlayer(m *Movie, logger *log.Entry) Player {
 	}
 
 	player.keymap = newKeymap()
-	player.help = help.New()
-	player.helpKeys = []key.Binding{
+	helpModel := help.New()
+	player.helpViewCache = helpModel.ShortHelpView([]key.Binding{
 		player.keymap.quit,
 		player.keymap.left,
 		player.keymap.right,
 		player.keymap.choose,
-	}
+	})
 
 	return player
 }
@@ -49,14 +50,15 @@ type Player struct {
 	playCtx context.Context
 	pause   context.CancelFunc
 
-	selectedOption int
-	activeOption   int
+	selectedOption  int
+	activeOption    int
+	optionViewCache string
+	optionViewStale bool
 
 	screenStyle lipgloss.Style
 
-	keymap   keymap
-	help     help.Model
-	helpKeys []key.Binding
+	keymap        keymap
+	helpViewCache string
 }
 
 func (p Player) Init() tea.Cmd {
@@ -66,6 +68,7 @@ func (p Player) Init() tea.Cmd {
 func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		p.optionViewStale = true
 		switch {
 		case key.Matches(msg, p.keymap.quit):
 			return p, Quit
@@ -114,6 +117,7 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		duration = time.Duration(float64(duration) / speed)
 		return p, tick(p.playCtx, duration)
 	case PlayerOption:
+		p.optionViewStale = true
 		switch msg {
 		case Option3xRewind:
 			p.activeOption = 0
@@ -151,6 +155,20 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (p Player) View() string {
+	if p.optionViewStale {
+		p.optionViewCache = p.OptionsView()
+	}
+
+	return appStyle.Render(lipgloss.JoinVertical(
+		lipgloss.Center,
+		p.screenStyle.Render(p.movie.Frames[p.frame].Data),
+		progressStyle.Render(p.movie.Frames[p.frame].Progress),
+		p.optionViewCache,
+		p.helpViewCache,
+	))
+}
+
+func (p Player) OptionsView() string {
 	options := make([]string, 0, len(playerOptions))
 	for i, option := range playerOptions {
 		if option == OptionPause && p.playCtx.Err() != nil {
@@ -166,17 +184,7 @@ func (p Player) View() string {
 		}
 		options = append(options, rendered)
 	}
-	optionsView := lipgloss.JoinHorizontal(lipgloss.Top, options...)
-
-	shortHelp := p.help.ShortHelpView(p.helpKeys)
-
-	return appStyle.Render(lipgloss.JoinVertical(
-		lipgloss.Center,
-		p.screenStyle.Render(p.movie.Frames[p.frame].Data),
-		progressStyle.Render(p.movie.Frames[p.frame].Progress),
-		optionsView,
-		shortHelp,
-	))
+	return lipgloss.JoinHorizontal(lipgloss.Top, options...)
 }
 
 func newKeymap() keymap {
