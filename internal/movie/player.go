@@ -84,13 +84,11 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		} else {
 			p.frame -= 1
 		}
-		duration := p.movie.Frames[p.frame].Duration
 		speed := p.speed
 		if speed < 0 {
 			speed *= -1
 		}
-		duration = time.Duration(float64(duration) / speed)
-		return p, tick(p.playCtx, duration)
+		return p, tick(p.playCtx, p.movie.Frames[p.frame].CalcDuration(speed))
 	case tea.KeyMsg:
 		p.optionViewStale = true
 		switch {
