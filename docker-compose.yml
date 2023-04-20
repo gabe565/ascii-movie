@@ -6,6 +6,9 @@ services:
     build:
       context: .
       target: debug
+    environment:
+      COLORTERM: "$COLORTERM"
+      TERM: "$TERM"
     ports:
       - "23:23"
       - "2222:22"

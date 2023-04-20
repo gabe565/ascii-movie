@@ -36,8 +36,10 @@ An image is available at [`ghcr.io/gabe565/ascii-movie`](https://ghcr.io/gabe565
 #### Watch Locally
 The following command will run a container that plays the movie directly in your terminal.
 
+- The `COLORTERM` optionally indicates if your terminal supports true colors. If left off, 256 color mode will be used.
+
 ```shell
-docker run --rm -it ghcr.io/gabe565/ascii-movie play
+docker run --rm -it -e "COLORTERM=$COLORTERM" ghcr.io/gabe565/ascii-movie play
 ```
 
 #### Serve Movie over Telnet and SSH

@@ -22,11 +22,13 @@ RUN --mount=type=cache,target=/root/.cache \
 
 FROM gcr.io/distroless/static-debian11:debug-nonroot as debug
 COPY --from=build /app/ascii-movie /
+ENV TERM=xterm-256color
 ENTRYPOINT ["/ascii-movie"]
 CMD ["serve"]
 
 
 FROM gcr.io/distroless/static-debian11:nonroot as production
 COPY --from=build /app/ascii-movie /
+ENV TERM=xterm-256color
 ENTRYPOINT ["/ascii-movie"]
 CMD ["serve"]
