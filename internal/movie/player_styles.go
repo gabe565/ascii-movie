@@ -25,7 +25,7 @@ var (
 
 	optionsStyle = lipgloss.NewStyle().
 			Padding(1, 2).
-			Margin(0, 1).
+			Margin(0, 1, 1).
 			Background(lipgloss.CompleteAdaptiveColor{
 			Light: lipgloss.CompleteColor{TrueColor: "#eee", ANSI256: "254", ANSI: "15"},
 			Dark:  lipgloss.CompleteColor{TrueColor: "#111", ANSI256: "235", ANSI: "0"},
