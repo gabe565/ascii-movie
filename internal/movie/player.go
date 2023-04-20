@@ -145,15 +145,12 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case Option3xRewind:
 			p.activeOption = 0
 			p.speed = -15
-			return p, nil
 		case Option2xRewind:
 			p.activeOption = 1
 			p.speed = -3
-			return p, nil
 		case Option1xRewind:
 			p.activeOption = 2
 			p.speed = -1
-			return p, nil
 		case OptionPause, OptionPlay:
 			if p.playCtx.Err() == nil {
 				p.pause()
@@ -165,15 +162,16 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case Option1xForward:
 			p.activeOption = 4
 			p.speed = 1
-			return p, nil
 		case Option2xForward:
 			p.activeOption = 5
 			p.speed = 3
-			return p, nil
 		case Option3xForward:
 			p.activeOption = 6
 			p.speed = 15
-			return p, nil
+		}
+		if p.playCtx.Err() != nil {
+			p.playCtx, p.pause = context.WithCancel(context.Background())
+			return p, tick(p.playCtx, 0)
 		}
 	}
 	return p, nil
