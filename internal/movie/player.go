@@ -12,33 +12,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var (
-	appStyle = lipgloss.NewStyle().
-			Margin(2, 4)
-
-	screenStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#312A24"))
-
-	progressStyle = lipgloss.NewStyle().
-			Margin(1, 0).
-			Background(lipgloss.Color("#111")).
-			Foreground(lipgloss.Color("#626262")).
-			Border(lipgloss.NormalBorder(), false, true).
-			BorderForeground(lipgloss.Color("#594F46"))
-
-	optionsStyle = lipgloss.NewStyle().
-			Padding(1, 2).
-			Margin(0, 1).
-			Background(lipgloss.Color("#111"))
-
-	activeStyle = optionsStyle.Copy().
-			Background(lipgloss.Color("#222"))
-
-	selectedStyle = optionsStyle.Copy().
-			Background(lipgloss.Color("#2C3C55"))
-)
-
 func NewPlayer(m *Movie, logger *log.Entry) Player {
 	player := Player{
 		movie:          m,
