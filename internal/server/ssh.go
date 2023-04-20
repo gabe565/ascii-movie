@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
 	"github.com/charmbracelet/wish/bubbletea"
@@ -41,10 +42,12 @@ func NewSSH(flags *flag.FlagSet) SSHServer {
 func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 	s.Log.WithField("address", s.Address).Info("Starting SSH server")
 
+	lipgloss.SetColorProfile(termenv.ANSI256)
+
 	sshOptions := []ssh.Option{
 		wish.WithAddress(s.Address),
 		wish.WithMiddleware(
-			bubbletea.MiddlewareWithColorProfile(s.Handler(m), termenv.TrueColor),
+			bubbletea.Middleware(s.Handler(m)),
 		),
 	}
 
