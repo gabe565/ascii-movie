@@ -74,6 +74,9 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 	group, ctx := errgroup.WithContext(ctx)
 
 	group.Go(func() error {
+		if ctx.Err() != nil {
+			return nil
+		}
 		if err = server.ListenAndServe(); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
 			return fmt.Errorf("failed to start server: %w", err)
 		}
