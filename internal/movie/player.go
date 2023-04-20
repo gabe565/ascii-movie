@@ -55,6 +55,12 @@ func NewPlayer(m *Movie, logger *log.Entry) Player {
 
 	player.keymap = newKeymap()
 	player.help = help.New()
+	player.helpKeys = []key.Binding{
+		player.keymap.quit,
+		player.keymap.left,
+		player.keymap.right,
+		player.keymap.choose,
+	}
 
 	return player
 }
@@ -75,8 +81,9 @@ type Player struct {
 
 	screenStyle lipgloss.Style
 
-	keymap keymap
-	help   help.Model
+	keymap   keymap
+	help     help.Model
+	helpKeys []key.Binding
 }
 
 func (p Player) Init() tea.Cmd {
@@ -188,12 +195,7 @@ func (p Player) View() string {
 	}
 	optionsView := lipgloss.JoinHorizontal(lipgloss.Top, options...)
 
-	shortHelp := p.help.ShortHelpView([]key.Binding{
-		p.keymap.quit,
-		p.keymap.left,
-		p.keymap.right,
-		p.keymap.choose,
-	})
+	shortHelp := p.help.ShortHelpView(p.helpKeys)
 
 	return appStyle.Render(lipgloss.JoinVertical(
 		lipgloss.Center,
