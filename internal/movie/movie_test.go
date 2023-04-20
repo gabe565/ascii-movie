@@ -7,12 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewMovie(t *testing.T) {
-	movie := NewMovie()
-	assert.NotEmpty(t, movie.BodyStyle)
-	assert.NotEmpty(t, movie.ProgressStyle)
-}
-
 func TestMovie_Duration(t *testing.T) {
 	type fields struct {
 		Filename string

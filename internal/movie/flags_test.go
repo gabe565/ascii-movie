@@ -12,28 +12,10 @@ func TestFromFlags(t *testing.T) {
 		flags := flag.NewFlagSet(t.Name(), flag.PanicOnError)
 		Flags(flags)
 
-		movie, err := FromFlags(flags, path)
+		_, err := FromFlags(flags, path)
 		if !assert.NoError(t, err) {
 			return
 		}
-
-		bodyPad, err := flags.GetIntSlice(PadFlag)
-		if err != nil {
-			panic(err)
-		}
-		assert.Equal(t, movie.BodyStyle.GetPaddingTop(), bodyPad[0])
-		assert.Equal(t, movie.BodyStyle.GetPaddingRight(), bodyPad[1])
-		assert.Equal(t, movie.BodyStyle.GetPaddingBottom(), bodyPad[2])
-		assert.Equal(t, movie.BodyStyle.GetPaddingLeft(), bodyPad[1])
-
-		progressPad, err := flags.GetIntSlice(ProgressPadFlag)
-		if err != nil {
-			panic(err)
-		}
-		assert.Equal(t, movie.ProgressStyle.GetPaddingTop(), progressPad[0])
-		assert.Equal(t, movie.ProgressStyle.GetPaddingRight(), progressPad[1])
-		assert.Equal(t, movie.ProgressStyle.GetPaddingBottom(), progressPad[2])
-		assert.Equal(t, movie.ProgressStyle.GetPaddingLeft(), progressPad[1])
 	}
 
 	t.Run("default embedded", func(t *testing.T) {

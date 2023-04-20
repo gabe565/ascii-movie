@@ -9,10 +9,8 @@ ascii-movie play [movie] [flags]
 ### Options
 
 ```
-      --body-pad ints       Body padding (default [3,6,2,6])
-  -h, --help                help for play
-      --progress-pad ints   Progress bar padding (default [2,0,1,0])
-      --speed float         Playback speed multiplier. Must be greater than 0. (default 1)
+  -h, --help          help for play
+      --speed float   Playback speed multiplier. Must be greater than 0. (default 1)
 ```
 
 ### Options inherited from parent commands

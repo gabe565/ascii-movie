@@ -15,9 +15,6 @@ import (
 var (
 	SpeedFlag       = "speed"
 	ErrInvalidSpeed = errors.New("speed must be greater than 0")
-
-	PadFlag         = "body-pad"
-	ProgressPadFlag = "progress-pad"
 )
 
 func Flags(flags *flag.FlagSet) {
@@ -26,9 +23,6 @@ func Flags(flags *flag.FlagSet) {
 		1,
 		"Playback speed multiplier. Must be greater than 0.",
 	)
-
-	flags.IntSlice(PadFlag, []int{3, 6, 2, 6}, "Body padding")
-	flags.IntSlice(ProgressPadFlag, []int{2, 0, 1, 0}, "Progress bar padding")
 }
 
 func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
@@ -80,18 +74,6 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	if err := movie.LoadFile(path, src, speed); err != nil {
 		return movie, err
 	}
-
-	bodyPad, err := flags.GetIntSlice(PadFlag)
-	if err != nil {
-		panic(err)
-	}
-	movie.BodyStyle = movie.BodyStyle.Padding(bodyPad...)
-
-	progressPad, err := flags.GetIntSlice(ProgressPadFlag)
-	if err != nil {
-		panic(err)
-	}
-	movie.ProgressStyle = movie.ProgressStyle.Padding(progressPad...)
 
 	log.WithField("duration", movie.Duration()).Info("Movie loaded")
 

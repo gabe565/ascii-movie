@@ -2,24 +2,17 @@ package movie
 
 import (
 	"time"
-
-	"github.com/charmbracelet/lipgloss"
 )
 
 func NewMovie() Movie {
-	return Movie{
-		BodyStyle:     lipgloss.NewStyle(),
-		ProgressStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("#626262")),
-	}
+	return Movie{}
 }
 
 type Movie struct {
 	Filename string
 	Cap      int
 	Frames   []Frame
-
-	BodyStyle     lipgloss.Style
-	ProgressStyle lipgloss.Style
+	Width    int
 }
 
 func (m Movie) Duration() time.Duration {

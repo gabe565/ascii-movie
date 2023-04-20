@@ -16,7 +16,6 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 	m.Filename = filepath.Base(path)
 
 	var f Frame
-	var maxWidth int
 	scanner := bufio.NewScanner(src)
 
 	// Build part of every frame, excluding progress bar and bottom padding
@@ -39,8 +38,8 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 			f.Duration = time.Duration(v) * time.Second / 15
 			f.Duration = time.Duration(float64(f.Duration) / speed)
 		} else {
-			if len(scanner.Bytes()) > maxWidth {
-				maxWidth = len(scanner.Bytes())
+			if len(scanner.Bytes()) > m.Width {
+				m.Width = len(scanner.Bytes())
 			}
 			f.Data += scanner.Text() + "\n"
 		}
@@ -59,7 +58,7 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 	var currentPosition time.Duration
 	for i, f := range m.Frames {
 		f.Data = strings.TrimSuffix(f.Data, "\n")
-		f.Progress += bar.Generate(currentPosition+f.Duration/2, totalDuration, maxWidth)
+		f.Progress += bar.Generate(currentPosition+f.Duration/2, totalDuration, m.Width+2)
 		m.Frames[i] = f
 		if frameCap < len(f.Data) {
 			frameCap = len(f.Data)

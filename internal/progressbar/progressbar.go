@@ -35,13 +35,12 @@ func (p *ProgressBar) Generate(n, total time.Duration, width int) string {
 	phaseIdx := int((filledLen - float64(filledNum)) * float64(len(p.Phases)))
 	emptyNum := width - filledNum
 
-	result := "["
+	var result string
 	result += strings.Repeat(p.Phases[len(p.Phases)-1], filledNum)
 	if phaseIdx > 0 {
 		result += p.Phases[phaseIdx]
 		emptyNum -= 1
 	}
 	result += strings.Repeat(p.Phases[0], emptyNum)
-	result += "]"
 	return result
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/charmbracelet/wish"
 	"github.com/charmbracelet/wish/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/movie"
+	"github.com/muesli/termenv"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	gossh "golang.org/x/crypto/ssh"
@@ -43,7 +44,7 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 	sshOptions := []ssh.Option{
 		wish.WithAddress(s.Address),
 		wish.WithMiddleware(
-			bubbletea.Middleware(s.Handler(m)),
+			bubbletea.MiddlewareWithColorProfile(s.Handler(m), termenv.TrueColor),
 		),
 	}
 
