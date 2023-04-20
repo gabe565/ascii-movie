@@ -125,10 +125,12 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		if p.speed >= 0 {
 			p.frame += 1
+		} else if p.frame == 0 {
+			p.pause()
+			p.speed = 1
+			p.activeOption = 4
+			return p, nil
 		} else {
-			if p.frame == 0 {
-				return p, Quit
-			}
 			p.frame -= 1
 		}
 		duration := p.movie.Frames[p.frame].Duration
