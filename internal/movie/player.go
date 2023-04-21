@@ -106,6 +106,7 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return p, chooseOption(playerOptions[p.selectedOption])
 		}
 	case quitMsg:
+		p.pause()
 		if p.log != nil {
 			if time.Since(p.durationHook.GetStart()) < p.LogExcludeFaster {
 				p.log.Trace("Disconnected early")
