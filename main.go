@@ -6,7 +6,7 @@ import (
 	"github.com/gabe565/ascii-movie/cmd"
 )
 
-//go:generate go run -tags generate ./internal/cmd/generate_movie
+//go:generate go run ./internal/cmd/gzip
 
 func main() {
 	if err := cmd.NewCommand().Execute(); err != nil {

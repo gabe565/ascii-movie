@@ -30,7 +30,7 @@ func CompleteMovieName(cmd *cobra.Command, args []string, toComplete string) ([]
 	}
 
 	if len(result) == 0 {
-		return []string{"txt"}, cobra.ShellCompDirectiveFilterFileExt
+		return []string{"txt", "txt.gz"}, cobra.ShellCompDirectiveFilterFileExt
 	} else {
 		return result, cobra.ShellCompDirectiveDefault
 	}

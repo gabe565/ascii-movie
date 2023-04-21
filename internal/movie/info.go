@@ -1,7 +1,9 @@
 package movie
 
 import (
+	"compress/gzip"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -14,7 +16,8 @@ import (
 
 func GetInfo(fsys fs.FS, path string) (Info, error) {
 	name := filepath.Base(path)
-	name = strings.TrimSuffix(name, filepath.Ext(name))
+	name = strings.TrimSuffix(name, ".gz")
+	name = strings.TrimSuffix(name, ".txt")
 
 	info := Info{
 		Path:    filepath.Clean(path),
@@ -34,8 +37,16 @@ func GetInfo(fsys fs.FS, path string) (Info, error) {
 		_ = f.Close()
 	}(f)
 
+	var r io.Reader = f
+	if strings.HasSuffix(path, ".gz") {
+		r, err = gzip.NewReader(f)
+		if err != nil {
+			return Info{}, err
+		}
+	}
+
 	m := NewMovie()
-	if err := m.LoadFile(path, f, 1); err != nil {
+	if err := m.LoadFile(path, r, 1); err != nil {
 		return info, fmt.Errorf("failed to parse movie: %w", err)
 	}
 	info.Duration = m.Duration()

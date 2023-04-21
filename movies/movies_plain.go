@@ -1,8 +1,8 @@
+//go:build !gzip
+
 package movies
 
-import (
-	"embed"
-)
+import "embed"
 
 const Default = "sw1.txt"
 

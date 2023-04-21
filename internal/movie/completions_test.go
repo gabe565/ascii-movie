@@ -13,6 +13,6 @@ func TestCompleteMovieName(t *testing.T) {
 	assert.Equal(t, cobra.ShellCompDirectiveDefault, shellComp)
 
 	got, shellComp = CompleteMovieName(&cobra.Command{}, []string{}, "movie-that-does-not-exist")
-	assert.Equal(t, []string{"txt"}, got)
+	assert.Equal(t, []string{"txt", "txt.gz"}, got)
 	assert.Equal(t, cobra.ShellCompDirectiveFilterFileExt, shellComp)
 }

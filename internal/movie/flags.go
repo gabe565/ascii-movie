@@ -1,6 +1,7 @@
 package movie
 
 import (
+	"compress/gzip"
 	"errors"
 	"fmt"
 	"io"
@@ -40,8 +41,8 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	}
 	// Load embedded movie
 	embeddedPath := path
-	if !strings.HasSuffix(embeddedPath, ".txt") {
-		embeddedPath += ".txt"
+	if !strings.HasSuffix(embeddedPath, FileSuffix) {
+		embeddedPath += FileSuffix
 	}
 	if src, err = movies.Movies.Open(embeddedPath); err == nil {
 		log.WithField("name", embeddedPath).Debug("Using embedded movie")
@@ -72,7 +73,15 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 		return movie, fmt.Errorf("%w: %f", ErrInvalidSpeed, speed)
 	}
 
-	if err := movie.LoadFile(path, src, speed); err != nil {
+	var r io.Reader = src
+	if strings.HasSuffix(path, ".gz") {
+		r, err = gzip.NewReader(src)
+		if err != nil {
+			return movie, err
+		}
+	}
+
+	if err := movie.LoadFile(path, r, speed); err != nil {
 		return movie, err
 	}
 
