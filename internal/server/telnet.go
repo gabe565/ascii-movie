@@ -90,17 +90,21 @@ func (s *TelnetServer) Handler(conn net.Conn, m *movie.Movie) {
 		// Proxy output to client
 		_, _ = io.Copy(conn, outR)
 		program.Send(movie.Quit())
+		program.Kill()
 	}()
 
 	go func() {
 		// Proxy input to program
 		_ = proxyTelnetInput(conn, inW)
 		program.Send(movie.Quit())
+		program.Kill()
 	}()
 
 	if _, err := program.Run(); err != nil && !errors.Is(err, tea.ErrProgramKilled) {
 		logger.WithError(err).Error("Stream failed")
 	}
+
+	program.Kill()
 }
 
 func proxyTelnetInput(conn io.ReadWriter, proxy io.Writer) error {
