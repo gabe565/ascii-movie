@@ -16,7 +16,7 @@ var (
 	progressStyle = lipgloss.NewStyle().
 			Margin(1, 0).
 			Foreground(borderColor).
-			Border(lipgloss.NormalBorder(), false, true).
+			Border(lipgloss.InnerHalfBlockBorder(), false, true).
 			BorderForeground(borderColor)
 
 	optionsColor = lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
