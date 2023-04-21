@@ -1,6 +1,7 @@
 .DS_Store
 vendor
 ascii-movie
+ascii-movie.mp4
 
 # local env files
 .env.local
