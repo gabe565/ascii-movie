@@ -19,13 +19,13 @@ import (
 )
 
 type SSHServer struct {
-	Server
+	MovieServer
 	HostKeyPath []string
 	HostKeyPEM  []string
 }
 
 func NewSSH(flags *flag.FlagSet) SSHServer {
-	ssh := SSHServer{Server: NewServer(flags, SSHFlagPrefix)}
+	ssh := SSHServer{MovieServer: NewMovieServer(flags, SSHFlagPrefix)}
 	var err error
 
 	if ssh.HostKeyPath, err = flags.GetStringSlice(SSHHostKeyPathFlag); err != nil {
@@ -77,6 +77,7 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 		if ctx.Err() != nil {
 			return nil
 		}
+
 		if err = server.ListenAndServe(); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
 			return fmt.Errorf("failed to start server: %w", err)
 		}

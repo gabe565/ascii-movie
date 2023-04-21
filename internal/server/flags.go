@@ -10,6 +10,7 @@ const (
 
 	SSHFlagPrefix    = "ssh"
 	TelnetFlagPrefix = "telnet"
+	ApiFlagPrefix    = "api"
 	EnabledFlag      = "-enabled"
 	AddressFlag      = "-address"
 
@@ -35,6 +36,9 @@ func Flags(flags *flag.FlagSet) {
 
 	flags.Bool(TelnetFlagPrefix+EnabledFlag, true, "Enables Telnet listener")
 	flags.String(TelnetFlagPrefix+AddressFlag, ":23", "Telnet listen address")
+
+	flags.Bool(ApiFlagPrefix+EnabledFlag, true, "Enables API listener")
+	flags.String(ApiFlagPrefix+AddressFlag, "127.0.0.1:1977", "API listen address")
 
 	// Deprecated --address flag
 	flags.StringP("address", "a", ":23", "Telnet listen address")

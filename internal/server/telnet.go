@@ -16,11 +16,11 @@ import (
 )
 
 type TelnetServer struct {
-	Server
+	MovieServer
 }
 
 func NewTelnet(flags *flag.FlagSet) TelnetServer {
-	return TelnetServer{Server: NewServer(flags, TelnetFlagPrefix)}
+	return TelnetServer{MovieServer: NewMovieServer(flags, TelnetFlagPrefix)}
 }
 
 func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {

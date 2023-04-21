@@ -9,6 +9,8 @@ ascii-movie serve [movie] [flags]
 ### Options
 
 ```
+      --api-address string            API listen address (default "127.0.0.1:1977")
+      --api-enabled                   Enables API listener (default true)
   -h, --help                          help for serve
       --log-exclude-faster duration   Makes early disconnect logs faster than the value be trace level. Useful for excluding health checks from logs.
       --speed float                   Playback speed multiplier. Must be greater than 0. (default 1)

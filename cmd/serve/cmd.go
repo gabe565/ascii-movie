@@ -65,6 +65,12 @@ func run(cmd *cobra.Command, args []string) (err error) {
 		return fmt.Errorf("all server types were disabled")
 	}
 
+	if api := server.NewApi(cmd.Flags()); api.Enabled {
+		group.Go(func() error {
+			return api.Listen(ctx)
+		})
+	}
+
 	group.Go(func() error {
 		sig := make(chan os.Signal, 1)
 		signal.Notify(sig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)

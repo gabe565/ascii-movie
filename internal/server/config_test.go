@@ -25,7 +25,7 @@ func TestNewServer(t *testing.T) {
 			return
 		}
 
-		server := NewServer(flags, prefix)
+		server := NewMovieServer(flags, prefix)
 		assert.Equal(t, true, server.Enabled)
 		assert.Equal(t, "127.0.0.1:1977", server.Address)
 		assert.Equal(t, time.Second, server.LogExcludeFaster)
