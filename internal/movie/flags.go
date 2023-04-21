@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gabe565/ascii-movie/movies"
 	log "github.com/sirupsen/logrus"
@@ -75,7 +76,7 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 		return movie, err
 	}
 
-	log.WithField("duration", movie.Duration()).Info("Movie loaded")
+	log.WithField("duration", movie.Duration().Round(time.Second)).Info("Movie loaded")
 
 	return movie, nil
 }
