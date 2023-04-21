@@ -83,21 +83,24 @@ func (s *TelnetServer) Handler(conn net.Conn, m *movie.Movie) {
 		player,
 		tea.WithInput(inR),
 		tea.WithOutput(outW),
-		tea.WithContext(ctx),
 	)
+
+	go func() {
+		<-ctx.Done()
+		program.Send(movie.Quit())
+	}()
 
 	go func() {
 		// Proxy output to client
 		_, _ = io.Copy(conn, outR)
-		program.Send(movie.Quit())
-		program.Kill()
+		cancel()
+		_, _ = io.Copy(io.Discard, outR)
 	}()
 
 	go func() {
 		// Proxy input to program
 		_ = proxyTelnetInput(conn, inW)
-		program.Send(movie.Quit())
-		program.Kill()
+		cancel()
 	}()
 
 	if _, err := program.Run(); err != nil && !errors.Is(err, tea.ErrProgramKilled) {
