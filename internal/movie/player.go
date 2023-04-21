@@ -207,7 +207,7 @@ func (p Player) OptionsView() string {
 func newKeymap() keymap {
 	return keymap{
 		quit: key.NewBinding(
-			key.WithKeys("q", "ctrl+c", "ctrl+d"),
+			key.WithKeys("q", "ctrl+c", "ctrl+d", "esc"),
 			key.WithHelp("q", "quit"),
 		),
 		left: key.NewBinding(
