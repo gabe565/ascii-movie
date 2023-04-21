@@ -74,21 +74,39 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return p, tea.Quit
 		}
+		var frameDiff int
 		if p.speed >= 0 {
-			p.frame += 1
-		} else if p.frame == 0 {
+			frameDiff = 1
+		} else if p.frame <= 0 {
 			p.pause()
 			p.speed = 1
 			p.activeOption = 4
 			return p, nil
 		} else {
-			p.frame -= 1
+			frameDiff = -1
 		}
+		p.frame += frameDiff
 		speed := p.speed
 		if speed < 0 {
 			speed *= -1
 		}
-		return p, tick(p.playCtx, p.movie.Frames[p.frame].CalcDuration(speed))
+		duration := p.movie.Frames[p.frame].CalcDuration(speed)
+		for duration < time.Second/15 {
+			if p.frame+frameDiff >= len(p.movie.Frames) {
+				if p.log != nil {
+					p.log.Info("Finished movie")
+				}
+				return p, tea.Quit
+			} else if p.frame+frameDiff <= 0 {
+				p.pause()
+				p.speed = 1
+				p.activeOption = 4
+				return p, nil
+			}
+			p.frame += frameDiff
+			duration += p.movie.Frames[p.frame].CalcDuration(speed)
+		}
+		return p, tick(p.playCtx, duration)
 	case tea.KeyMsg:
 		p.optionViewStale = true
 		switch {
