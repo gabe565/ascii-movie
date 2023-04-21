@@ -13,7 +13,7 @@ See it in action:
 
 ## Demo
 <div align="center">
-  <video src="https://user-images.githubusercontent.com/7717888/230992596-3f952de2-9acc-42fb-b0f9-87f1bf7fec45.mp4"></video>
+  <video src="https://user-images.githubusercontent.com/7717888/233742309-4eeace5e-9a7c-41c6-9fc5-21ea19728f77.mp4"></video>
 </div>
 
 <details>
