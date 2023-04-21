@@ -69,6 +69,10 @@ func (s *TelnetServer) Handler(conn net.Conn, m *movie.Movie) {
 
 	inR, inW := io.Pipe()
 	outR, outW := io.Pipe()
+	defer func() {
+		_ = outR.Close()
+		_ = inR.Close()
+	}()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
