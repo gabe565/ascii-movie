@@ -68,15 +68,15 @@ func (p Player) Init() tea.Cmd {
 func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tickMsg:
-		if p.frame+1 >= len(p.movie.Frames) {
-			if p.log != nil {
-				p.log.Info("Finished movie")
-			}
-			return p, tea.Quit
-		}
 		var frameDiff int
 		if p.speed >= 0 {
 			frameDiff = 1
+			if p.frame+frameDiff >= len(p.movie.Frames) {
+				if p.log != nil {
+					p.log.Info("Finished movie")
+				}
+				return p, tea.Quit
+			}
 		} else if p.frame <= 0 {
 			p.pause()
 			p.speed = 1
