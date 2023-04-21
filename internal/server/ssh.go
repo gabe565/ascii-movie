@@ -18,6 +18,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+var sshListeners uint8
+
 type SSHServer struct {
 	MovieServer
 	HostKeyPath []string
@@ -77,6 +79,11 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 		if ctx.Err() != nil {
 			return nil
 		}
+
+		sshListeners += 1
+		defer func() {
+			sshListeners -= 1
+		}()
 
 		if err = server.ListenAndServe(); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
 			return fmt.Errorf("failed to start server: %w", err)

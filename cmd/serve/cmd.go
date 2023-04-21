@@ -45,27 +45,27 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	defer cancel()
 	group, ctx := errgroup.WithContext(ctx)
 
-	var serving bool
+	api := server.NewApi(cmd.Flags())
 
 	if ssh := server.NewSSH(cmd.Flags()); ssh.Enabled {
-		serving = true
+		api.SSHEnabled = true
 		group.Go(func() error {
 			return ssh.Listen(ctx, &m)
 		})
 	}
 
 	if telnet := server.NewTelnet(cmd.Flags()); telnet.Enabled {
-		serving = true
+		api.TelnetEnabled = true
 		group.Go(func() error {
 			return telnet.Listen(ctx, &m)
 		})
 	}
 
-	if !serving {
+	if !api.SSHEnabled && !api.TelnetEnabled {
 		return fmt.Errorf("all server types were disabled")
 	}
 
-	if api := server.NewApi(cmd.Flags()); api.Enabled {
+	if api.Enabled {
 		group.Go(func() error {
 			return api.Listen(ctx)
 		})

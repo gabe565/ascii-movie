@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -11,6 +12,8 @@ import (
 
 type ApiServer struct {
 	Server
+	TelnetEnabled bool
+	SSHEnabled    bool
 }
 
 func NewApi(flags *flag.FlagSet) ApiServer {
@@ -38,7 +41,33 @@ func (s *ApiServer) Listen(ctx context.Context) error {
 	return nil
 }
 
+type StatusResponse struct {
+	Healthy bool `json:"healthy"`
+	SSH     bool `json:"ssh"`
+	Telnet  bool `json:"telnet"`
+}
+
 func (s *ApiServer) Status(w http.ResponseWriter, r *http.Request) {
+	response := StatusResponse{
+		Telnet: telnetListeners == 1,
+		SSH:    sshListeners == 1,
+	}
+	response.Healthy = (!s.SSHEnabled || response.SSH) && (!s.TelnetEnabled || response.Telnet)
+
+	buf, err := json.Marshal(response)
+	if err != nil {
+		s.Log.WithError(err).Error("Failed to marshal API response")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	_, _ = w.Write([]byte(`{"healthy":true}`))
+	if response.Healthy {
+		w.WriteHeader(http.StatusOK)
+	} else {
+		w.WriteHeader(http.StatusServiceUnavailable)
+	}
+	if _, err := w.Write([]byte(buf)); err != nil {
+		s.Log.WithError(err).Error("Failed to write API response")
+	}
 }

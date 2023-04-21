@@ -15,6 +15,8 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
+var telnetListeners uint8
+
 type TelnetServer struct {
 	MovieServer
 }
@@ -37,6 +39,11 @@ func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 	}(listen)
 
 	go func() {
+		telnetListeners += 1
+		defer func() {
+			telnetListeners -= 1
+		}()
+
 		for {
 			conn, err := listen.Accept()
 			if err != nil {
