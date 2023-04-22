@@ -18,7 +18,6 @@ func NewPlayer(m *Movie, logger *log.Entry) Player {
 		speed:           1,
 		selectedOption:  3,
 		activeOption:    4,
-		screenStyle:     screenStyle.Copy().Width(m.Width),
 		optionViewStale: true,
 	}
 	player.playCtx, player.pause = context.WithCancel(context.Background())
@@ -54,8 +53,6 @@ type Player struct {
 	activeOption    int
 	optionViewCache string
 	optionViewStale bool
-
-	screenStyle lipgloss.Style
 
 	keymap        keymap
 	helpViewCache string
@@ -178,7 +175,7 @@ func (p Player) View() string {
 
 	return appStyle.Render(lipgloss.JoinVertical(
 		lipgloss.Center,
-		p.screenStyle.Render(p.movie.Frames[p.frame].Data),
+		p.movie.screenStyle.Render(p.movie.Frames[p.frame].Data),
 		progressStyle.Render(p.movie.Frames[p.frame].Progress),
 		p.optionViewCache,
 		p.helpViewCache,
