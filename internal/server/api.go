@@ -24,7 +24,7 @@ func NewApi(flags *flag.FlagSet) ApiServer {
 func (s *ApiServer) Listen(ctx context.Context) error {
 	s.Log.WithField("address", s.Address).Info("Starting API server")
 
-	http.HandleFunc("/health", s.Status)
+	http.HandleFunc("/health", s.Health)
 	server := http.Server{Addr: s.Address}
 	go func() {
 		<-ctx.Done()
@@ -41,14 +41,14 @@ func (s *ApiServer) Listen(ctx context.Context) error {
 	return nil
 }
 
-type StatusResponse struct {
+type HealthResponse struct {
 	Healthy bool `json:"healthy"`
 	SSH     bool `json:"ssh"`
 	Telnet  bool `json:"telnet"`
 }
 
-func (s *ApiServer) Status(w http.ResponseWriter, r *http.Request) {
-	response := StatusResponse{
+func (s *ApiServer) Health(w http.ResponseWriter, r *http.Request) {
+	response := HealthResponse{
 		Telnet: telnetListeners == 1,
 		SSH:    sshListeners == 1,
 	}
