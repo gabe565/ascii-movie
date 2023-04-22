@@ -59,12 +59,12 @@ type Player struct {
 }
 
 func (p Player) Init() tea.Cmd {
-	return tick(p.playCtx, p.movie.Frames[p.frame].Duration)
+	return tick(p.playCtx, p.movie.Frames[p.frame].Duration, frameTickMsg{})
 }
 
 func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tickMsg:
+	case frameTickMsg:
 		var frameDiff int
 		if p.speed >= 0 {
 			frameDiff = 1
@@ -101,7 +101,7 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			p.frame += frameDiff
 			duration += p.movie.Frames[p.frame].CalcDuration(speed)
 		}
-		return p, tick(p.playCtx, duration)
+		return p, tick(p.playCtx, duration, frameTickMsg{})
 	case tea.KeyMsg:
 		p.optionViewStale = true
 		switch {
@@ -204,7 +204,7 @@ func (p Player) pause() tea.Cmd {
 func (p *Player) play() tea.Cmd {
 	p.playCtx, p.playCancel = context.WithCancel(context.Background())
 	return func() tea.Msg {
-		return tickMsg{}
+		return frameTickMsg{}
 	}
 }
 
