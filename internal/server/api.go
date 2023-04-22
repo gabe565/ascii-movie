@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	_ "net/http/pprof"
 
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
