@@ -38,7 +38,7 @@ An image is available at [`ghcr.io/gabe565/ascii-movie`](https://ghcr.io/gabe565
 The following command will run a container that plays the movie directly in your terminal.
 
 ```shell
-docker run --rm -it -e ghcr.io/gabe565/ascii-movie play
+docker run --rm -it ghcr.io/gabe565/ascii-movie play
 ```
 
 #### Serve Movie over Telnet and SSH
