@@ -23,9 +23,8 @@ func NewApi(flags *flag.FlagSet) ApiServer {
 func (s *ApiServer) Listen(ctx context.Context) error {
 	s.Log.WithField("address", s.Address).Info("Starting API server")
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/health", s.Status)
-	server := http.Server{Addr: s.Address, Handler: mux}
+	http.HandleFunc("/health", s.Status)
+	server := http.Server{Addr: s.Address}
 	go func() {
 		<-ctx.Done()
 		s.Log.Info("Stopping API server")
