@@ -17,7 +17,7 @@ const (
 	Option3xForward PlayerOption = ">>>"
 )
 
-var playerOptions = []PlayerOption{
+var playerOptions = [...]PlayerOption{
 	Option3xRewind,
 	Option2xRewind,
 	Option1xRewind,
