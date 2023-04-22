@@ -33,3 +33,24 @@ type keymap struct {
 	right  key.Binding
 	choose key.Binding
 }
+
+func newKeymap() keymap {
+	return keymap{
+		quit: key.NewBinding(
+			key.WithKeys("q", "ctrl+c", "ctrl+d", "esc"),
+			key.WithHelp("q", "quit"),
+		),
+		left: key.NewBinding(
+			key.WithKeys("left", "h"),
+			key.WithHelp("←/h", "left"),
+		),
+		right: key.NewBinding(
+			key.WithKeys("right", "l"),
+			key.WithHelp("→/l", "right"),
+		),
+		choose: key.NewBinding(
+			key.WithKeys(" ", "enter"),
+			key.WithHelp("enter", "choose"),
+		),
+	}
+}
