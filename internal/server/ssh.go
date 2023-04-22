@@ -50,6 +50,7 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 		wish.WithAddress(s.Address),
 		wish.WithMiddleware(
 			bubbletea.Middleware(s.Handler(m)),
+			countStreamMiddleware,
 		),
 	}
 
@@ -111,5 +112,13 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 		player := movie.NewPlayer(m, logger)
 		player.LogExcludeFaster = s.LogExcludeFaster
 		return player, []tea.ProgramOption{}
+	}
+}
+
+func countStreamMiddleware(handler ssh.Handler) ssh.Handler {
+	return func(session ssh.Session) {
+		streamCount.Add(1)
+		handler(session)
+		streamCount.Add(-1)
 	}
 }

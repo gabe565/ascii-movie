@@ -67,6 +67,9 @@ func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 }
 
 func (s *TelnetServer) Handler(conn net.Conn, m *movie.Movie) {
+	streamCount.Add(1)
+	defer streamCount.Add(-1)
+
 	defer func(conn net.Conn) {
 		_ = conn.Close()
 	}(conn)

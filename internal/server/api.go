@@ -6,10 +6,13 @@ import (
 	"errors"
 	"net/http"
 	_ "net/http/pprof"
+	"sync/atomic"
 
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 )
+
+var streamCount atomic.Int32
 
 type ApiServer struct {
 	Server
@@ -25,6 +28,7 @@ func (s *ApiServer) Listen(ctx context.Context) error {
 	s.Log.WithField("address", s.Address).Info("Starting API server")
 
 	http.HandleFunc("/health", s.Health)
+	http.HandleFunc("/streams", s.Streams)
 	server := http.Server{Addr: s.Address}
 	go func() {
 		<-ctx.Done()
@@ -67,6 +71,25 @@ func (s *ApiServer) Health(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusServiceUnavailable)
 	}
+	if _, err := w.Write([]byte(buf)); err != nil {
+		s.Log.WithError(err).Error("Failed to write API response")
+	}
+}
+
+type StreamsResponse struct {
+	Count int32 `json:"count"`
+}
+
+func (s *ApiServer) Streams(w http.ResponseWriter, r *http.Request) {
+	response := StreamsResponse{Count: streamCount.Load()}
+
+	buf, err := json.Marshal(response)
+	if err != nil {
+		s.Log.WithError(err).Error("Failed to marshal API response")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
 	if _, err := w.Write([]byte(buf)); err != nil {
 		s.Log.WithError(err).Error("Failed to write API response")
 	}
