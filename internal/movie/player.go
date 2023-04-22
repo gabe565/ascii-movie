@@ -20,7 +20,7 @@ func NewPlayer(m *Movie, logger *log.Entry) Player {
 		activeOption:    4,
 		optionViewStale: true,
 	}
-	player.playCtx, player.pause = context.WithCancel(context.Background())
+	player.play()
 	if logger != nil {
 		player.durationHook = log_hooks.NewDuration()
 		player.log = logger.WithField("duration", player.durationHook)
@@ -45,9 +45,9 @@ type Player struct {
 	durationHook     log_hooks.Duration
 	LogExcludeFaster time.Duration
 
-	speed   float64
-	playCtx context.Context
-	pause   context.CancelFunc
+	speed      float64
+	playCtx    context.Context
+	playCancel context.CancelFunc
 
 	selectedOption  int
 	activeOption    int
@@ -75,10 +75,9 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return p, tea.Quit
 			}
 		} else if p.frame <= 0 {
-			p.pause()
 			p.speed = 1
 			p.activeOption = 4
-			return p, nil
+			return p, p.pause()
 		} else {
 			frameDiff = -1
 		}
@@ -95,10 +94,9 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 				return p, tea.Quit
 			} else if p.frame+frameDiff <= 0 {
-				p.pause()
 				p.speed = 1
 				p.activeOption = 4
-				return p, nil
+				return p, p.pause()
 			}
 			p.frame += frameDiff
 			duration += p.movie.Frames[p.frame].CalcDuration(speed)
@@ -143,12 +141,10 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			p.activeOption = 2
 			p.speed = -1
 		case OptionPause, OptionPlay:
-			if p.playCtx.Err() == nil {
-				p.pause()
-				return p, nil
+			if p.isPlaying() {
+				return p, p.pause()
 			} else {
-				p.playCtx, p.pause = context.WithCancel(context.Background())
-				return p, tick(p.playCtx, 0)
+				return p, p.play()
 			}
 		case Option1xForward:
 			p.activeOption = 4
@@ -160,9 +156,8 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			p.activeOption = 6
 			p.speed = 15
 		}
-		if p.playCtx.Err() != nil {
-			p.playCtx, p.pause = context.WithCancel(context.Background())
-			return p, tick(p.playCtx, 0)
+		if !p.isPlaying() {
+			return p, p.play()
 		}
 	}
 	return p, nil
@@ -185,7 +180,7 @@ func (p Player) View() string {
 func (p Player) OptionsView() string {
 	options := make([]string, 0, len(playerOptions))
 	for i, option := range playerOptions {
-		if option == OptionPause && p.playCtx.Err() != nil {
+		if option == OptionPause && !p.isPlaying() {
 			option = OptionPlay
 		}
 		var rendered string
@@ -199,4 +194,20 @@ func (p Player) OptionsView() string {
 		options = append(options, rendered)
 	}
 	return lipgloss.JoinHorizontal(lipgloss.Top, options...)
+}
+
+func (p Player) pause() tea.Cmd {
+	p.playCancel()
+	return nil
+}
+
+func (p *Player) play() tea.Cmd {
+	p.playCtx, p.playCancel = context.WithCancel(context.Background())
+	return func() tea.Msg {
+		return tickMsg{}
+	}
+}
+
+func (p Player) isPlaying() bool {
+	return p.playCtx.Err() == nil
 }
