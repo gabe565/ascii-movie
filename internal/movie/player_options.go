@@ -6,7 +6,7 @@ import (
 
 type PlayerOption string
 
-var (
+const (
 	Option3xRewind  PlayerOption = "<<<"
 	Option2xRewind  PlayerOption = "<<"
 	Option1xRewind  PlayerOption = "<"
