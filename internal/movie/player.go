@@ -117,7 +117,7 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				p.selectedOption -= 1
 			}
 		case key.Matches(msg, p.keymap.right):
-			if p.selectedOption < 6 {
+			if p.selectedOption < len(playerOptions)-1 {
 				p.selectedOption += 1
 			}
 		case key.Matches(msg, p.keymap.choose):
