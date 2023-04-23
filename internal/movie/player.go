@@ -39,11 +39,10 @@ func NewPlayer(m *Movie, logger *log.Entry) Player {
 }
 
 type Player struct {
-	movie            *Movie
-	frame            int
-	log              *log.Entry
-	durationHook     log_hooks.Duration
-	LogExcludeFaster time.Duration
+	movie        *Movie
+	frame        int
+	log          *log.Entry
+	durationHook log_hooks.Duration
 
 	speed      float64
 	playCtx    context.Context
@@ -124,11 +123,7 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case quitMsg:
 		p.pause()
 		if p.log != nil {
-			if time.Since(p.durationHook.GetStart()) < p.LogExcludeFaster {
-				p.log.Trace("Disconnected early")
-			} else {
-				p.log.Info("Disconnected early")
-			}
+			p.log.Info("Disconnected early")
 		}
 		return p, tea.Quit
 	case PlayerOption:

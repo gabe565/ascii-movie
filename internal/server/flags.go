@@ -5,9 +5,6 @@ import (
 )
 
 const (
-	LogExcludeGatewayFlag = "log-exclude-gateway"
-	LogExcludeFaster      = "log-exclude-faster"
-
 	SSHFlagPrefix    = "ssh"
 	TelnetFlagPrefix = "telnet"
 	ApiFlagPrefix    = "api"
@@ -19,19 +16,6 @@ const (
 )
 
 func Flags(flags *flag.FlagSet) {
-	flags.Bool(LogExcludeGatewayFlag, false, "Makes default gateway early disconnect logs be trace level. Useful for excluding health checks from logs.")
-	if err := flags.MarkDeprecated(
-		LogExcludeGatewayFlag,
-		"please use --log-exclude-faster instead.",
-	); err != nil {
-		panic(err)
-	}
-
-	flags.Duration(LogExcludeFaster, 0, "Makes early disconnect logs faster than the value be trace level. Useful for excluding health checks from logs.")
-	if err := flags.MarkDeprecated(LogExcludeFaster, "please use the API for health checks."); err != nil {
-		panic(err)
-	}
-
 	flags.Bool(SSHFlagPrefix+EnabledFlag, true, "Enables SSH listener")
 	flags.String(SSHFlagPrefix+AddressFlag, ":22", "SSH listen address")
 	flags.StringSlice(SSHHostKeyPathFlag, []string{}, "SSH host key file path")

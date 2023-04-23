@@ -2,7 +2,6 @@ package server
 
 import (
 	"testing"
-	"time"
 
 	flag "github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
@@ -21,14 +20,9 @@ func TestNewServer(t *testing.T) {
 			return
 		}
 
-		if err := flags.Set(LogExcludeFaster, "1s"); !assert.NoError(t, err) {
-			return
-		}
-
 		server := NewMovieServer(flags, prefix)
 		assert.Equal(t, true, server.Enabled)
 		assert.Equal(t, "127.0.0.1:1977", server.Address)
-		assert.Equal(t, time.Second, server.LogExcludeFaster)
 		assert.Equal(t, prefix, server.Log.Data["server"])
 	}
 

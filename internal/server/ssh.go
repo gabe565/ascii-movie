@@ -110,7 +110,6 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 			"user":      session.User(),
 		})
 		player := movie.NewPlayer(m, logger)
-		player.LogExcludeFaster = s.LogExcludeFaster
 		return player, []tea.ProgramOption{}
 	}
 }

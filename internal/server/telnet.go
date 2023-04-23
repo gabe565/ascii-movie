@@ -88,7 +88,6 @@ func (s *TelnetServer) Handler(conn net.Conn, m *movie.Movie) {
 	defer cancel()
 
 	player := movie.NewPlayer(m, logger)
-	player.LogExcludeFaster = s.LogExcludeFaster
 	program := tea.NewProgram(
 		player,
 		tea.WithInput(inR),
