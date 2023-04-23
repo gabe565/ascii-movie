@@ -73,15 +73,14 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 		return movie, fmt.Errorf("%w: %f", ErrInvalidSpeed, speed)
 	}
 
-	var r io.Reader = src
 	if strings.HasSuffix(path, ".gz") {
-		r, err = gzip.NewReader(src)
+		src, err = gzip.NewReader(src)
 		if err != nil {
 			return movie, err
 		}
 	}
 
-	if err := movie.LoadFile(path, r, speed); err != nil {
+	if err := movie.LoadFile(path, src, speed); err != nil {
 		return movie, err
 	}
 
