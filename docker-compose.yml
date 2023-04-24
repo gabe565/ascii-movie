@@ -9,6 +9,8 @@ services:
     environment:
       COLORTERM: "$COLORTERM"
       TERM: "$TERM"
+      ASCII_MOVIE_API_ADDRESS: ":1977"
     ports:
       - "23:23"
       - "2222:22"
+      - "127.0.0.1:1977:1977"
