@@ -12,6 +12,7 @@ Command line ASCII movie player.
 
 ### SEE ALSO
 
+* [ascii-movie get](ascii-movie_get.md)	 - Fetches data from a running server.
 * [ascii-movie ls](ascii-movie_ls.md)	 - Lists movie files and metadata.
 * [ascii-movie play](ascii-movie_play.md)	 - Play an ASCII movie locally.
 * [ascii-movie serve](ascii-movie_serve.md)	 - Serve an ASCII movie over Telnet and SSH.

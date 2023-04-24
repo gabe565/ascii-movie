@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/gabe565/ascii-movie/cmd/get"
 	"github.com/gabe565/ascii-movie/cmd/ls"
 	"github.com/gabe565/ascii-movie/cmd/play"
 	"github.com/gabe565/ascii-movie/cmd/serve"
@@ -25,6 +26,7 @@ func NewCommand() *cobra.Command {
 		play.NewCommand(),
 		serve.NewCommand(),
 		ls.NewCommand(),
+		get.NewCommand(),
 	)
 	config.RegisterLogFlags(cmd)
 	return cmd
