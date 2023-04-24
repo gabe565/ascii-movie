@@ -35,6 +35,9 @@ jobs:
   build:
     name: Build Image (${{ matrix.target }})
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     strategy:
       # Limit 1 to improve caching
       max-parallel: 1
