@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	_ "net/http/pprof"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
@@ -76,11 +77,24 @@ func (s *ApiServer) Health(w http.ResponseWriter, r *http.Request) {
 }
 
 type StreamsResponse struct {
-	Count int `json:"count"`
+	Count   *int      `json:"count,omitempty"`
+	Streams *[]Stream `json:"streams,omitempty"`
 }
 
 func (s *ApiServer) Streams(w http.ResponseWriter, r *http.Request) {
-	response := StreamsResponse{Count: streamList.Len()}
+	var response StreamsResponse
+
+	fields := r.URL.Query().Get("fields")
+
+	if fields == "" || strings.Contains(fields, "count") {
+		count := streamList.Len()
+		response.Count = &count
+	}
+
+	if fields == "" || strings.Contains(fields, "streams") {
+		streams := streamList.Streams()
+		response.Streams = &streams
+	}
 
 	buf, err := json.Marshal(response)
 	if err != nil {

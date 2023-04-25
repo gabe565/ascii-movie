@@ -29,7 +29,7 @@ func run(cmd *cobra.Command, args []string) error {
 		panic(fmt.Errorf("invalid URL from context: %v", u))
 	}
 
-	u, err := u.Parse("/streams")
+	u, err := u.Parse("/streams?fields=count")
 	if err != nil {
 		return err
 	}
@@ -51,9 +51,12 @@ func run(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to parse API response: %w", err)
 	}
 
-	if _, err := fmt.Fprintln(cmd.OutOrStdout(), decoded.Count); err != nil {
-		return err
+	if decoded.Count == nil {
+		return fmt.Errorf("unexpected nil value: count")
 	}
 
+	if _, err := fmt.Fprintln(cmd.OutOrStdout(), *decoded.Count); err != nil {
+		return err
+	}
 	return nil
 }

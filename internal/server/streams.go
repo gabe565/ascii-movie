@@ -42,3 +42,13 @@ func (s *StreamList) Len() int {
 
 	return len(s.streams)
 }
+
+func (s *StreamList) Streams() []Stream {
+	result := make([]Stream, 0, s.Len())
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for _, stream := range s.streams {
+		result = append(result, stream)
+	}
+	return result
+}
