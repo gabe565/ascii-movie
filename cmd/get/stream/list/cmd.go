@@ -54,7 +54,7 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 3, ' ', 0)
-	if _, err := fmt.Fprintln(w, "IP\tCONNECTED\t"); err != nil {
+	if _, err := fmt.Fprintln(w, "IP\tCONNECTED\tDURATION\t"); err != nil {
 		return err
 	}
 
@@ -66,9 +66,10 @@ func run(cmd *cobra.Command, args []string) error {
 	for _, stream := range *decoded.Streams {
 		if _, err := fmt.Fprintf(
 			w,
-			"%s\t%s\t\n",
+			"%s\t%s\t%s\t\n",
 			stream.RemoteIp,
 			stream.Connected.Truncate(time.Second),
+			time.Since(stream.Connected).Truncate(time.Second),
 		); err != nil {
 			return err
 		}
