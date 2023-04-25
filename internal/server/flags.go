@@ -13,7 +13,11 @@ const (
 
 	SSHHostKeyPathFlag = SSHFlagPrefix + "-host-key"
 	SSHHostKeyDataFlag = SSHFlagPrefix + "-host-key-data"
+
+	ConcurrentStreamsFlag = "concurrent-streams"
 )
+
+var concurrentStreams uint
 
 func Flags(flags *flag.FlagSet) {
 	flags.Bool(SSHFlagPrefix+EnabledFlag, true, "Enables SSH listener")
@@ -35,4 +39,6 @@ func Flags(flags *flag.FlagSet) {
 	); err != nil {
 		panic(err)
 	}
+
+	flags.UintVar(&concurrentStreams, ConcurrentStreamsFlag, 10, "Number of concurrent streams allowed from an IP address. Set to 0 to disable.")
 }

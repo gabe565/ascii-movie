@@ -11,6 +11,7 @@ ascii-movie serve [movie] [flags]
 ```
       --api-address string          API listen address (default "127.0.0.1:1977")
       --api-enabled                 Enables API listener (default true)
+      --concurrent-streams uint     Number of concurrent streams allowed from an IP address. Set to 0 to disable. (default 10)
   -h, --help                        help for serve
       --speed float                 Playback speed multiplier. Must be greater than 0. (default 1)
       --ssh-address string          SSH listen address (default ":22")
