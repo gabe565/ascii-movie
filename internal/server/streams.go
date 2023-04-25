@@ -6,6 +6,7 @@ import (
 )
 
 type Stream struct {
+	Server    string    `json:"server"`
 	RemoteIp  string    `json:"remote_ip"`
 	Connected time.Time `json:"connected"`
 }
@@ -21,7 +22,7 @@ type StreamList struct {
 	mu      sync.Mutex
 }
 
-func (s *StreamList) Connect(remoteIp string) (ok bool) {
+func (s *StreamList) Connect(server, remoteIp string) (ok bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -30,6 +31,7 @@ func (s *StreamList) Connect(remoteIp string) (ok bool) {
 	}
 
 	s.streams[remoteIp] = Stream{
+		Server:    server,
 		RemoteIp:  remoteIp,
 		Connected: time.Now(),
 	}

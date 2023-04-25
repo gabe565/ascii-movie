@@ -117,7 +117,7 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 func (s *SSHServer) TrackStream(handler ssh.Handler) ssh.Handler {
 	return func(session ssh.Session) {
 		remoteIP := RemoteIp(session.RemoteAddr().String())
-		if ok := streamList.Connect(remoteIP); !ok {
+		if ok := streamList.Connect("ssh", remoteIP); !ok {
 			logger := s.Log.WithFields(log.Fields{
 				"remote_ip": remoteIP,
 				"user":      session.User(),
