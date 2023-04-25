@@ -6,13 +6,12 @@ import (
 	"errors"
 	"net/http"
 	_ "net/http/pprof"
-	"sync/atomic"
 
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 )
 
-var streamCount atomic.Int32
+var streamList = NewStreamList()
 
 type ApiServer struct {
 	Server
@@ -77,11 +76,11 @@ func (s *ApiServer) Health(w http.ResponseWriter, r *http.Request) {
 }
 
 type StreamsResponse struct {
-	Count int32 `json:"count"`
+	Count int `json:"count"`
 }
 
 func (s *ApiServer) Streams(w http.ResponseWriter, r *http.Request) {
-	response := StreamsResponse{Count: streamCount.Load()}
+	response := StreamsResponse{Count: streamList.Len()}
 
 	buf, err := json.Marshal(response)
 	if err != nil {

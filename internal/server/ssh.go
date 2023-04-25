@@ -50,7 +50,7 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 		wish.WithAddress(s.Address),
 		wish.WithMiddleware(
 			bubbletea.Middleware(s.Handler(m)),
-			countStreamMiddleware,
+			s.TrackStream,
 		),
 	}
 
@@ -114,10 +114,19 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 	}
 }
 
-func countStreamMiddleware(handler ssh.Handler) ssh.Handler {
+func (s *SSHServer) TrackStream(handler ssh.Handler) ssh.Handler {
 	return func(session ssh.Session) {
-		streamCount.Add(1)
+		remoteIP := RemoteIp(session.RemoteAddr().String())
+		if ok := streamList.Connect(remoteIP); !ok {
+			logger := s.Log.WithFields(log.Fields{
+				"remote_ip": remoteIP,
+				"user":      session.User(),
+			})
+			logger.Info("Refused to serve concurrent streams")
+			_, _ = session.Write([]byte("409: Only one connection is allowed at a time\n"))
+			return
+		}
 		handler(session)
-		streamCount.Add(-1)
+		streamList.Disconnect(remoteIP)
 	}
 }
