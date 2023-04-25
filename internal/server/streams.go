@@ -1,9 +1,13 @@
 package server
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 type Stream struct {
-	RemoteIp string `json:"remote_ip"`
+	RemoteIp  string    `json:"remote_ip"`
+	Connected time.Time `json:"connected"`
 }
 
 func NewStreamList() StreamList {
@@ -25,7 +29,10 @@ func (s *StreamList) Connect(remoteIp string) (ok bool) {
 		return false
 	}
 
-	s.streams[remoteIp] = Stream{RemoteIp: remoteIp}
+	s.streams[remoteIp] = Stream{
+		RemoteIp:  remoteIp,
+		Connected: time.Now(),
+	}
 	return true
 }
 
