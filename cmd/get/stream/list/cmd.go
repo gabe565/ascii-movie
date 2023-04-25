@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sort"
 	"text/tabwriter"
 	"time"
 
@@ -63,7 +64,12 @@ func run(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("unexpected nil value: streams")
 	}
 
-	for _, stream := range *decoded.Streams {
+	streams := *decoded.Streams
+	sort.Slice(streams, func(i, j int) bool {
+		return streams[i].Connected.Compare(streams[j].Connected) < 0
+	})
+
+	for _, stream := range streams {
 		if _, err := fmt.Fprintf(
 			w,
 			"%s\t%s\t%s\t%s\t\n",
