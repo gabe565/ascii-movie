@@ -20,4 +20,5 @@ Fetches stream metrics from a running server.
 
 * [ascii-movie get](ascii-movie_get.md)	 - Fetches data from a running server.
 * [ascii-movie get stream count](ascii-movie_get_stream_count.md)	 - Fetches the number of connected clients
+* [ascii-movie get stream list](ascii-movie_get_stream_list.md)	 - Fetches a list of active streams
 

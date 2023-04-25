@@ -2,6 +2,7 @@ package stream
 
 import (
 	"github.com/gabe565/ascii-movie/cmd/get/stream/count"
+	"github.com/gabe565/ascii-movie/cmd/get/stream/list"
 	"github.com/spf13/cobra"
 )
 
@@ -13,6 +14,7 @@ func NewCommand() *cobra.Command {
 	}
 	cmd.AddCommand(
 		count.NewCommand(),
+		list.NewCommand(),
 	)
 	return cmd
 }
