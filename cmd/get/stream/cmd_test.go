@@ -1,4 +1,4 @@
-package count
+package stream
 
 import (
 	"context"
@@ -13,7 +13,41 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_preRun(t *testing.T) {
+	t.Run("without count", func(t *testing.T) {
+		cmd := NewCommand()
+		if err := preRun(cmd, []string{}); !assert.NoError(t, err) {
+			return
+		}
+		got, err := cmd.Flags().GetBool("count")
+		if !assert.NoError(t, err) {
+			return
+		}
+		assert.Equal(t, false, got)
+	})
+
+	t.Run("with count", func(t *testing.T) {
+		cmd := NewCommand()
+		if err := preRun(cmd, []string{"count"}); !assert.NoError(t, err) {
+			return
+		}
+		got, err := cmd.Flags().GetBool("count")
+		if !assert.NoError(t, err) {
+			return
+		}
+		assert.Equal(t, true, got)
+	})
+}
+
 func Test_run(t *testing.T) {
+	countCmd := func() *cobra.Command {
+		cmd := NewCommand()
+		if err := cmd.Flags().Set("count", "true"); !assert.NoError(t, err) {
+			return cmd
+		}
+		return cmd
+	}
+
 	type args struct {
 		cmd  *cobra.Command
 		args []string
@@ -25,9 +59,9 @@ func Test_run(t *testing.T) {
 		want500 bool
 		wantErr assert.ErrorAssertionFunc
 	}{
-		{"0", args{cmd: NewCommand()}, "0\n", false, assert.NoError},
-		{"1", args{cmd: NewCommand()}, "1\n", false, assert.NoError},
-		{"http error", args{cmd: NewCommand()}, "", true, assert.Error},
+		{"0", args{cmd: countCmd()}, "0\n", false, assert.NoError},
+		{"1", args{cmd: countCmd()}, "1\n", false, assert.NoError},
+		{"http error", args{cmd: countCmd()}, "", true, assert.Error},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
