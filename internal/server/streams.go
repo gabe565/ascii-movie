@@ -13,8 +13,8 @@ type Stream struct {
 
 func NewStreamList() StreamList {
 	return StreamList{
-		streams:    make(map[uint]Stream),
-		concurrent: make(map[string]uint),
+		streams:    make(map[uint]Stream, 64),
+		concurrent: make(map[string]uint, 64),
 	}
 }
 
