@@ -7,8 +7,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/server"
+	"github.com/muesli/termenv"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )
@@ -35,6 +37,8 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	if len(args) > 0 {
 		path = args[0]
 	}
+
+	lipgloss.SetColorProfile(termenv.ANSI256)
 
 	m, err := movie.FromFlags(cmd.Flags(), path)
 	if err != nil {

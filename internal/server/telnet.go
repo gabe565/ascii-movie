@@ -8,9 +8,7 @@ import (
 	"net"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/gabe565/ascii-movie/internal/movie"
-	"github.com/muesli/termenv"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 )
@@ -27,8 +25,6 @@ func NewTelnet(flags *flag.FlagSet) TelnetServer {
 
 func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 	s.Log.WithField("address", s.Address).Info("Starting Telnet server")
-
-	lipgloss.SetColorProfile(termenv.ANSI256)
 
 	listen, err := net.Listen("tcp", s.Address)
 	if err != nil {
