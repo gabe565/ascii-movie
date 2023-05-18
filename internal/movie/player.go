@@ -121,7 +121,6 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return p, chooseOption(playerOptions[p.selectedOption])
 		}
 	case quitMsg:
-		p.pause()
 		if p.log != nil {
 			p.log.Info("Disconnected early")
 		}
