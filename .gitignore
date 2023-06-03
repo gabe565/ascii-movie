@@ -3,6 +3,7 @@ vendor
 ascii-movie
 ascii-movie.mp4
 movies/*.gz
+id_ed25519*
 
 # local env files
 .env.local
