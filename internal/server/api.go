@@ -71,7 +71,7 @@ func (s *ApiServer) Health(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusServiceUnavailable)
 	}
-	if _, err := w.Write([]byte(buf)); err != nil {
+	if _, err := w.Write(buf); err != nil {
 		s.Log.WithError(err).Error("Failed to write API response")
 	}
 }
