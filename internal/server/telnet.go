@@ -70,8 +70,8 @@ func (s *TelnetServer) Handler(conn net.Conn, m *movie.Movie) {
 	remoteIP := RemoteIp(conn.RemoteAddr().String())
 	logger := s.Log.WithField("remote_ip", remoteIP)
 
-	id, concurrent := streamList.Connect("telnet", remoteIP)
-	defer streamList.Disconnect(id)
+	id, concurrent := serverInfo.StreamConnect("telnet", remoteIP)
+	defer serverInfo.StreamDisconnect(id)
 	if concurrentStreams != 0 && concurrent > concurrentStreams {
 		logger.Info("Refused to serve concurrent streams")
 		_, _ = conn.Write([]byte("409: Too many concurrent streams\n"))

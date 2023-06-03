@@ -9,8 +9,8 @@ ascii-movie get stream [flags]
 ### Options
 
 ```
-  -c, --count   Only output the number of active streams
-  -h, --help    help for stream
+  -c, --count string   Gets stream count (active, total)
+  -h, --help           help for stream
 ```
 
 ### Options inherited from parent commands

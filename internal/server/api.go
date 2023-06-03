@@ -12,7 +12,7 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-var streamList = NewStreamList()
+var serverInfo = NewInfo()
 
 type ApiServer struct {
 	Server
@@ -77,7 +77,8 @@ func (s *ApiServer) Health(w http.ResponseWriter, r *http.Request) {
 }
 
 type StreamsResponse struct {
-	Count   *int      `json:"count,omitempty"`
+	Active  *int      `json:"active,omitempty"`
+	Total   *uint32   `json:"total,omitempty"`
 	Streams *[]Stream `json:"streams,omitempty"`
 }
 
@@ -86,13 +87,18 @@ func (s *ApiServer) Streams(w http.ResponseWriter, r *http.Request) {
 
 	fields := r.URL.Query().Get("fields")
 
-	if fields == "" || strings.Contains(fields, "count") {
-		count := streamList.Len()
-		response.Count = &count
+	if fields == "" || strings.Contains(fields, "total") {
+		total := serverInfo.totalCount.Load()
+		response.Total = &total
+	}
+
+	if fields == "" || strings.Contains(fields, "active") {
+		count := serverInfo.NumActive()
+		response.Active = &count
 	}
 
 	if fields == "" || strings.Contains(fields, "streams") {
-		streams := streamList.Streams()
+		streams := serverInfo.GetStreams()
 		response.Streams = &streams
 	}
 

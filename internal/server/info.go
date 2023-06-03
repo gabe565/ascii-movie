@@ -2,6 +2,7 @@ package server
 
 import (
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -11,23 +12,26 @@ type Stream struct {
 	Connected time.Time `json:"connected"`
 }
 
-func NewStreamList() StreamList {
-	return StreamList{
+func NewInfo() Info {
+	return Info{
 		streams:    make(map[uint]Stream, 64),
 		concurrent: make(map[string]uint, 64),
 	}
 }
 
-type StreamList struct {
+type Info struct {
 	streams    map[uint]Stream
+	totalCount atomic.Uint32
 	concurrent map[string]uint
 	nextId     uint
 	mu         sync.Mutex
 }
 
-func (s *StreamList) Connect(server, remoteIp string) (id, concurrent uint) {
+func (s *Info) StreamConnect(server, remoteIp string) (id, concurrent uint) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
+	s.totalCount.Add(1)
 
 	defer func() {
 		s.nextId += 1
@@ -41,7 +45,7 @@ func (s *StreamList) Connect(server, remoteIp string) (id, concurrent uint) {
 	return s.nextId, s.concurrent[remoteIp]
 }
 
-func (s *StreamList) Disconnect(id uint) {
+func (s *Info) StreamDisconnect(id uint) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -57,15 +61,15 @@ func (s *StreamList) Disconnect(id uint) {
 	delete(s.streams, id)
 }
 
-func (s *StreamList) Len() int {
+func (s *Info) NumActive() int {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	return len(s.streams)
 }
 
-func (s *StreamList) Streams() []Stream {
-	result := make([]Stream, 0, s.Len())
+func (s *Info) GetStreams() []Stream {
+	result := make([]Stream, 0, s.NumActive())
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	for _, stream := range s.streams {

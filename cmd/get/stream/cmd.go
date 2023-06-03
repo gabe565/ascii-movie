@@ -26,13 +26,14 @@ func NewCommand() *cobra.Command {
 		RunE:    run,
 	}
 
-	cmd.Flags().BoolP("count", "c", false, "Only output the number of active streams")
+	cmd.Flags().StringP("count", "c", "", "Gets stream count (active, total)")
+
 	return cmd
 }
 
 func preRun(cmd *cobra.Command, args []string) error {
 	if len(args) != 0 && args[0] == "count" {
-		if err := cmd.Flags().Set("count", "true"); err != nil {
+		if err := cmd.Flags().Set("count", "active"); err != nil {
 			panic(err)
 		}
 	}
@@ -40,7 +41,7 @@ func preRun(cmd *cobra.Command, args []string) error {
 }
 
 func run(cmd *cobra.Command, args []string) error {
-	countFlag, err := cmd.Flags().GetBool("count")
+	countFlag, err := cmd.Flags().GetString("count")
 	if err != nil {
 		panic(err)
 	}
@@ -72,16 +73,26 @@ func run(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to parse API response: %w", err)
 	}
 
-	if countFlag {
-		// Print count
-		if decoded.Count == nil {
+	switch countFlag {
+	case "active":
+		// Print active count
+		if decoded.Active == nil {
 			return fmt.Errorf("unexpected nil value: count")
 		}
 
-		if _, err := fmt.Fprintln(cmd.OutOrStdout(), *decoded.Count); err != nil {
+		if _, err := fmt.Fprintln(cmd.OutOrStdout(), *decoded.Active); err != nil {
 			return err
 		}
-	} else {
+	case "total":
+		// Print total count
+		if decoded.Total == nil {
+			return fmt.Errorf("unexpected nil value: count")
+		}
+
+		if _, err := fmt.Fprintln(cmd.OutOrStdout(), *decoded.Total); err != nil {
+			return err
+		}
+	default:
 		// Print list
 		w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 0, 3, ' ', 0)
 		if _, err := fmt.Fprintln(w, "SERVER\tIP\tCONNECTED\tDURATION\t"); err != nil {

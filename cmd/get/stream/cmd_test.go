@@ -19,30 +19,30 @@ func Test_preRun(t *testing.T) {
 		if err := preRun(cmd, []string{}); !assert.NoError(t, err) {
 			return
 		}
-		got, err := cmd.Flags().GetBool("count")
+		got, err := cmd.Flags().GetString("count")
 		if !assert.NoError(t, err) {
 			return
 		}
-		assert.Equal(t, false, got)
+		assert.Equal(t, "", got)
 	})
 
-	t.Run("with count", func(t *testing.T) {
+	t.Run("with active count", func(t *testing.T) {
 		cmd := NewCommand()
 		if err := preRun(cmd, []string{"count"}); !assert.NoError(t, err) {
 			return
 		}
-		got, err := cmd.Flags().GetBool("count")
+		got, err := cmd.Flags().GetString("count")
 		if !assert.NoError(t, err) {
 			return
 		}
-		assert.Equal(t, true, got)
+		assert.Equal(t, "active", got)
 	})
 }
 
 func Test_run(t *testing.T) {
 	countCmd := func() *cobra.Command {
 		cmd := NewCommand()
-		if err := cmd.Flags().Set("count", "true"); !assert.NoError(t, err) {
+		if err := cmd.Flags().Set("count", "active"); !assert.NoError(t, err) {
 			return cmd
 		}
 		return cmd
@@ -70,7 +70,7 @@ func Test_run(t *testing.T) {
 					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}
-				_, _ = w.Write([]byte(`{"count":` + strings.TrimSuffix(tt.want, "\n") + `}`))
+				_, _ = w.Write([]byte(`{"active":` + strings.TrimSuffix(tt.want, "\n") + `}`))
 			}))
 			defer svr.Close()
 

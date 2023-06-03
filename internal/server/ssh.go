@@ -113,8 +113,8 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 func (s *SSHServer) TrackStream(handler ssh.Handler) ssh.Handler {
 	return func(session ssh.Session) {
 		remoteIP := RemoteIp(session.RemoteAddr().String())
-		id, concurrent := streamList.Connect("ssh", remoteIP)
-		defer streamList.Disconnect(id)
+		id, concurrent := serverInfo.StreamConnect("ssh", remoteIP)
+		defer serverInfo.StreamDisconnect(id)
 		if concurrentStreams != 0 && concurrent > concurrentStreams {
 			logger := s.Log.WithFields(log.Fields{
 				"remote_ip": remoteIP,
