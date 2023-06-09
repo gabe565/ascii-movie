@@ -1,6 +1,8 @@
 package server
 
 import (
+	"time"
+
 	flag "github.com/spf13/pflag"
 )
 
@@ -15,9 +17,13 @@ const (
 	SSHHostKeyDataFlag = SSHFlagPrefix + "-host-key-data"
 
 	ConcurrentStreamsFlag = "concurrent-streams"
+	TimeoutFlag           = "timeout"
 )
 
-var concurrentStreams uint
+var (
+	concurrentStreams uint
+	timeout           time.Duration
+)
 
 func Flags(flags *flag.FlagSet) {
 	flags.Bool(SSHFlagPrefix+EnabledFlag, true, "Enables SSH listener")
@@ -41,4 +47,5 @@ func Flags(flags *flag.FlagSet) {
 	}
 
 	flags.UintVar(&concurrentStreams, ConcurrentStreamsFlag, 10, "Number of concurrent streams allowed from an IP address. Set to 0 to disable.")
+	flags.DurationVar(&timeout, TimeoutFlag, time.Hour, "Maximum amount of time that a connection may stay active.")
 }

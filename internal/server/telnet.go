@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"net"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/movie"
@@ -94,6 +95,17 @@ func (s *TelnetServer) Handler(conn net.Conn, m *movie.Movie) {
 		tea.WithInput(inR),
 		tea.WithOutput(outW),
 	)
+
+	go func() {
+		if timeout != 0 {
+			timer := time.NewTimer(timeout)
+			select {
+			case <-timer.C:
+				program.Quit()
+			case <-ctx.Done():
+			}
+		}
+	}()
 
 	go func() {
 		<-ctx.Done()

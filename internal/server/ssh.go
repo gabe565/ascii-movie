@@ -4,12 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
 	"github.com/charmbracelet/wish/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/movie"
+	"github.com/muesli/termenv"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	gossh "golang.org/x/crypto/ssh"
@@ -45,7 +47,7 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 	sshOptions := []ssh.Option{
 		wish.WithAddress(s.Address),
 		wish.WithMiddleware(
-			bubbletea.Middleware(s.Handler(m)),
+			bubbletea.MiddlewareWithProgramHandler(s.Handler(m), termenv.ANSI256),
 			s.TrackStream,
 		),
 	}
@@ -98,15 +100,33 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 	return group.Wait()
 }
 
-func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
-	return func(session ssh.Session) (tea.Model, []tea.ProgramOption) {
+func (s *SSHServer) Handler(m *movie.Movie) bubbletea.ProgramHandler {
+	return func(session ssh.Session) *tea.Program {
 		remoteIP := RemoteIp(session.RemoteAddr().String())
 		logger := s.Log.WithFields(log.Fields{
 			"remote_ip": remoteIP,
 			"user":      session.User(),
 		})
+
 		player := movie.NewPlayer(m, logger)
-		return player, []tea.ProgramOption{}
+		program := tea.NewProgram(
+			player,
+			tea.WithInput(session),
+			tea.WithOutput(session),
+		)
+
+		go func() {
+			if timeout != 0 {
+				timer := time.NewTimer(timeout)
+				select {
+				case <-timer.C:
+					program.Quit()
+				case <-session.Context().Done():
+				}
+			}
+		}()
+
+		return program
 	}
 }
 

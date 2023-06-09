@@ -20,6 +20,7 @@ ascii-movie serve [movie] [flags]
       --ssh-host-key-data strings   SSH host key PEM data
       --telnet-address string       Telnet listen address (default ":23")
       --telnet-enabled              Enables Telnet listener (default true)
+      --timeout duration            Maximum amount of time that a connection may stay active. (default 1h0m0s)
 ```
 
 ### Options inherited from parent commands
