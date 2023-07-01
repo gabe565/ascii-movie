@@ -8,8 +8,8 @@
 The original Star Wars telnet server is currently down, so why not implement it in Go? This server will open a TCP server on `0.0.0.0:23` and an SSH server on `0.0.0.0:22` which stream the original Star Wars ASCII movie to command line clients.
 
 Run one of these commands in a terminal to see it in action:
-- **SSH:** `ssh gabe565.com`
-- **Telnet:** `telnet gabe565.com`
+- **SSH:** `ssh movie.gabe565.com`
+- **Telnet:** `telnet movie.gabe565.com`
 - **Docker:** `docker run --rm -it ghcr.io/gabe565/ascii-movie play`
 
 ## Demo
