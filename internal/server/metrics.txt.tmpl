@@ -1,0 +1,6 @@
+# HELP ascii_movie_active_connections Count of active connections
+# TYPE ascii_movie_active_connections gauge
+ascii_movie_active_connections {{ .ActiveCount }}
+# HELP ascii_movie_total_connections Total connections
+# TYPE ascii_movie_total_connections counter
+ascii_movie_total_connections {{ .TotalCount }}
