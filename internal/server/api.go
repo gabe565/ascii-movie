@@ -1,7 +1,6 @@
 package server
 
 import (
-	"bytes"
 	"context"
 	_ "embed"
 	"encoding/json"
@@ -9,8 +8,8 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"strings"
-	"text/template"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 )
@@ -32,7 +31,7 @@ func (s *ApiServer) Listen(ctx context.Context) error {
 
 	http.HandleFunc("/health", s.Health)
 	http.HandleFunc("/streams", s.Streams)
-	http.HandleFunc("/metrics", s.Metrics)
+	http.Handle("/metrics", promhttp.Handler())
 	server := http.Server{Addr: s.Address}
 	go func() {
 		<-ctx.Done()
@@ -115,44 +114,5 @@ func (s *ApiServer) Streams(w http.ResponseWriter, r *http.Request) {
 
 	if _, err := w.Write(buf); err != nil {
 		s.Log.WithError(err).Error("Failed to write API response")
-	}
-}
-
-//go:embed metrics.txt.tmpl
-var metricsTemplateSrc string
-
-var metricsTemplate *template.Template
-
-type MetricsData struct{}
-
-func (m MetricsData) ActiveCount() int {
-	return serverInfo.NumActive()
-}
-
-func (m MetricsData) TotalCount() uint32 {
-	return serverInfo.totalCount.Load()
-}
-
-func (s *ApiServer) Metrics(w http.ResponseWriter, r *http.Request) {
-	var err error
-
-	if metricsTemplate == nil {
-		metricsTemplate, err = template.New("").Parse(metricsTemplateSrc)
-		if err != nil {
-			s.Log.WithError(err).Error("Failed to parse metrics API template")
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-			return
-		}
-	}
-
-	var buf bytes.Buffer
-	if err := metricsTemplate.Execute(&buf, MetricsData{}); err != nil {
-		s.Log.WithError(err).Error("Failed to execute metrics API template")
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	if _, err := w.Write(buf.Bytes()); err != nil {
-		s.Log.WithError(err).Error("Failed to write metrics API response")
 	}
 }
