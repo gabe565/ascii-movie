@@ -22,14 +22,16 @@ func NewInfo() Info {
 
 		activeConnections: promauto.NewGauge(
 			prometheus.GaugeOpts{
-				Name: "ascii_movie_active_connections",
-				Help: "Count of active connections",
+				Namespace: "ascii_movie",
+				Name:      "active_connections",
+				Help:      "Count of active connections",
 			},
 		),
 		totalConnections: promauto.NewCounter(
 			prometheus.CounterOpts{
-				Name: "ascii_movie_total_connections",
-				Help: "Total connections",
+				Namespace: "ascii_movie",
+				Name:      "total_connections",
+				Help:      "Total connections",
 			},
 		),
 	}
