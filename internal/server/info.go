@@ -20,19 +20,21 @@ func NewInfo() Info {
 		streams:    make(map[uint]Stream, 64),
 		concurrent: make(map[string]uint, 64),
 
-		activeConnections: promauto.NewGauge(
+		activeConnections: promauto.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Namespace: "ascii_movie",
 				Name:      "active_connections",
 				Help:      "Count of active connections",
 			},
+			[]string{"server"},
 		),
-		totalConnections: promauto.NewCounter(
+		totalConnections: promauto.NewCounterVec(
 			prometheus.CounterOpts{
 				Namespace: "ascii_movie",
 				Name:      "total_connections",
 				Help:      "Total connections",
 			},
+			[]string{"server"},
 		),
 	}
 }
@@ -44,8 +46,8 @@ type Info struct {
 	nextId     uint
 	mu         sync.Mutex
 
-	activeConnections prometheus.Gauge
-	totalConnections  prometheus.Counter
+	activeConnections *prometheus.GaugeVec
+	totalConnections  *prometheus.CounterVec
 }
 
 func (s *Info) StreamConnect(server, remoteIp string) (id, concurrent uint) {
@@ -53,8 +55,8 @@ func (s *Info) StreamConnect(server, remoteIp string) (id, concurrent uint) {
 	defer s.mu.Unlock()
 
 	s.totalCount.Add(1)
-	s.activeConnections.Inc()
-	s.totalConnections.Inc()
+	s.activeConnections.With(prometheus.Labels{"server": server}).Inc()
+	s.totalConnections.With(prometheus.Labels{"server": server}).Inc()
 
 	defer func() {
 		s.nextId += 1
@@ -83,7 +85,7 @@ func (s *Info) StreamDisconnect(id uint) {
 	}
 	delete(s.streams, id)
 
-	s.activeConnections.Dec()
+	s.activeConnections.With(prometheus.Labels{"server": stream.Server}).Dec()
 }
 
 func (s *Info) NumActive() int {
