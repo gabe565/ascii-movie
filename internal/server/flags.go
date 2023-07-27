@@ -37,15 +37,6 @@ func Flags(flags *flag.FlagSet) {
 	flags.Bool(ApiFlagPrefix+EnabledFlag, true, "Enables API listener")
 	flags.String(ApiFlagPrefix+AddressFlag, "127.0.0.1:1977", "API listen address")
 
-	// Deprecated --address flag
-	flags.StringP("address", "a", ":23", "Telnet listen address")
-	if err := flags.MarkDeprecated(
-		"address",
-		"please use --telnet-address instead.",
-	); err != nil {
-		panic(err)
-	}
-
 	flags.UintVar(&concurrentStreams, ConcurrentStreamsFlag, 10, "Number of concurrent streams allowed from an IP address. Set to 0 to disable.")
 	flags.DurationVar(&timeout, TimeoutFlag, time.Hour, "Maximum amount of time that a connection may stay active.")
 }
