@@ -45,6 +45,24 @@ func NewInfo() Info {
 			},
 			[]string{"server"},
 		),
+		connectionDuration: promauto.NewHistogramVec(prometheus.HistogramOpts{
+			Namespace: "ascii_movie",
+			Name:      "connection_duration_seconds",
+			Help:      "Connection duration in seconds",
+			Buckets: []float64{
+				100 * time.Millisecond.Seconds(),
+				1 * time.Second.Seconds(),
+				10 * time.Second.Seconds(),
+				30 * time.Second.Seconds(),
+				1 * time.Minute.Seconds(),
+				3 * time.Minute.Seconds(),
+				6 * time.Minute.Seconds(),
+				9 * time.Minute.Seconds(),
+				12 * time.Minute.Seconds(),
+				15 * time.Minute.Seconds(),
+				18 * time.Minute.Seconds(),
+			},
+		}, []string{"server"}),
 	}
 }
 
@@ -58,6 +76,7 @@ type Info struct {
 	activeConnections      *prometheus.GaugeVec
 	totalConnections       *prometheus.CounterVec
 	rateLimitedConnections *prometheus.CounterVec
+	connectionDuration     *prometheus.HistogramVec
 }
 
 var ErrRateLimited = errors.New("rate limited")
@@ -95,6 +114,9 @@ func (s *Info) StreamDisconnect(id uint) {
 	if !ok {
 		return
 	}
+
+	s.connectionDuration.With(prometheus.Labels{"server": stream.Server}).
+		Observe(time.Since(stream.Connected).Seconds())
 
 	s.concurrent[stream.RemoteIp] -= 1
 	if s.concurrent[stream.RemoteIp] == 0 {
