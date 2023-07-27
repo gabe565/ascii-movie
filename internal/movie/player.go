@@ -124,6 +124,12 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if p.log != nil {
 			p.log.Info("Disconnected early")
 		}
+		if p.playCancel != nil {
+			p.playCancel()
+		}
+		if p.timeoutCancel != nil {
+			p.timeoutCancel()
+		}
 		return p, tea.Quit
 	case PlayerOption:
 		p.optionViewStale = true
