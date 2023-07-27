@@ -133,17 +133,17 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.ProgramHandler {
 func (s *SSHServer) TrackStream(handler ssh.Handler) ssh.Handler {
 	return func(session ssh.Session) {
 		remoteIP := RemoteIp(session.RemoteAddr().String())
-		id, concurrent := serverInfo.StreamConnect("ssh", remoteIP)
-		defer serverInfo.StreamDisconnect(id)
-		if concurrentStreams != 0 && concurrent > concurrentStreams {
+		id, err := serverInfo.StreamConnect("ssh", remoteIP)
+		if err != nil {
 			logger := s.Log.WithFields(log.Fields{
 				"remote_ip": remoteIP,
 				"user":      session.User(),
 			})
-			logger.Info("Refused to serve concurrent streams")
-			_, _ = session.Write([]byte("409: Too many concurrent streams\n"))
+			logger.Error(err)
+			_, _ = session.Write([]byte(ErrorText(err) + "\n"))
 			return
 		}
+		defer serverInfo.StreamDisconnect(id)
 		handler(session)
 	}
 }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -50,9 +51,15 @@ type Info struct {
 	totalConnections  *prometheus.CounterVec
 }
 
-func (s *Info) StreamConnect(server, remoteIp string) (id, concurrent uint) {
+var ErrRateLimited = errors.New("rate limited")
+
+func (s *Info) StreamConnect(server, remoteIp string) (uint, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
+	if concurrentStreams != 0 && s.concurrent[remoteIp]+1 > concurrentStreams {
+		return 0, ErrRateLimited
+	}
 
 	s.totalCount.Add(1)
 	s.activeConnections.With(prometheus.Labels{"server": server}).Inc()
@@ -67,7 +74,7 @@ func (s *Info) StreamConnect(server, remoteIp string) (id, concurrent uint) {
 		Connected: time.Now(),
 	}
 	s.concurrent[remoteIp] += 1
-	return s.nextId, s.concurrent[remoteIp]
+	return s.nextId, nil
 }
 
 func (s *Info) StreamDisconnect(id uint) {
@@ -103,4 +110,11 @@ func (s *Info) GetStreams() []Stream {
 		result = append(result, stream)
 	}
 	return result
+}
+
+func ErrorText(err error) string {
+	if errors.Is(err, ErrRateLimited) {
+		return "409: Too many concurrent streams"
+	}
+	return err.Error()
 }
