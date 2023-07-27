@@ -85,14 +85,16 @@ func (s *Info) StreamConnect(server, remoteIp string) (uint, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	prometheusLabels := prometheus.Labels{"server": server}
+
 	if concurrentStreams != 0 && s.concurrent[remoteIp]+1 > concurrentStreams {
-		s.rateLimitedConnections.With(prometheus.Labels{"server": server}).Inc()
+		s.rateLimitedConnections.With(prometheusLabels).Inc()
 		return 0, ErrRateLimited
 	}
 
 	s.totalCount.Add(1)
-	s.activeConnections.With(prometheus.Labels{"server": server}).Inc()
-	s.totalConnections.With(prometheus.Labels{"server": server}).Inc()
+	s.activeConnections.With(prometheusLabels).Inc()
+	s.totalConnections.With(prometheusLabels).Inc()
 
 	defer func() {
 		s.nextId += 1
@@ -115,7 +117,9 @@ func (s *Info) StreamDisconnect(id uint) {
 		return
 	}
 
-	s.connectionDuration.With(prometheus.Labels{"server": stream.Server}).
+	prometheusLabels := prometheus.Labels{"server": stream.Server}
+
+	s.connectionDuration.With(prometheusLabels).
 		Observe(time.Since(stream.Connected).Seconds())
 
 	s.concurrent[stream.RemoteIp] -= 1
@@ -124,7 +128,7 @@ func (s *Info) StreamDisconnect(id uint) {
 	}
 	delete(s.streams, id)
 
-	s.activeConnections.With(prometheus.Labels{"server": stream.Server}).Dec()
+	s.activeConnections.With(prometheusLabels).Dec()
 }
 
 func (s *Info) NumActive() int {
