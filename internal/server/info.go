@@ -37,6 +37,14 @@ func NewInfo() Info {
 			},
 			[]string{"server"},
 		),
+		rateLimitedConnections: promauto.NewCounterVec(
+			prometheus.CounterOpts{
+				Namespace: "ascii_movie",
+				Name:      "rate_limited_connections",
+				Help:      "Total number of rate limited connections",
+			},
+			[]string{"server"},
+		),
 	}
 }
 
@@ -47,8 +55,9 @@ type Info struct {
 	nextId     uint
 	mu         sync.Mutex
 
-	activeConnections *prometheus.GaugeVec
-	totalConnections  *prometheus.CounterVec
+	activeConnections      *prometheus.GaugeVec
+	totalConnections       *prometheus.CounterVec
+	rateLimitedConnections *prometheus.CounterVec
 }
 
 var ErrRateLimited = errors.New("rate limited")
@@ -58,6 +67,7 @@ func (s *Info) StreamConnect(server, remoteIp string) (uint, error) {
 	defer s.mu.Unlock()
 
 	if concurrentStreams != 0 && s.concurrent[remoteIp]+1 > concurrentStreams {
+		s.rateLimitedConnections.With(prometheus.Labels{"server": server}).Inc()
 		return 0, ErrRateLimited
 	}
 
