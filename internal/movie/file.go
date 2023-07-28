@@ -62,7 +62,7 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 	var currentPosition time.Duration
 	for i, f := range m.Frames {
 		f.Data = strings.TrimSuffix(f.Data, "\n")
-		f.Progress += bar.Generate(currentPosition+f.Duration/2, totalDuration, m.Width+2)
+		f.Progress = bar.Generate(currentPosition+f.Duration/2, totalDuration, m.Width+2)
 		m.Frames[i] = f
 		if frameCap < len(f.Data) {
 			frameCap = len(f.Data)
