@@ -16,6 +16,7 @@ import (
 func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 	m.Filename = filepath.Base(path)
 
+	frames := make([]Frame, 0, 2000)
 	var f Frame
 	var buf bytes.Buffer
 	scanner := bufio.NewScanner(src)
@@ -29,7 +30,7 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 			if frameNum != 0 {
 				f.Data = buf.String()
 				buf.Reset()
-				m.Frames = append(m.Frames, f)
+				frames = append(frames, f)
 			}
 
 			f = Frame{}
@@ -48,10 +49,13 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 			buf.WriteString(scanner.Text() + "\n")
 		}
 	}
-	m.Frames = append(m.Frames, f)
+	frames = append(frames, f)
 	if err := scanner.Err(); err != nil {
 		return err
 	}
+
+	m.Frames = make([]Frame, len(frames))
+	copy(m.Frames, frames)
 
 	// Compute the total duration
 	var frameCap int
