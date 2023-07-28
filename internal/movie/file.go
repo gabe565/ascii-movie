@@ -28,7 +28,7 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 		if frameHeadRe.Match(scanner.Bytes()) {
 			frameNum += 1
 			if frameNum != 0 {
-				f.Data = buf.String()
+				f.Data = strings.TrimSuffix(buf.String(), "\n")
 				buf.Reset()
 				frames = append(frames, f)
 			}
@@ -65,7 +65,6 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 	// Build the rest of every frame and write to disk
 	var currentPosition time.Duration
 	for i, f := range m.Frames {
-		f.Data = strings.TrimSuffix(f.Data, "\n")
 		f.Progress = bar.Generate(currentPosition+f.Duration/2, totalDuration, m.Width+2)
 		m.Frames[i] = f
 		if frameCap < len(f.Data) {
