@@ -31,6 +31,7 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	var err error
 
 	log.Info("Loading movie...")
+	start := time.Now()
 
 	movie := NewMovie()
 
@@ -84,7 +85,10 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 		return movie, err
 	}
 
-	log.WithField("duration", movie.Duration().Round(time.Second)).Info("Movie loaded")
+	log.WithFields(log.Fields{
+		"duration": movie.Duration().Round(time.Second),
+		"took":     time.Since(start).Round(time.Microsecond),
+	}).Info("Movie loaded")
 
 	return movie, nil
 }
