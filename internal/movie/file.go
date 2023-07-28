@@ -2,6 +2,7 @@ package movie
 
 import (
 	"bufio"
+	"bytes"
 	"io"
 	"path/filepath"
 	"regexp"
@@ -16,6 +17,7 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 	m.Filename = filepath.Base(path)
 
 	var f Frame
+	var buf bytes.Buffer
 	scanner := bufio.NewScanner(src)
 
 	// Build part of every frame, excluding progress bar and bottom padding
@@ -25,6 +27,8 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 		if frameHeadRe.Match(scanner.Bytes()) {
 			frameNum += 1
 			if frameNum != 0 {
+				f.Data = buf.String()
+				buf.Reset()
 				m.Frames = append(m.Frames, f)
 			}
 
@@ -41,7 +45,7 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 			if len(scanner.Bytes()) > m.Width {
 				m.Width = len(scanner.Bytes())
 			}
-			f.Data += scanner.Text() + "\n"
+			buf.WriteString(scanner.Text() + "\n")
 		}
 	}
 	m.Frames = append(m.Frames, f)
