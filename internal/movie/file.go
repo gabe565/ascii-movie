@@ -24,13 +24,18 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 	// Build part of every frame, excluding progress bar and bottom padding
 	frameNum := -1
 	frameHeadRe := regexp.MustCompile(`^\d+$`)
-	for scanner.Scan() {
-		if frameHeadRe.Match(scanner.Bytes()) {
+	for {
+		ok := scanner.Scan()
+
+		if frameHeadRe.Match(scanner.Bytes()) || !ok {
 			frameNum += 1
 			if frameNum != 0 {
 				f.Data = strings.TrimSuffix(buf.String(), "\n")
 				buf.Reset()
 				frames = append(frames, f)
+			}
+			if !ok {
+				break
 			}
 
 			f = Frame{}
@@ -49,7 +54,6 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 			buf.WriteString(scanner.Text() + "\n")
 		}
 	}
-	frames = append(frames, f)
 	if err := scanner.Err(); err != nil {
 		return err
 	}
