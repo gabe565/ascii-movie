@@ -47,6 +47,13 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	}
 	if src, err = movies.Movies.Open(embeddedPath); err == nil {
 		log.WithField("name", embeddedPath).Debug("Using embedded movie")
+
+		if strings.HasSuffix(embeddedPath, ".gz") {
+			src, err = gzip.NewReader(src)
+			if err != nil {
+				return movie, err
+			}
+		}
 	} else {
 		if errors.Is(err, os.ErrNotExist) {
 			// Fallback to loading file
@@ -61,6 +68,13 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 			defer func(f *os.File) {
 				_ = f.Close()
 			}(f)
+
+			if strings.HasSuffix(path, ".gz") {
+				src, err = gzip.NewReader(src)
+				if err != nil {
+					return movie, err
+				}
+			}
 		} else {
 			return movie, err
 		}
@@ -72,13 +86,6 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	}
 	if speed <= 0 {
 		return movie, fmt.Errorf("%w: %f", ErrInvalidSpeed, speed)
-	}
-
-	if strings.HasSuffix(path, ".gz") {
-		src, err = gzip.NewReader(src)
-		if err != nil {
-			return movie, err
-		}
 	}
 
 	if err := movie.LoadFile(path, src, speed); err != nil {
