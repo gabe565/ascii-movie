@@ -94,7 +94,11 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 		<-ctx.Done()
 		s.Log.Info("Stopping SSH server")
 		defer s.Log.Info("Stopped SSH server")
-		return server.Close()
+
+		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer shutdownCancel()
+
+		return server.Shutdown(shutdownCtx)
 	})
 
 	return group.Wait()

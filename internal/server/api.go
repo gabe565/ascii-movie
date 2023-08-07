@@ -8,10 +8,11 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"strings"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
+	"golang.org/x/sync/errgroup"
 )
 
 var serverInfo = NewInfo()
@@ -33,19 +34,28 @@ func (s *ApiServer) Listen(ctx context.Context) error {
 	http.HandleFunc("/streams", s.Streams)
 	http.Handle("/metrics", promhttp.Handler())
 	server := http.Server{Addr: s.Address}
-	go func() {
+
+	var group errgroup.Group
+
+	group.Go(func() error {
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			return err
+		}
+		return nil
+	})
+
+	group.Go(func() error {
 		<-ctx.Done()
 		s.Log.Info("Stopping API server")
 		defer s.Log.Info("Stopped API server")
-		if err := server.Close(); err != nil {
-			log.WithError(err).Error("Failed to close server")
-		}
-	}()
 
-	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		return err
-	}
-	return nil
+		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer shutdownCancel()
+
+		return server.Shutdown(shutdownCtx)
+	})
+
+	return group.Wait()
 }
 
 type HealthResponse struct {

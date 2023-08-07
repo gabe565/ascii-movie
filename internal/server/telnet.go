@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"net"
+	"sync"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -35,6 +36,10 @@ func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 		_ = listen.Close()
 	}(listen)
 
+	var serveGroup sync.WaitGroup
+	serveCtx, serveCancel := context.WithCancel(context.Background())
+	defer serveCancel()
+
 	go func() {
 		telnetListeners += 1
 		defer func() {
@@ -53,17 +58,32 @@ func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 				}
 			}
 
-			go s.Handler(conn, m)
+			serveGroup.Add(1)
+			go func() {
+				defer serveGroup.Done()
+				s.Handler(serveCtx, conn, m)
+			}()
 		}
 	}()
 
 	<-ctx.Done()
 	s.Log.Info("Stopping Telnet server")
 	defer s.Log.Info("Stopped Telnet server")
+
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownCancel()
+
+	go func() {
+		serveCancel()
+		serveGroup.Wait()
+		shutdownCancel()
+	}()
+	<-shutdownCtx.Done()
+
 	return listen.Close()
 }
 
-func (s *TelnetServer) Handler(conn net.Conn, m *movie.Movie) {
+func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movie) {
 	defer func(conn net.Conn) {
 		_ = conn.Close()
 	}(conn)
@@ -86,7 +106,7 @@ func (s *TelnetServer) Handler(conn net.Conn, m *movie.Movie) {
 		_ = inR.Close()
 	}()
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	player := movie.NewPlayer(m, logger)
