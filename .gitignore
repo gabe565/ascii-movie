@@ -19,3 +19,4 @@ id_ed25519*
 *.sw?
 
 /completions/
+/manpages/
