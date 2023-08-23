@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/charmbracelet/bubbles v0.16.1
-	github.com/charmbracelet/bubbletea v0.24.3-0.20230724163731-91dd12007337
+	github.com/charmbracelet/bubbletea v0.24.3-0.20230822143355-b5e2519feadd
 	github.com/charmbracelet/lipgloss v0.8.0
 	github.com/charmbracelet/ssh v0.0.0-20230731150232-efe1ff2b8cca
 	github.com/charmbracelet/wish v1.1.1
