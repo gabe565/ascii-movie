@@ -21,15 +21,18 @@ RUN --mount=type=cache,target=/root/.cache \
     && CGO_ENABLED=0 go build -ldflags='-w -s' -trimpath -tags gzip
 
 
-FROM gcr.io/distroless/static-debian11:debug-nonroot as debug
+FROM alpine:3.18
+
+RUN apk add --no-cache tzdata
+
+ARG USERNAME=ascii-movie
+ARG UID=1000
+ARG GID=$UID
+RUN addgroup -g "$GID" "$USERNAME" \
+    && adduser -S -u "$UID" -G "$USERNAME" "$USERNAME"
+
 COPY --from=build /app/ascii-movie /bin
 ENV TERM=xterm-256color
-ENTRYPOINT ["ascii-movie"]
-CMD ["serve"]
-
-
-FROM gcr.io/distroless/static-debian11:nonroot as production
-COPY --from=build /app/ascii-movie /bin
-ENV TERM=xterm-256color
+USER $UID
 ENTRYPOINT ["ascii-movie"]
 CMD ["serve"]
