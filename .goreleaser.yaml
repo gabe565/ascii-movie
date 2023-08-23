@@ -1,0 +1,167 @@
+project_name: ascii-movie
+before:
+  hooks:
+    - go run ./internal/generate/completions
+    - go run ./internal/generate/manpages --version='{{ .Version }}' --date='{{ .CommitDate }}'
+builds:
+  - env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - "7"
+archives:
+  - format: tar.gz
+    # use zip for windows archives
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+      - README.md
+      - manpages/*
+      - completions/*
+      - systemd/{{ .ProjectName }}.service
+checksum:
+  name_template: "checksums.txt"
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs'
+      - '^test'
+brews:
+  - homepage: https://github.com/gabe565/ascii-movie
+    description: Star Wars SSH + Telnet server written in Go
+    license: GPL-3.0
+    repository:
+      owner: gabe565
+      name: homebrew-tap
+      token: '{{ .Env.HOMEBREW_TOKEN }}'
+    folder: Formula
+    install: |
+      bin.install "{{ .ProjectName }}"
+      man1.install "manpages/{{ .ProjectName }}.1.gz"
+      man1.install "manpages/{{ .ProjectName }}-get.1.gz"
+      man1.install "manpages/{{ .ProjectName }}-get-stream.1.gz"
+      man1.install "manpages/{{ .ProjectName }}-ls.1.gz"
+      man1.install "manpages/{{ .ProjectName }}-play.1.gz"
+      man1.install "manpages/{{ .ProjectName }}-serve.1.gz"
+      bash_completion.install "completions/{{ .ProjectName }}.bash" => "{{ .ProjectName }}"
+      zsh_completion.install "completions/{{ .ProjectName }}.zsh" => "_{{ .ProjectName }}"
+      fish_completion.install "completions/{{ .ProjectName }}.fish"
+    service: |
+      if OS.linux?
+        name "systemd/{{ .ProjectName }}.service"
+      else
+        run [opt_bin/"{{ .ProjectName }}"]
+        keep_alive true
+        error_log_path var/"log/{{ .ProjectName }}.log"
+      end
+dockers:
+  - &dockers
+    image_templates:
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-amd64
+    use: buildx
+    dockerfile: Dockerfile.goreleaser
+    build_flag_templates:
+      - "--platform=linux/amd64"
+  - <<: *dockers
+    image_templates:
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-armv7
+    goarch: arm
+    goarm: 7
+    build_flag_templates:
+      - "--platform=linux/arm/v7"
+  - <<: *dockers
+    image_templates:
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-arm64v8
+    goarch: arm64
+    build_flag_templates:
+      - "--platform=linux/arm64/v8"
+docker_manifests:
+  - &docker_manifests
+    name_template: ghcr.io/gabe565/{{ .ProjectName }}:latest
+    image_templates:
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-amd64
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-armv7
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-arm64v8
+  - <<: *docker_manifests
+    name_template: ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}
+  - <<: *docker_manifests
+    name_template: ghcr.io/gabe565/{{ .ProjectName }}:{{ .Major }}
+  - <<: *docker_manifests
+    name_template: ghcr.io/gabe565/{{ .ProjectName }}:{{ .Major }}.{{ .Minor }}
+nfpms:
+  - id: packages
+    vendor: Gabe Cook
+    homepage: https://github.com/gabe565/ascii-movie
+    description: Star Wars SSH + Telnet server written in Go
+    license: GPL-3.0
+    maintainer: Gabe Cook <gabe565@gmail.com>
+    formats:
+      - deb
+      - rpm
+    contents:
+      - src: ./manpages/
+        dst: /usr/share/man/man1
+        file_info:
+          mode: 0644
+      - src: ./completions/{{ .ProjectName }}.bash
+        dst: /usr/share/bash-completion/completions/{{ .ProjectName }}
+        file_info:
+          mode: 0644
+      - src: ./completions/{{ .ProjectName }}.fish
+        dst: /usr/share/fish/vendor_completions.d/{{ .ProjectName }}.fish
+        file_info:
+          mode: 0644
+      - src: ./completions/{{ .ProjectName }}.zsh
+        dst:  /usr/share/zsh/vendor-completions/_{{ .ProjectName }}
+        file_info:
+          mode: 0644
+      - src: ./systemd/{{ .ProjectName }}.service
+        dst: /usr/lib/systemd/system/{{ .ProjectName }}.service
+        type: config
+publishers:
+  - name: fury.io
+    ids:
+      - packages
+    dir: "{{ dir .ArtifactPath }}"
+    cmd: curl -sf -Fpackage=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/gabe565/
+aurs:
+  - name: "{{ .ProjectName }}-bin"
+    homepage: https://github.com/gabe565/ascii-movie
+    description: Star Wars SSH + Telnet server written in Go
+    maintainers:
+      - Gabe Cook <gabe565@gmail.com>
+    license: GPL-3.0
+    private_key: '{{ .Env.AUR_SSH_KEY }}'
+    git_url: ssh://aur@aur.archlinux.org/{{ .ProjectName }}-bin.git
+    skip_upload: auto
+    package: |-
+      # bin
+      install -Dm755 "./{{ .ProjectName }}" "${pkgdir}/usr/bin/{{ .ProjectName }}"
+      # license
+      install -Dm644 "./LICENSE" "${pkgdir}/usr/share/licenses/{{ .ProjectName }}/LICENSE"
+      # man page
+      install -Dm644 "./manpages/{{ .ProjectName }}.1.gz" "${pkgdir}/usr/share/man/man1/{{ .ProjectName }}.1.gz"
+      install -Dm644 "./manpages/{{ .ProjectName }}-get.1.gz" "${pkgdir}/usr/share/man/man1/{{ .ProjectName }}-get.1.gz"
+      install -Dm644 "./manpages/{{ .ProjectName }}-get-stream.1.gz" "${pkgdir}/usr/share/man/man1/{{ .ProjectName }}-get-stream.1.gz"
+      install -Dm644 "./manpages/{{ .ProjectName }}-ls.1.gz" "${pkgdir}/usr/share/man/man1/{{ .ProjectName }}-ls.1.gz"
+      install -Dm644 "./manpages/{{ .ProjectName }}-play.1.gz" "${pkgdir}/usr/share/man/man1/{{ .ProjectName }}-play.1.gz"
+      install -Dm644 "./manpages/{{ .ProjectName }}-serve.1.gz" "${pkgdir}/usr/share/man/man1/{{ .ProjectName }}-serve.1.gz"
+      # completion
+      install -Dm644 "./completions/{{ .ProjectName }}.bash" "${pkgdir}/usr/share/bash-completion/completions/{{ .ProjectName }}"
+      install -Dm644 "./completions/{{ .ProjectName }}.zsh" "${pkgdir}/usr/share/zsh/site-functions/_{{ .ProjectName }}"
+      install -Dm644 "./completions/{{ .ProjectName }}.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/{{ .ProjectName }}.fish"
+      # systemd unit
+      install -Dm644 "./systemd/{{ .ProjectName }}.service" "${pkgdir}/usr/lib/systemd/system/{{ .ProjectName }}.service"
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com

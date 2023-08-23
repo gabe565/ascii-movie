@@ -7,7 +7,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v3
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -23,8 +23,10 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v3
+      - name: Change Cache Key
+        run: echo '// ${{ github.job }}' >> go.sum
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
@@ -33,41 +35,16 @@ jobs:
         run: go test ./...
 
   build:
-    name: Build Image (${{ matrix.target }})
+    name: Build
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
-    strategy:
-      # Limit 1 to improve caching
-      max-parallel: 1
-      matrix:
-        include:
-          # Debug build
-          - target: debug
-            suffix: -debug
-          # Production build
-          - target: production
-            suffix: ""
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
         with:
-          flavor: |
-            latest=false
-            suffix=${{ matrix.suffix }}
-          images: |
-            ghcr.io/gabe565/ascii-telnet-go
-            ghcr.io/gabe565/ascii-movie
-          tags: |
-            type=raw,priority=1000,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=ref,event=branch
+          fetch-depth: 0
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Buildx
@@ -78,18 +55,51 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - name: Build and Push
-        id: docker_build
-        uses: docker/build-push-action@v4
+      - name: Set up Go
+        uses: actions/setup-go@v4
         with:
-          context: .
-          pull: true
-          push: ${{ github.secret_source == 'Actions' }}
-          platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
-          target: ${{ matrix.target }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            FONTAWESOME_NPM_AUTH_TOKEN=${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          go-version-file: go.mod
+      - name: Set build variables
+        id: vars
+        run: |
+          args='release --clean'
+          if [[ "$GITHUB_REF" != refs/tags/* ]]; then
+            args+=' --snapshot'
+          fi
+          echo "args=$args" >> $GITHUB_OUTPUT
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          version: latest
+          args: ${{ steps.vars.outputs.args }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
+          HOMEBREW_TOKEN: ${{ secrets.HOMEBREW_TOKEN }}
+          AUR_SSH_KEY: ${{ secrets.AUR_SSH_KEY }}
+      - name: Push beta image
+        if: github.ref_name == 'main'
+        run: |
+          export REPO="$(tr '[[:upper:]]' '[[:lower:]]' <<< "ghcr.io/$GITHUB_REPOSITORY")"
+          IMAGES=()
+          while read -r SOURCE DEST; do
+            docker tag "$SOURCE" "$DEST"
+            docker push "$DEST"
+            IMAGES+=("$DEST")
+          done \
+            < <(docker image ls --format=json | \
+              yq --input-format=json --no-doc '[.]' | \
+              yq --output-format=tsv '.[] |
+                select(.Repository == strenv(REPO)) |
+                [
+                  .Repository + ":" + .Tag,
+                  .Repository + ":beta-" + (.Tag | sub(".*-", ""))
+                ]
+              ')
+
+          docker manifest create "$REPO:beta" "${IMAGES[@]}"
+          docker manifest push "$REPO:beta"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist

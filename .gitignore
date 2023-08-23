@@ -18,5 +18,6 @@ id_ed25519*
 *.sln
 *.sw?
 
+/dist/
 /completions/
 /manpages/
