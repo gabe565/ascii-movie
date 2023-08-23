@@ -1,0 +1,11 @@
+[Unit]
+Description=Star Wars SSH + Telnet server written in Go
+Documentation=https://github.com/gabe565/ascii-movie
+After=network.target
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/ascii-movie
+
+[Install]
+WantedBy=multi-user.target
