@@ -25,6 +25,10 @@ Run one of these commands in a terminal to see it in action:
   </p>
 </details>
 
+## Installation
+
+See [Installation](https://github.com/gabe565/ascii-movie/wiki/Installation).
+
 ## Usage
 
 The app can play a movie directly on your terminal with the [`play`](docs/ascii-movie_play.md) subcommand, or it can host an SSH and Telnet stream server with the [`serve`](docs/ascii-movie_serve.md) subcommand.
@@ -38,30 +42,15 @@ An image is available at [`ghcr.io/gabe565/ascii-movie`](https://ghcr.io/gabe565
 The following command will run a container that plays the movie directly in your terminal.
 
 ```shell
-docker run --rm -it ghcr.io/gabe565/ascii-movie play
+sudo docker run --rm -it ghcr.io/gabe565/ascii-movie play
 ```
 
 #### Serve Movie over Telnet and SSH
 The following command will run a Telnet server on port `23` and an SSH server on port `2222`.
 ```shell
-docker run --rm -it -p 23:23 -p 2222:22 ghcr.io/gabe565/ascii-movie serve
+sudo docker run --port=22:22 --port=23:23 ghcr.io/gabe565/ascii-movie serve
 ```
 
-### Kubernetes
-A Helm chart is available for Kubernetes deployments.
-See [charts.gabe565.com](https://charts.gabe565.com/charts/ascii-movie/) or
-[gabe565/charts](https://github.com/gabe565/charts/tree/main/charts/ascii-movie) for details.
+### Other
 
-### Local Build
-```shell
-# Compile the app
-go install github.com/gabe565/ascii-movie@latest
-
-# Run the app in your terminal
-ascii-movie play
-
-# Or run it as a server
-ascii-movie serve
-
-# Now, run `ssh localhost` or `telnet localhost` to watch the movie!
-```
+See [Usage](https://github.com/gabe565/ascii-movie/wiki/Usage).
