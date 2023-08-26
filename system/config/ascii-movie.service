@@ -6,6 +6,11 @@ After=network.target
 [Service]
 Restart=always
 ExecStart=/usr/bin/ascii-movie serve
+WorkingDirectory=/var/lib/ascii-movie
+BindReadOnlyPaths=/usr/bin/ascii-movie
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+User=ascii-movie
+Group=ascii-movie
 
 [Install]
 WantedBy=multi-user.target

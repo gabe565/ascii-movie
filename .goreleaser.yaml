@@ -25,7 +25,7 @@ archives:
       - README.md
       - manpages/*
       - completions/*
-      - systemd/{{ .ProjectName }}.service
+      - system/config/*
 checksum:
   name_template: "checksums.txt"
 snapshot:
@@ -58,7 +58,7 @@ brews:
       fish_completion.install "completions/{{ .ProjectName }}.fish"
     service: |
       if OS.linux?
-        name "systemd/{{ .ProjectName }}.service"
+        name "system/config/{{ .ProjectName }}.service"
       else
         run [opt_bin/"{{ .ProjectName }}", "serve"]
         keep_alive true
@@ -125,9 +125,22 @@ nfpms:
         dst:  /usr/share/zsh/vendor-completions/_{{ .ProjectName }}
         file_info:
           mode: 0644
-      - src: ./systemd/{{ .ProjectName }}.service
+      - src: ./system/config/sysusers.conf
+        dst: /usr/lib/sysusers.d/{{ .ProjectName }}.conf
+      - src: ./system/config/tmpfiles.conf
+        dst: /usr/lib/tmpfiles.d/{{ .ProjectName }}.conf
+      - src: ./system/config/{{ .ProjectName }}.service
         dst: /usr/lib/systemd/system/{{ .ProjectName }}.service
         type: config
+        packager: rpm
+      - src: ./system/config/{{ .ProjectName }}.service
+        dst: /lib/systemd/system/{{ .ProjectName }}.service
+        type: config
+        packager: deb
+    overrides:
+      deb:
+        scripts:
+          postinstall: system/scripts/deb-postinstall.sh
 publishers:
   - name: fury.io
     ids:
@@ -160,8 +173,12 @@ aurs:
       install -Dm644 "./completions/{{ .ProjectName }}.bash" "${pkgdir}/usr/share/bash-completion/completions/{{ .ProjectName }}"
       install -Dm644 "./completions/{{ .ProjectName }}.zsh" "${pkgdir}/usr/share/zsh/site-functions/_{{ .ProjectName }}"
       install -Dm644 "./completions/{{ .ProjectName }}.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/{{ .ProjectName }}.fish"
+      # user
+      install -Dm644 "./system/config/sysusers.conf" "${pkgdir}/usr/lib/sysusers.d/{{ .ProjectName }}.conf"
+      # homedir
+      install -Dm644 "./system/config/tmpfiles.conf" "${pkgdir}/usr/lib/tmpfiles.d/{{ .ProjectName }}.conf"
       # systemd unit
-      install -Dm644 "./systemd/{{ .ProjectName }}.service" "${pkgdir}/usr/lib/systemd/system/{{ .ProjectName }}.service"
+      install -Dm644 "./system/config/{{ .ProjectName }}.service" "${pkgdir}/usr/lib/systemd/system/{{ .ProjectName }}.service"
     commit_author:
       name: goreleaserbot
       email: bot@goreleaser.com
