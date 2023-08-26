@@ -60,7 +60,7 @@ brews:
       if OS.linux?
         name "systemd/{{ .ProjectName }}.service"
       else
-        run [opt_bin/"{{ .ProjectName }}"]
+        run [opt_bin/"{{ .ProjectName }}", "serve"]
         keep_alive true
         error_log_path var/"log/{{ .ProjectName }}.log"
       end

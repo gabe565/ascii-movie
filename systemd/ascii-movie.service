@@ -5,7 +5,7 @@ After=network.target
 
 [Service]
 Restart=always
-ExecStart=/usr/bin/ascii-movie
+ExecStart=/usr/bin/ascii-movie serve
 
 [Install]
 WantedBy=multi-user.target
