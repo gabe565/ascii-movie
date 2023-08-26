@@ -56,14 +56,6 @@ brews:
       bash_completion.install "completions/{{ .ProjectName }}.bash" => "{{ .ProjectName }}"
       zsh_completion.install "completions/{{ .ProjectName }}.zsh" => "_{{ .ProjectName }}"
       fish_completion.install "completions/{{ .ProjectName }}.fish"
-    service: |
-      if OS.linux?
-        name "system/config/{{ .ProjectName }}.service"
-      else
-        run [opt_bin/"{{ .ProjectName }}", "serve"]
-        keep_alive true
-        error_log_path var/"log/{{ .ProjectName }}.log"
-      end
 dockers:
   - &dockers
     image_templates:
