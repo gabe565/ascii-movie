@@ -1,6 +1,7 @@
 project_name: ascii-movie
 before:
   hooks:
+    - go run ./internal/generate/gzip
     - go run ./internal/generate/completions
     - go run ./internal/generate/manpages --version='{{ .Version }}' --date='{{ .CommitDate }}'
 builds:
@@ -8,6 +9,8 @@ builds:
       - CGO_ENABLED=0
     flags:
       - -trimpath
+    tags:
+      - gzip
     goarch:
       - amd64
       - arm
