@@ -34,7 +34,6 @@ func Proxy(conn io.ReadWriter, proxy io.Writer) error {
 				if conn != nil && !wroteTelnetCommands {
 					log.Trace("Writing Telnet commands")
 					if _, err := conn.Write([]byte{
-						Iac, Do, Linemode,
 						Iac, Will, Echo,
 						Iac, Will, SuppressGoAhead,
 					}); err != nil {
