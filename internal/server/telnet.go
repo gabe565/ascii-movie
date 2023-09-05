@@ -119,6 +119,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	go func() {
 		if timeout != 0 {
 			timer := time.NewTimer(timeout)
+			defer timer.Stop()
 			select {
 			case <-timer.C:
 				cancel()
