@@ -124,7 +124,7 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.ProgramHandler {
 				timer := time.NewTimer(timeout)
 				select {
 				case <-timer.C:
-					program.Quit()
+					program.Send(movie.Quit())
 				case <-session.Context().Done():
 				}
 			}
