@@ -119,17 +119,18 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.ProgramHandler {
 			tea.WithOutput(session),
 		)
 
-		go func() {
-			if timeout != 0 {
+		if timeout != 0 {
+			go func() {
 				timer := time.NewTimer(timeout)
 				defer timer.Stop()
 				select {
 				case <-timer.C:
 					program.Send(movie.Quit())
 				case <-session.Context().Done():
+
 				}
-			}
-		}()
+			}()
+		}
 
 		return program
 	}

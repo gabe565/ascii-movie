@@ -116,8 +116,8 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 		tea.WithOutput(outW),
 	)
 
-	go func() {
-		if timeout != 0 {
+	if timeout != 0 {
+		go func() {
 			timer := time.NewTimer(timeout)
 			defer timer.Stop()
 			select {
@@ -125,8 +125,8 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 				cancel()
 			case <-ctx.Done():
 			}
-		}
-	}()
+		}()
+	}
 
 	go func() {
 		<-ctx.Done()
