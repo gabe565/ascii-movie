@@ -113,6 +113,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 		player,
 		tea.WithInput(inR),
 		tea.WithOutput(outW),
+		tea.WithFPS(30),
 	)
 
 	if timeout != 0 {

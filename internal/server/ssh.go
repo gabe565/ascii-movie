@@ -117,6 +117,7 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.ProgramHandler {
 			player,
 			tea.WithInput(session),
 			tea.WithOutput(session),
+			tea.WithFPS(30),
 		)
 
 		if timeout != 0 {
