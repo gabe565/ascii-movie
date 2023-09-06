@@ -180,7 +180,8 @@ func (p Player) View() string {
 	))
 }
 
-func (p Player) OptionsView() string {
+func (p *Player) OptionsView() string {
+	p.optionViewStale = false
 	options := make([]string, 0, len(playerOptions))
 	for i, option := range playerOptions {
 		if option == OptionPause && !p.isPlaying() {
