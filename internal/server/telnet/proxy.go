@@ -17,7 +17,7 @@ func Proxy(conn io.ReadWriter, proxy io.Writer) error {
 	// Gets Telnet to send option negotiation commands if explicit port was given.
 	// Also clears the line in case the client isn't Telnet
 	// https://ibm.com/docs/zos/2.5.0?topic=problems-telnet-commands-options
-	if _, err := conn.Write([]byte{Iac, Do, Linemode}); err != nil {
+	if _, err := WriteAndClear(conn, Iac, Do, Linemode); err != nil {
 		return err
 	}
 
@@ -28,15 +28,16 @@ func Proxy(conn io.ReadWriter, proxy io.Writer) error {
 		}
 
 		for _, c := range buf[:n] {
-			switch c {
+			op := Operator(c)
+			switch op {
 			case Iac:
 				// https://ibm.com/docs/zos/2.5.0?topic=problems-telnet-commands-options
 				if conn != nil && !wroteTelnetCommands {
 					log.Trace("Writing Telnet commands")
-					if _, err := conn.Write([]byte{
+					if _, err := Write(conn,
 						Iac, Will, Echo,
 						Iac, Will, SuppressGoAhead,
-					}); err != nil {
+					); err != nil {
 						log.WithError(err).Error("Failed to write Telnet commands")
 					}
 

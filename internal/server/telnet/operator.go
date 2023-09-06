@@ -1,7 +1,15 @@
 package telnet
 
+import (
+	"io"
+)
+
+//go:generate stringer -type Operator
+
+type Operator byte
+
 const (
-	Se = 0xF0 + iota
+	Se Operator = 0xF0 + iota
 	Nop
 	DataMark
 	Break
@@ -20,7 +28,7 @@ const (
 )
 
 const (
-	BinaryTransmission = iota
+	BinaryTransmission Operator = iota
 	Echo
 	Reconnection
 	SuppressGoAhead
@@ -58,3 +66,21 @@ const (
 	XDisplayLocation
 	ExtendedOptionsList
 )
+
+func Bytes(cmds ...Operator) []byte {
+	bytes := make([]byte, 0, len(cmds))
+	for _, cmd := range cmds {
+		bytes = append(bytes, byte(cmd))
+	}
+	return bytes
+}
+
+func Write(w io.Writer, cmds ...Operator) (int, error) {
+	return w.Write(Bytes(cmds...))
+}
+
+var ClearLine = []byte("\r\x1B[K")
+
+func WriteAndClear(w io.Writer, cmds ...Operator) (int, error) {
+	return w.Write(append(Bytes(cmds...), ClearLine...))
+}
