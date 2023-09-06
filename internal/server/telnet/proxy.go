@@ -1,17 +1,18 @@
 package telnet
 
 import (
-	"bytes"
+	"bufio"
+	"errors"
 	"io"
+	"net"
+	"os"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
 
-func Proxy(conn io.ReadWriter, proxy io.Writer) error {
-	buf := make([]byte, 64)
-	var proxyBuf bytes.Buffer
-	var skip uint8
-	var subNegotiation bool
+func Proxy(conn net.Conn, proxy io.Writer) error {
+	reader := bufio.NewReaderSize(conn, 64)
 	var wroteTelnetCommands bool
 
 	// Gets Telnet to send option negotiation commands if explicit port was given.
@@ -22,51 +23,55 @@ func Proxy(conn io.ReadWriter, proxy io.Writer) error {
 	}
 
 	for {
-		n, err := conn.Read(buf)
+		b, err := reader.ReadByte()
 		if err != nil {
 			return err
 		}
 
-		for _, c := range buf[:n] {
-			op := Operator(c)
-			switch op {
-			case Iac:
-				// https://ibm.com/docs/zos/2.5.0?topic=problems-telnet-commands-options
-				if conn != nil && !wroteTelnetCommands {
-					log.Trace("Writing Telnet commands")
-					if _, err := Write(conn,
-						Iac, Will, Echo,
-						Iac, Will, SuppressGoAhead,
-					); err != nil {
-						log.WithError(err).Error("Failed to write Telnet commands")
-					}
+		switch Operator(b) {
+		case BinaryTransmission:
+		case Iac:
+			// https://ibm.com/docs/zos/2.5.0?topic=problems-telnet-commands-options
+			if conn != nil && !wroteTelnetCommands {
+				log.Trace("Writing Telnet commands")
+				if _, err := Write(conn,
+					Iac, Will, Echo,
+					Iac, Will, SuppressGoAhead,
+				); err != nil {
+					log.WithError(err).Error("Failed to write Telnet commands")
+				}
 
-					wroteTelnetCommands = true
-				}
-				skip = 3
-			case Subnegotiation:
-				subNegotiation = true
-			case Se:
-				if skip == 2 {
-					skip = 0
-					subNegotiation = false
-				}
-			default:
-				if skip == 0 && !subNegotiation {
-					proxyBuf.WriteByte(c)
-				}
+				wroteTelnetCommands = true
 			}
 
-			if skip != 0 {
-				skip -= 1
-			}
-		}
-
-		if proxyBuf.Len() != 0 {
-			if _, err := proxyBuf.WriteTo(proxy); err != nil {
+			if b, err = reader.ReadByte(); err != nil {
 				return err
 			}
-			proxyBuf.Reset()
+
+			switch Operator(b) {
+			case Subnegotiation:
+				if err := conn.SetReadDeadline(time.Now().Add(250 * time.Millisecond)); err != nil {
+					return err
+				}
+				_, err := reader.ReadBytes(byte(Se))
+				if err != nil && !errors.Is(err, os.ErrDeadlineExceeded) {
+					return err
+				}
+				if err := conn.SetReadDeadline(time.Time{}); err != nil {
+					return err
+				}
+			case Will, Wont, Do, Dont:
+				if _, err := reader.Discard(1); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := reader.UnreadByte(); err != nil {
+				return err
+			}
+			if _, err := io.CopyN(proxy, reader, int64(reader.Buffered())); err != nil {
+				return err
+			}
 		}
 	}
 }
