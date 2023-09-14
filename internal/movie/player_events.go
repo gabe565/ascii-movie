@@ -2,6 +2,7 @@ package movie
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -34,9 +35,17 @@ type keymap struct {
 	home   key.Binding
 	end    key.Binding
 	choose key.Binding
+	jumps  []key.Binding
 }
 
 func newKeymap() keymap {
+	jumps := make([]key.Binding, 0, 10)
+	for i := 0; i < 10; i += 1 {
+		jumps = append(jumps, key.NewBinding(
+			key.WithKeys(strconv.Itoa(i)),
+		))
+	}
+
 	return keymap{
 		quit: key.NewBinding(
 			key.WithKeys("q", "ctrl+c", "ctrl+d", "esc"),
@@ -60,5 +69,6 @@ func newKeymap() keymap {
 			key.WithKeys(" ", "enter"),
 			key.WithHelp("enter", "choose"),
 		),
+		jumps: jumps,
 	}
 }

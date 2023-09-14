@@ -7,7 +7,9 @@ import (
 )
 
 func NewMovie() Movie {
-	return Movie{}
+	return Movie{
+		Sections: make([]int, 10),
+	}
 }
 
 type Movie struct {
@@ -15,6 +17,7 @@ type Movie struct {
 	Cap      int
 	Frames   []Frame
 	Width    int
+	Sections []int
 
 	screenStyle lipgloss.Style
 }

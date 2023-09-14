@@ -123,6 +123,15 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			p.selectedOption = 0
 		case key.Matches(msg, p.keymap.end):
 			p.selectedOption = len(playerOptions) - 1
+		case key.Matches(msg, p.keymap.jumps...):
+			for i, binding := range p.keymap.jumps {
+				if key.Matches(msg, binding) {
+					p.frame = p.movie.Sections[i]
+					if p.isPlaying() {
+						return p, p.play()
+					}
+				}
+			}
 		}
 	case quitMsg:
 		if p.log != nil {
