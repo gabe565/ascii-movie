@@ -31,6 +31,8 @@ type keymap struct {
 	quit   key.Binding
 	left   key.Binding
 	right  key.Binding
+	home   key.Binding
+	end    key.Binding
 	choose key.Binding
 }
 
@@ -47,6 +49,12 @@ func newKeymap() keymap {
 		right: key.NewBinding(
 			key.WithKeys("right", "l"),
 			key.WithHelp("→/l", "right"),
+		),
+		home: key.NewBinding(
+			key.WithKeys("home"),
+		),
+		end: key.NewBinding(
+			key.WithKeys("end"),
 		),
 		choose: key.NewBinding(
 			key.WithKeys(" ", "enter"),

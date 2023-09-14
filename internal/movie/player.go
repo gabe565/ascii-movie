@@ -119,6 +119,10 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case key.Matches(msg, p.keymap.choose):
 			return p, chooseOption(playerOptions[p.selectedOption])
+		case key.Matches(msg, p.keymap.home):
+			p.selectedOption = 0
+		case key.Matches(msg, p.keymap.end):
+			p.selectedOption = len(playerOptions) - 1
 		}
 	case quitMsg:
 		if p.log != nil {
