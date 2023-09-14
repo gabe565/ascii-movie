@@ -205,15 +205,13 @@ func (p *Player) OptionsView() string {
 }
 
 func (p *Player) pause() tea.Cmd {
-	p.playCancel()
+	p.clearTimeouts()
 	p.timeoutCtx, p.timeoutCancel = context.WithCancel(context.Background())
 	return tick(p.timeoutCtx, 15*time.Minute, Quit())
 }
 
 func (p *Player) play() tea.Cmd {
-	if p.timeoutCancel != nil {
-		p.timeoutCancel()
-	}
+	p.clearTimeouts()
 	p.playCtx, p.playCancel = context.WithCancel(context.Background())
 	return func() tea.Msg {
 		return frameTickMsg{}
@@ -222,4 +220,13 @@ func (p *Player) play() tea.Cmd {
 
 func (p Player) isPlaying() bool {
 	return p.playCtx.Err() == nil
+}
+
+func (p *Player) clearTimeouts() {
+	if p.playCancel != nil {
+		p.playCancel()
+	}
+	if p.timeoutCancel != nil {
+		p.timeoutCancel()
+	}
 }
