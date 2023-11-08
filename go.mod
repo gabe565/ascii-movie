@@ -1,6 +1,6 @@
 module github.com/gabe565/ascii-movie
 
-go 1.21
+go 1.21.4
 
 require (
 	github.com/charmbracelet/bubbles v0.16.1
