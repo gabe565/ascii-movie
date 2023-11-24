@@ -39,6 +39,15 @@ changelog:
     exclude:
       - '^docs'
       - '^test'
+  groups:
+    - title: Features
+      order: 0
+      regexp: "(feat)"
+    - title: Fixes
+      order: 1
+      regexp: "(fix|perf)"
+    - title: Others
+      order: 999
 brews:
   - homepage: https://github.com/gabe565/ascii-movie
     description: Star Wars SSH + Telnet server written in Go
