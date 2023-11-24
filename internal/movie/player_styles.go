@@ -27,12 +27,20 @@ var (
 			BorderForeground(optionsColor).
 			Background(optionsColor)
 
+	optionsStyleAnsi = optionsStyle.Copy().
+				Padding(0, 2).
+				Margin(1).
+				Border(lipgloss.InnerHalfBlockBorder(), false)
+
 	activeColor = lipgloss.AdaptiveColor{Light: "8", Dark: "12"}
 	activeStyle = optionsStyle.Copy().
 			Background(activeColor).
 			BorderForeground(activeColor).
 			Foreground(lipgloss.AdaptiveColor{Light: "15"}).
 			Bold(true)
+
+	activeStyleAnsi = activeStyle.Copy().
+			BorderStyle(lipgloss.DoubleBorder())
 
 	selectedColor = lipgloss.AdaptiveColor{Light: "12", Dark: "4"}
 	selectedStyle = optionsStyle.Copy().

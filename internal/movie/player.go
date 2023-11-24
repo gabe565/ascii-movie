@@ -9,16 +9,24 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/gabe565/ascii-movie/internal/log_hooks"
+	"github.com/muesli/termenv"
 	log "github.com/sirupsen/logrus"
 )
 
-func NewPlayer(m *Movie, logger *log.Entry) Player {
+func NewPlayer(m *Movie, logger *log.Entry, profile termenv.Profile) Player {
 	player := Player{
 		movie:           m,
+		profile:         profile,
 		speed:           1,
 		selectedOption:  3,
 		activeOption:    4,
+		optionsStyle:    &optionsStyle,
+		activeStyle:     &activeStyle,
 		optionViewStale: true,
+	}
+	if profile == termenv.Ascii {
+		player.optionsStyle = &optionsStyleAnsi
+		player.activeStyle = &activeStyleAnsi
 	}
 	player.play()
 	if logger != nil {
@@ -28,7 +36,7 @@ func NewPlayer(m *Movie, logger *log.Entry) Player {
 
 	player.keymap = newKeymap()
 	helpModel := help.New()
-	player.helpViewCache = helpModel.ShortHelpView([]key.Binding{
+	player.helpViewCache = RenderHelpWithProfile(profile, helpModel, []key.Binding{
 		player.keymap.quit,
 		player.keymap.left,
 		player.keymap.right,
@@ -43,6 +51,7 @@ type Player struct {
 	frame        int
 	log          *log.Entry
 	durationHook log_hooks.Duration
+	profile      termenv.Profile
 
 	speed      float64
 	playCtx    context.Context
@@ -50,6 +59,8 @@ type Player struct {
 
 	selectedOption  int
 	activeOption    int
+	optionsStyle    *lipgloss.Style
+	activeStyle     *lipgloss.Style
 	optionViewCache string
 	optionViewStale bool
 
@@ -184,10 +195,10 @@ func (p Player) View() string {
 		p.optionViewCache = p.OptionsView()
 	}
 
-	return appStyle.Render(lipgloss.JoinVertical(
+	return appStyle.RenderWithProfile(p.profile, lipgloss.JoinVertical(
 		lipgloss.Center,
-		p.movie.screenStyle.Render(p.movie.Frames[p.frame].Data),
-		progressStyle.Render(p.movie.Frames[p.frame].Progress),
+		p.movie.screenStyle.RenderWithProfile(p.profile, p.movie.Frames[p.frame].Data),
+		progressStyle.RenderWithProfile(p.profile, p.movie.Frames[p.frame].Progress),
 		p.optionViewCache,
 		p.helpViewCache,
 	))
@@ -195,6 +206,7 @@ func (p Player) View() string {
 
 func (p *Player) OptionsView() string {
 	p.optionViewStale = false
+
 	options := make([]string, 0, len(playerOptions))
 	for i, option := range playerOptions {
 		if option == OptionPause && !p.isPlaying() {
@@ -202,11 +214,11 @@ func (p *Player) OptionsView() string {
 		}
 		var rendered string
 		if i == p.selectedOption {
-			rendered = selectedStyle.Render(string(option))
+			rendered = selectedStyle.RenderWithProfile(p.profile, string(option))
 		} else if i == p.activeOption {
-			rendered = activeStyle.Render(string(option))
+			rendered = p.activeStyle.RenderWithProfile(p.profile, string(option))
 		} else {
-			rendered = optionsStyle.Render(string(option))
+			rendered = p.optionsStyle.RenderWithProfile(p.profile, string(option))
 		}
 		options = append(options, rendered)
 	}

@@ -11,6 +11,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/server/telnet"
+	"github.com/gabe565/ascii-movie/internal/util"
 	flag "github.com/spf13/pflag"
 )
 
@@ -108,7 +109,15 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	player := movie.NewPlayer(m, logger)
+	termCh := make(chan string)
+	go func() {
+		// Proxy input to program
+		_ = telnet.Proxy(conn, inW, termCh)
+		cancel()
+	}()
+	profile := util.Profile(<-termCh)
+
+	player := movie.NewPlayer(m, logger, profile)
 	program := tea.NewProgram(
 		player,
 		tea.WithInput(inR),
@@ -138,12 +147,6 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 		_, _ = io.Copy(conn, outR)
 		cancel()
 		_, _ = io.Copy(io.Discard, outR)
-	}()
-
-	go func() {
-		// Proxy input to program
-		_ = telnet.Proxy(conn, inW)
-		cancel()
 	}()
 
 	if _, err := program.Run(); err != nil && !errors.Is(err, tea.ErrProgramKilled) {
