@@ -99,7 +99,7 @@ jobs:
 
           docker manifest create "$REPO:beta" "${IMAGES[@]}"
           docker manifest push "$REPO:beta"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
