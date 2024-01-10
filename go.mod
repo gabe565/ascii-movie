@@ -6,7 +6,7 @@ replace github.com/charmbracelet/lipgloss => github.com/gabe565/lipgloss v0.0.0-
 
 require (
 	github.com/charmbracelet/bubbles v0.16.1
-	github.com/charmbracelet/bubbletea v0.24.3-0.20231107170225-a6f07b8ba643
+	github.com/charmbracelet/bubbletea v0.25.0
 	github.com/charmbracelet/lipgloss v0.9.1
 	github.com/charmbracelet/ssh v0.0.0-20230822194956-1a051f898e09
 	github.com/charmbracelet/wish v1.2.0
