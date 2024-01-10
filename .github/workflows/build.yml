@@ -10,7 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
           cache: false
@@ -28,7 +28,7 @@ jobs:
       - name: Change Cache Key
         run: echo '// ${{ github.job }}' >> go.sum
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
       - name: Test
@@ -56,7 +56,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
       - name: Set build variables
