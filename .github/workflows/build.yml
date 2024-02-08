@@ -93,8 +93,7 @@ jobs:
             IMAGES+=("$DEST")
           done \
             < <(docker image ls --format=json | \
-              yq --input-format=json --no-doc '[.]' | \
-              yq --output-format=tsv '.[] |
+              yq --input-format=json --output-format=tsv '
                 select(.Repository == strenv(REPO)) |
                 [
                   .Repository + ":" + .Tag,
