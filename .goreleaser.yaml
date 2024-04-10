@@ -55,7 +55,7 @@ brews:
     repository:
       owner: gabe565
       name: homebrew-tap
-    folder: Formula
+    directory: Formula
     install: |
       bin.install "{{ .ProjectName }}"
       man1.install "manpages/{{ .ProjectName }}.1.gz"
