@@ -60,6 +60,7 @@ func run(cmd *cobra.Command, args []string) (err error) {
 
 	if telnet := server.NewTelnet(cmd.Flags()); telnet.Enabled {
 		api.TelnetEnabled = true
+		server.LoadDeprecated(cmd.Flags())
 		group.Go(func() error {
 			return telnet.Listen(ctx, &m)
 		})

@@ -13,6 +13,8 @@ ascii-movie serve [movie] [flags]
       --api-enabled                 Enables API listener (default true)
       --concurrent-streams uint     Number of concurrent streams allowed from an IP address. Set to 0 to disable. (default 10)
   -h, --help                        help for serve
+      --idle-timeout duration       Idle connection timeout. (default 15m0s)
+      --max-timeout duration        Absolute connection timeout. (default 2h0m0s)
       --speed float                 Playback speed multiplier. Must be greater than 0. (default 1)
       --ssh-address string          SSH listen address (default ":22")
       --ssh-enabled                 Enables SSH listener (default true)
@@ -20,7 +22,6 @@ ascii-movie serve [movie] [flags]
       --ssh-host-key-data strings   SSH host key PEM data
       --telnet-address string       Telnet listen address (default ":23")
       --telnet-enabled              Enables Telnet listener (default true)
-      --timeout duration            Maximum amount of time that a connection may stay active. (default 1h0m0s)
 ```
 
 ### Options inherited from parent commands

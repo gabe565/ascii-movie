@@ -18,11 +18,14 @@ const (
 
 	ConcurrentStreamsFlag = "concurrent-streams"
 	TimeoutFlag           = "timeout"
+	IdleTimeoutFlag       = "idle-timeout"
+	MaxTimeoutFlag        = "max-timeout"
 )
 
 var (
 	concurrentStreams uint
-	timeout           time.Duration
+	idleTimeout       time.Duration
+	maxTimeout        time.Duration
 )
 
 func Flags(flags *flag.FlagSet) {
@@ -38,5 +41,21 @@ func Flags(flags *flag.FlagSet) {
 	flags.String(ApiFlagPrefix+AddressFlag, "127.0.0.1:1977", "API listen address")
 
 	flags.UintVar(&concurrentStreams, ConcurrentStreamsFlag, 10, "Number of concurrent streams allowed from an IP address. Set to 0 to disable.")
-	flags.DurationVar(&timeout, TimeoutFlag, time.Hour, "Maximum amount of time that a connection may stay active.")
+	flags.DurationVar(&idleTimeout, IdleTimeoutFlag, 15*time.Minute, "Idle connection timeout.")
+	flags.DurationVar(&maxTimeout, MaxTimeoutFlag, 2*time.Hour, "Absolute connection timeout.")
+
+	flags.Duration(TimeoutFlag, time.Hour, "Maximum amount of time that a connection may stay active.")
+	if err := flags.MarkDeprecated(TimeoutFlag, "please use --idle-timeout and --max-timeout instead."); err != nil {
+		panic(err)
+	}
+}
+
+func LoadDeprecated(flags *flag.FlagSet) {
+	if flags.Lookup(TimeoutFlag).Changed {
+		d, err := flags.GetDuration(TimeoutFlag)
+		if err == nil {
+			idleTimeout = d
+			maxTimeout = d
+		}
+	}
 }

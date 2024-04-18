@@ -66,9 +66,6 @@ type Player struct {
 
 	keymap        keymap
 	helpViewCache string
-
-	timeoutCtx    context.Context
-	timeoutCancel context.CancelFunc
 }
 
 func (p Player) Init() tea.Cmd {
@@ -148,12 +145,7 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if p.log != nil {
 			p.log.Info("Disconnected early")
 		}
-		if p.playCancel != nil {
-			p.playCancel()
-		}
-		if p.timeoutCancel != nil {
-			p.timeoutCancel()
-		}
+		p.clearTimeouts()
 		return p, tea.Quit
 	case PlayerOption:
 		p.optionViewStale = true
@@ -227,8 +219,7 @@ func (p *Player) OptionsView() string {
 
 func (p *Player) pause() tea.Cmd {
 	p.clearTimeouts()
-	p.timeoutCtx, p.timeoutCancel = context.WithCancel(context.Background())
-	return tick(p.timeoutCtx, 15*time.Minute, Quit())
+	return nil
 }
 
 func (p *Player) play() tea.Cmd {
@@ -246,8 +237,5 @@ func (p Player) isPlaying() bool {
 func (p *Player) clearTimeouts() {
 	if p.playCancel != nil {
 		p.playCancel()
-	}
-	if p.timeoutCancel != nil {
-		p.timeoutCancel()
 	}
 }

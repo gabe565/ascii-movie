@@ -10,6 +10,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/movie"
+	"github.com/gabe565/ascii-movie/internal/server/idleconn"
 	"github.com/gabe565/ascii-movie/internal/server/telnet"
 	"github.com/gabe565/ascii-movie/internal/util"
 	flag "github.com/spf13/pflag"
@@ -61,7 +62,9 @@ func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 			serveGroup.Add(1)
 			go func() {
 				defer serveGroup.Done()
-				s.Handler(serveCtx, conn, m)
+				ctx, cancel := context.WithCancel(serveCtx)
+				conn = idleconn.New(conn, idleTimeout, maxTimeout, cancel)
+				s.Handler(ctx, conn, m)
 			}()
 		}
 	}()
@@ -124,18 +127,6 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 		tea.WithOutput(outW),
 		tea.WithFPS(30),
 	)
-
-	if timeout != 0 {
-		go func() {
-			timer := time.NewTimer(timeout)
-			defer timer.Stop()
-			select {
-			case <-timer.C:
-				cancel()
-			case <-ctx.Done():
-			}
-		}()
-	}
 
 	go func() {
 		<-ctx.Done()

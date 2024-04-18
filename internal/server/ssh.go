@@ -47,6 +47,8 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 
 	sshOptions := []ssh.Option{
 		wish.WithAddress(s.Address),
+		wish.WithIdleTimeout(idleTimeout),
+		wish.WithMaxTimeout(maxTimeout),
 		wish.WithMiddleware(
 			bubbletea.MiddlewareWithProgramHandler(s.Handler(m), termenv.ANSI256),
 			s.TrackStream,
@@ -117,27 +119,12 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.ProgramHandler {
 		profile := util.Profile(pty.Term)
 
 		player := movie.NewPlayer(m, logger, profile)
-		program := tea.NewProgram(
+		return tea.NewProgram(
 			player,
 			tea.WithInput(session),
 			tea.WithOutput(session),
 			tea.WithFPS(30),
 		)
-
-		if timeout != 0 {
-			go func() {
-				timer := time.NewTimer(timeout)
-				defer timer.Stop()
-				select {
-				case <-timer.C:
-					program.Send(movie.Quit())
-				case <-session.Context().Done():
-
-				}
-			}()
-		}
-
-		return program
 	}
 }
 
