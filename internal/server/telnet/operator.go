@@ -35,7 +35,7 @@ const (
 	ApproxMessageSizeNegotiation
 	Status
 	TimingMark
-	RemoteControlledTransandEcho
+	RemoteControlledTransAndEcho
 	OutputLineWidth
 	OutputPageSize
 	OutputCarriageReturnDisposition
