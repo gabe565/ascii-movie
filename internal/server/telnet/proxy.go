@@ -2,6 +2,8 @@ package telnet
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/binary"
 	"errors"
 	"io"
 	"net"
@@ -11,8 +13,18 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func Proxy(conn net.Conn, proxy io.Writer, termCh chan string) error {
+type TermInfo struct {
+	Term string
+	WindowSize
+}
+
+type WindowSize struct {
+	Width, Height uint16
+}
+
+func Proxy(conn net.Conn, proxy io.Writer, termCh chan TermInfo) error {
 	reader := bufio.NewReaderSize(conn, 64)
+	var info TermInfo
 	var wroteTelnetCommands bool
 	var wroteTermType bool
 
@@ -22,15 +34,6 @@ func Proxy(conn net.Conn, proxy io.Writer, termCh chan string) error {
 	if _, err := WriteAndClear(conn, Iac, Do, Linemode); err != nil {
 		return err
 	}
-
-	go func() {
-		time.Sleep(250 * time.Millisecond)
-		if !wroteTermType {
-			wroteTermType = true
-			log.Trace("Did not get terminal type in time")
-			close(termCh)
-		}
-	}()
 
 	for {
 		b, err := reader.ReadByte()
@@ -48,6 +51,7 @@ func Proxy(conn net.Conn, proxy io.Writer, termCh chan string) error {
 					Iac, Will, Echo,
 					Iac, Will, SuppressGoAhead,
 					Iac, Do, TerminalType,
+					Iac, Do, NegotiateAboutWindowSize,
 				); err != nil {
 					log.WithError(err).Error("Failed to write Telnet commands")
 				}
@@ -77,10 +81,18 @@ func Proxy(conn net.Conn, proxy io.Writer, termCh chan string) error {
 					case TerminalType:
 						if len(command) > 5 && !wroteTermType {
 							wroteTermType = true
-							term := string(command[2 : len(command)-2])
+							info.Term = string(command[2 : len(command)-2])
 							log.Trace("Got terminal type")
-							termCh <- term
-							close(termCh)
+							termCh <- info
+						}
+					case NegotiateAboutWindowSize:
+						if len(command) > 5 {
+							log.Trace("Got window size")
+							r := bytes.NewReader(command[1 : len(command)-2])
+							if err := binary.Read(r, binary.BigEndian, &info.WindowSize); err != nil {
+								return err
+							}
+							termCh <- info
 						}
 					}
 				}

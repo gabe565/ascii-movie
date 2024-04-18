@@ -13,6 +13,7 @@ import (
 	"github.com/gabe565/ascii-movie/internal/server/idleconn"
 	"github.com/gabe565/ascii-movie/internal/server/telnet"
 	"github.com/gabe565/ascii-movie/internal/util"
+	"github.com/muesli/termenv"
 	flag "github.com/spf13/pflag"
 )
 
@@ -112,13 +113,20 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	termCh := make(chan string)
+	termCh := make(chan telnet.TermInfo)
 	go func() {
 		// Proxy input to program
 		_ = telnet.Proxy(conn, inW, termCh)
 		cancel()
 	}()
-	profile := util.Profile(<-termCh)
+
+	var profile termenv.Profile
+	select {
+	case info := <-termCh:
+		profile = util.Profile(info.Term)
+	case <-time.After(250 * time.Millisecond):
+		profile = termenv.ANSI256
+	}
 
 	player := movie.NewPlayer(m, logger, profile)
 	program := tea.NewProgram(
@@ -129,8 +137,20 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	)
 
 	go func() {
-		<-ctx.Done()
-		program.Send(movie.Quit())
+		for {
+			select {
+			case info := <-termCh:
+				if info.Width != 0 && info.Height != 0 {
+					program.Send(tea.WindowSizeMsg{
+						Width:  int(info.Width),
+						Height: int(info.Height),
+					})
+				}
+			case <-ctx.Done():
+				program.Send(movie.Quit())
+				return
+			}
+		}
 	}()
 
 	go func() {
