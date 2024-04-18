@@ -113,17 +113,20 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	termCh := make(chan telnet.TermInfo)
+	termCh := make(chan string)
+	defer close(termCh)
+	sizeCh := make(chan telnet.WindowSize, 1)
+	defer close(sizeCh)
 	go func() {
 		// Proxy input to program
-		_ = telnet.Proxy(conn, inW, termCh)
+		_ = telnet.Proxy(conn, inW, termCh, sizeCh)
 		cancel()
 	}()
 
 	var profile termenv.Profile
 	select {
-	case info := <-termCh:
-		profile = util.Profile(info.Term)
+	case term := <-termCh:
+		profile = util.Profile(term)
 	case <-time.After(250 * time.Millisecond):
 		profile = termenv.ANSI256
 	}
@@ -139,7 +142,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	go func() {
 		for {
 			select {
-			case info := <-termCh:
+			case info := <-sizeCh:
 				if info.Width != 0 && info.Height != 0 {
 					program.Send(tea.WindowSizeMsg{
 						Width:  int(info.Width),

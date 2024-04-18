@@ -10,18 +10,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type TermInfo struct {
-	Term string
-	WindowSize
-}
-
 type WindowSize struct {
 	Width, Height uint16
 }
 
-func Proxy(conn net.Conn, proxy io.Writer, termCh chan TermInfo) error {
+func Proxy(conn net.Conn, proxy io.Writer, termCh chan string, sizeCh chan WindowSize) error {
 	reader := bufio.NewReaderSize(conn, 64)
-	var info TermInfo
 	var wroteTelnetCommands bool
 	var wroteTermType bool
 
@@ -71,19 +65,19 @@ func Proxy(conn net.Conn, proxy io.Writer, termCh chan TermInfo) error {
 					switch Operator(command[0]) {
 					case TerminalType:
 						if len(command) > 5 && !wroteTermType {
-							wroteTermType = true
-							info.Term = string(command[2 : len(command)-2])
 							log.Trace("Got terminal type")
-							termCh <- info
+							termCh <- string(command[2 : len(command)-2])
+							wroteTermType = true
 						}
 					case NegotiateAboutWindowSize:
-						if len(command) > 5 {
+						if len(command) >= 5 {
 							log.Trace("Got window size")
 							r := bytes.NewReader(command[1 : len(command)-2])
-							if err := binary.Read(r, binary.BigEndian, &info.WindowSize); err != nil {
+							var size WindowSize
+							if err := binary.Read(r, binary.BigEndian, &size); err != nil {
 								return err
 							}
-							termCh <- info
+							sizeCh <- size
 						}
 					}
 				}
