@@ -60,6 +60,7 @@ func Proxy(conn net.Conn, proxy io.Writer, termCh chan string, sizeCh chan Windo
 				scanner.Split(ScanIacSe)
 				if scanner.Scan() {
 					command := scanner.Bytes()
+					command = bytes.ReplaceAll(command, []byte{byte(Iac), byte(Iac)}, []byte{byte(Iac)})
 
 					if len(command) != 0 {
 						switch Operator(command[0]) {
