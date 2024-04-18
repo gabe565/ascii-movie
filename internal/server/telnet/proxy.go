@@ -56,30 +56,34 @@ func Proxy(conn net.Conn, proxy io.Writer, termCh chan string, sizeCh chan Windo
 
 			switch Operator(b) {
 			case Subnegotiation:
-				command, err := reader.ReadBytes(byte(Se))
-				if err != nil {
-					return err
-				}
+				scanner := bufio.NewScanner(reader)
+				scanner.Split(ScanIacSe)
+				if scanner.Scan() {
+					command := scanner.Bytes()
 
-				if len(command) != 0 {
-					switch Operator(command[0]) {
-					case TerminalType:
-						if len(command) > 5 && !wroteTermType {
-							log.Trace("Got terminal type")
-							termCh <- string(command[2 : len(command)-2])
-							wroteTermType = true
-						}
-					case NegotiateAboutWindowSize:
-						if len(command) >= 5 {
-							log.Trace("Got window size")
-							r := bytes.NewReader(command[1 : len(command)-2])
-							var size WindowSize
-							if err := binary.Read(r, binary.BigEndian, &size); err != nil {
-								return err
+					if len(command) != 0 {
+						switch Operator(command[0]) {
+						case TerminalType:
+							if !wroteTermType && len(command) > 2 {
+								log.Trace("Got terminal type")
+								termCh <- string(command[2:])
+								wroteTermType = true
 							}
-							sizeCh <- size
+						case NegotiateAboutWindowSize:
+							if len(command) >= 5 {
+								log.Trace("Got window size")
+								r := bytes.NewReader(command[1:])
+								var size WindowSize
+								if err := binary.Read(r, binary.BigEndian, &size); err != nil {
+									return err
+								}
+								sizeCh <- size
+							}
 						}
 					}
+				}
+				if scanner.Err() != nil {
+					return scanner.Err()
 				}
 			case Will:
 				if b, err = reader.ReadByte(); err != nil {
@@ -107,4 +111,27 @@ func Proxy(conn net.Conn, proxy io.Writer, termCh chan string, sizeCh chan Windo
 			}
 		}
 	}
+}
+
+func ScanIacSe(data []byte, atEOF bool) (int, []byte, error) {
+	if atEOF && len(data) == 0 {
+		return 0, nil, nil
+	}
+	if i := bytes.Index(data, []byte{byte(Iac), byte(Se)}); i != 0 {
+		// We have a full newline-terminated line.
+		return i + 2, trimIac(data[:i]), nil
+	}
+	// If we're at EOF, we have a final, non-terminated line. Return it.
+	if atEOF {
+		return len(data), trimIac(data), nil
+	}
+	// Request more data.
+	return 0, nil, nil
+}
+
+func trimIac(data []byte) []byte {
+	if len(data) != 0 && data[len(data)-1] == byte(Iac) {
+		return data[:len(data)-1]
+	}
+	return data
 }
