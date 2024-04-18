@@ -4,11 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/binary"
-	"errors"
 	"io"
 	"net"
-	"os"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -65,14 +62,8 @@ func Proxy(conn net.Conn, proxy io.Writer, termCh chan TermInfo) error {
 
 			switch Operator(b) {
 			case Subnegotiation:
-				if err := conn.SetReadDeadline(time.Now().Add(250 * time.Millisecond)); err != nil {
-					return err
-				}
 				command, err := reader.ReadBytes(byte(Se))
-				if err != nil && !errors.Is(err, os.ErrDeadlineExceeded) {
-					return err
-				}
-				if err := conn.SetReadDeadline(time.Time{}); err != nil {
+				if err != nil {
 					return err
 				}
 
