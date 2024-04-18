@@ -91,8 +91,7 @@ func Proxy(conn net.Conn, proxy io.Writer, termCh chan string, sizeCh chan Windo
 					return err
 				}
 
-				switch Operator(b) {
-				case TerminalType:
+				if b == byte(TerminalType) {
 					log.Trace("Requesting terminal type")
 					if _, err := Write(conn, Iac, Subnegotiation, TerminalType, 1, Iac, Se); err != nil {
 						return err
