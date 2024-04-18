@@ -52,6 +52,7 @@ type Player struct {
 	log          *log.Entry
 	durationHook log_hooks.Duration
 	profile      termenv.Profile
+	small        bool
 
 	speed      float64
 	playCtx    context.Context
@@ -178,6 +179,8 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if !p.isPlaying() {
 			return p, p.play()
 		}
+	case tea.WindowSizeMsg:
+		p.small = msg.Width < p.movie.Width+10
 	}
 	return p, nil
 }
@@ -187,13 +190,18 @@ func (p Player) View() string {
 		p.optionViewCache = p.OptionsView()
 	}
 
-	return appStyle.RenderWithProfile(p.profile, lipgloss.JoinVertical(
+	content := lipgloss.JoinVertical(
 		lipgloss.Center,
 		p.movie.screenStyle.RenderWithProfile(p.profile, p.movie.Frames[p.frame].Data),
 		progressStyle.RenderWithProfile(p.profile, p.movie.Frames[p.frame].Progress),
 		p.optionViewCache,
 		p.helpViewCache,
-	))
+	)
+
+	if p.small {
+		return smallAppStyle.RenderWithProfile(p.profile, content)
+	}
+	return appStyle.RenderWithProfile(p.profile, content)
 }
 
 func (p *Player) OptionsView() string {

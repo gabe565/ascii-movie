@@ -6,6 +6,8 @@ var (
 	appStyle = lipgloss.NewStyle().
 			Margin(2, 4)
 
+	smallAppStyle = lipgloss.NewStyle()
+
 	borderColor = lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
 
 	screenStyle = lipgloss.NewStyle().
