@@ -40,7 +40,8 @@ outer:
 		case BinaryTransmission:
 		case Iac:
 			// https://ibm.com/docs/zos/2.5.0?topic=problems-telnet-commands-options
-			if conn != nil && !wroteTelnetCommands {
+			if !wroteTelnetCommands {
+				wroteTelnetCommands = true
 				log.Trace("Configuring Telnet")
 				if _, err := Write(conn,
 					Iac, Will, Echo,
@@ -50,8 +51,6 @@ outer:
 				); err != nil {
 					log.WithError(err).Error("Failed to write Telnet commands")
 				}
-
-				wroteTelnetCommands = true
 			}
 
 			if b, err = reader.ReadByte(); err != nil {
