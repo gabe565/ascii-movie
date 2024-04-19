@@ -117,7 +117,7 @@ func ScanIacSe(data []byte, atEOF bool) (int, []byte, error) {
 	if atEOF && len(data) == 0 {
 		return 0, nil, nil
 	}
-	if i := bytes.Index(data, []byte{byte(Iac), byte(Se)}); i != 0 {
+	if i := bytes.Index(data, []byte{byte(Iac), byte(Se)}); i > 0 {
 		// We have a full newline-terminated line.
 		return i + 2, trimIac(data[:i]), nil
 	}
