@@ -18,6 +18,7 @@ services:
       - "23:23"
       - "2222:22"
       - "127.0.0.1:1977:1977"
+    read_only: true
     depends_on:
       chown:
         condition: service_completed_successfully
