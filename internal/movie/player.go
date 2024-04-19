@@ -10,6 +10,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/gabe565/ascii-movie/internal/loghooks"
+	zone "github.com/lrstanley/bubblezone"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -21,6 +22,7 @@ func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) Player 
 	player := Player{
 		movie:           m,
 		renderer:        renderer,
+		zone:            zone.New(),
 		speed:           1,
 		selectedOption:  3,
 		activeOption:    4,
@@ -54,6 +56,7 @@ type Player struct {
 	log          *log.Entry
 	durationHook loghooks.Duration
 	renderer     *lipgloss.Renderer
+	zone         *zone.Manager
 
 	speed      float64
 	playCtx    context.Context
@@ -139,7 +142,7 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, p.keymap.jumps...):
 			for i, binding := range p.keymap.jumps {
 				if key.Matches(msg, binding) {
-					p.frame = p.movie.Sections[i]
+					p.frame = p.movie.Sections[i*len(p.movie.Sections)/10]
 					if p.isPlaying() {
 						return p, p.play()
 					}
@@ -154,36 +157,47 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return p, tea.Quit
 	case PlayerOption:
 		p.optionViewStale = true
-		switch msg {
-		case Option3xRewind:
-			p.activeOption = 0
-			p.speed = -15
-		case Option2xRewind:
-			p.activeOption = 1
-			p.speed = -3
-		case Option1xRewind:
-			p.activeOption = 2
-			p.speed = -1
-		case OptionPause, OptionPlay:
+		return p, p.doPlayerOption(msg)
+	case tea.MouseMsg:
+		if msg.Action == tea.MouseActionRelease || msg.Button != tea.MouseButtonLeft {
+			return p, nil
+		}
+
+		if p.zone.Get("progress").InBounds(msg) {
+			x, _ := p.zone.Get("progress").Pos(msg)
+			x--
+			if x < 0 {
+				x = 0
+			}
+			p.frame = p.movie.Sections[x]
 			if p.isPlaying() {
-				p.pause()
-				return p, nil
-			} else {
 				return p, p.play()
 			}
-		case Option1xForward:
-			p.activeOption = 4
-			p.speed = 1
-		case Option2xForward:
-			p.activeOption = 5
-			p.speed = 3
-		case Option3xForward:
-			p.activeOption = 6
-			p.speed = 15
 		}
-		if !p.isPlaying() {
-			return p, p.play()
+
+		if msg.Action != tea.MouseActionPress {
+			return p, nil
 		}
+
+		switch {
+		case p.zone.Get(string(Option3xRewind)).InBounds(msg):
+			return p, p.doPlayerOption(Option3xRewind)
+		case p.zone.Get(string(Option2xRewind)).InBounds(msg):
+			return p, p.doPlayerOption(Option2xRewind)
+		case p.zone.Get(string(Option1xRewind)).InBounds(msg):
+			return p, p.doPlayerOption(Option1xRewind)
+		case p.zone.Get(string(OptionPause)).InBounds(msg):
+			return p, p.doPlayerOption(OptionPause)
+		case p.zone.Get(string(OptionPlay)).InBounds(msg):
+			return p, p.doPlayerOption(OptionPlay)
+		case p.zone.Get(string(Option3xForward)).InBounds(msg):
+			return p, p.doPlayerOption(Option3xForward)
+		case p.zone.Get(string(Option2xForward)).InBounds(msg):
+			return p, p.doPlayerOption(Option2xForward)
+		case p.zone.Get(string(Option1xForward)).InBounds(msg):
+			return p, p.doPlayerOption(Option1xForward)
+		}
+
 	case tea.WindowSizeMsg:
 		p.styles.MarginX, p.styles.MarginY = "", ""
 		if width := msg.Width/2 - p.movie.Width/2 - 1; width > 0 {
@@ -208,13 +222,13 @@ func (p Player) View() string {
 			lipgloss.Center,
 			p.styles.MarginY,
 			p.styles.Screen.Render(p.movie.Frames[p.frame].Data),
-			p.styles.Progress.Render(p.movie.Frames[p.frame].Progress),
+			p.zone.Mark("progress", p.styles.Progress.Render(p.movie.Frames[p.frame].Progress)),
 			p.optionViewCache,
 			p.helpViewCache,
 		),
 	)
 
-	return content
+	return p.zone.Scan(content)
 }
 
 func (p *Player) OptionsView() string {
@@ -234,7 +248,7 @@ func (p *Player) OptionsView() string {
 		default:
 			rendered = p.styles.Options.Render(string(option))
 		}
-		options = append(options, rendered)
+		options = append(options, p.zone.Mark(string(option), rendered))
 	}
 	return lipgloss.JoinHorizontal(lipgloss.Top, options...)
 }
@@ -259,4 +273,38 @@ func (p *Player) clearTimeouts() {
 	if p.playCancel != nil {
 		p.playCancel()
 	}
+}
+
+func (p *Player) doPlayerOption(opt PlayerOption) tea.Cmd {
+	switch opt {
+	case Option3xRewind:
+		p.activeOption = 0
+		p.speed = -15
+	case Option2xRewind:
+		p.activeOption = 1
+		p.speed = -3
+	case Option1xRewind:
+		p.activeOption = 2
+		p.speed = -1
+	case OptionPause, OptionPlay:
+		if p.isPlaying() {
+			p.pause()
+			return nil
+		} else {
+			return p.play()
+		}
+	case Option1xForward:
+		p.activeOption = 4
+		p.speed = 1
+	case Option2xForward:
+		p.activeOption = 5
+		p.speed = 3
+	case Option3xForward:
+		p.activeOption = 6
+		p.speed = 15
+	}
+	if !p.isPlaying() {
+		return p.play()
+	}
+	return nil
 }

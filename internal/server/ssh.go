@@ -129,7 +129,11 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 
 		renderer := bubbletea.MakeRenderer(session)
 		player := movie.NewPlayer(m, logger, renderer)
-		return player, []tea.ProgramOption{tea.WithFPS(30), tea.WithAltScreen()}
+		return player, []tea.ProgramOption{
+			tea.WithFPS(30),
+			tea.WithAltScreen(),
+			tea.WithMouseCellMotion(),
+		}
 	}
 }
 

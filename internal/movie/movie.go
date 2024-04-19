@@ -5,9 +5,7 @@ import (
 )
 
 func NewMovie() Movie {
-	return Movie{
-		Sections: make([]int, 10),
-	}
+	return Movie{}
 }
 
 type Movie struct {
