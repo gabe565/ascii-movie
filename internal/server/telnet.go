@@ -114,7 +114,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	termCh := make(chan string)
+	termCh := make(chan string, 1)
 	defer close(termCh)
 	sizeCh := make(chan telnet.WindowSize, 1)
 	defer close(sizeCh)
