@@ -6,12 +6,13 @@ import (
 )
 
 type Styles struct {
-	App      lipgloss.Style
 	Screen   lipgloss.Style
 	Progress lipgloss.Style
 	Options  lipgloss.Style
 	Active   lipgloss.Style
 	Selected lipgloss.Style
+
+	MarginX, MarginY string
 }
 
 func NewStyles(m *Movie, renderer *lipgloss.Renderer) Styles {
@@ -21,10 +22,6 @@ func NewStyles(m *Movie, renderer *lipgloss.Renderer) Styles {
 	selectedColor := lipgloss.AdaptiveColor{Light: "12", Dark: "4"}
 
 	s := Styles{
-		App: lipgloss.NewStyle().
-			Renderer(renderer).
-			Margin(2, 4),
-
 		Screen: lipgloss.NewStyle().
 			Renderer(renderer).
 			Width(m.Width).

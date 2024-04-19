@@ -38,7 +38,7 @@ func run(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	program := tea.NewProgram(movie.NewPlayer(&m, nil, nil))
+	program := tea.NewProgram(movie.NewPlayer(&m, nil, nil), tea.WithAltScreen())
 	if _, err := program.Run(); err != nil {
 		return err
 	}

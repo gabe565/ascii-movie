@@ -137,6 +137,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 		tea.WithInput(inR),
 		tea.WithOutput(outW),
 		tea.WithFPS(30),
+		tea.WithAltScreen(),
 	)
 
 	go func() {

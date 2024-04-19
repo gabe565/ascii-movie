@@ -2,6 +2,7 @@ package movie
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -53,7 +54,6 @@ type Player struct {
 	log          *log.Entry
 	durationHook log_hooks.Duration
 	renderer     *lipgloss.Renderer
-	small        bool
 
 	speed      float64
 	playCtx    context.Context
@@ -180,7 +180,13 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return p, p.play()
 		}
 	case tea.WindowSizeMsg:
-		p.small = msg.Width < p.movie.Width+10
+		p.styles.MarginX, p.styles.MarginY = "", ""
+		if width := msg.Width/2 - p.movie.Width/2 - 1; width > 0 {
+			p.styles.MarginX = strings.Repeat(" ", width)
+		}
+		if height := msg.Height/2 - lipgloss.Height(p.View())/2; height > 0 {
+			p.styles.MarginY = strings.Repeat("\n", height)
+		}
 	}
 	return p, nil
 }
@@ -190,18 +196,20 @@ func (p Player) View() string {
 		p.optionViewCache = p.OptionsView()
 	}
 
-	content := lipgloss.JoinVertical(
-		lipgloss.Center,
-		p.styles.Screen.Render(p.movie.Frames[p.frame].Data),
-		p.styles.Progress.Render(p.movie.Frames[p.frame].Progress),
-		p.optionViewCache,
-		p.helpViewCache,
+	content := lipgloss.JoinHorizontal(
+		lipgloss.Top,
+		p.styles.MarginX,
+		lipgloss.JoinVertical(
+			lipgloss.Center,
+			p.styles.MarginY,
+			p.styles.Screen.Render(p.movie.Frames[p.frame].Data),
+			p.styles.Progress.Render(p.movie.Frames[p.frame].Progress),
+			p.optionViewCache,
+			p.helpViewCache,
+		),
 	)
 
-	if p.small {
-		return content
-	}
-	return p.styles.App.Render(content)
+	return content
 }
 
 func (p *Player) OptionsView() string {
