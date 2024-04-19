@@ -27,7 +27,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/charmbracelet/keygen v0.5.0 // indirect
 	github.com/charmbracelet/log v0.4.0 // indirect
-	github.com/charmbracelet/x/errors v0.0.0-20240408110044-525ba71bb562 // indirect
+	github.com/charmbracelet/x/errors v0.1.0 // indirect
 	github.com/charmbracelet/x/exp/term v0.0.0-20240408110044-525ba71bb562 // indirect
 	github.com/containerd/console v1.0.4 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
