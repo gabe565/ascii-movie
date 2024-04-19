@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"strings"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -37,6 +39,10 @@ func NewSSH(flags *flag.FlagSet) SSHServer {
 		panic(err)
 	}
 
+	if len(ssh.HostKeyPath) == 0 && len(ssh.HostKeyPEM) == 0 {
+		ssh.HostKeyPath = []string{"$HOME/.ssh/ascii_movie_ed25519", "$HOME/.ssh/ascii_movie_rsa"}
+	}
+
 	return ssh
 }
 
@@ -58,6 +64,13 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 	}
 
 	for _, path := range s.HostKeyPath {
+		if strings.Contains(path, "$HOME") {
+			home, err := os.UserHomeDir()
+			if err != nil {
+				return err
+			}
+			path = strings.ReplaceAll(path, "$HOME", home)
+		}
 		sshOptions = append(sshOptions, wish.WithHostKeyPath(path))
 	}
 
