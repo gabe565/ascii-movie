@@ -13,10 +13,12 @@ services:
     environment:
       COLORTERM: "$COLORTERM"
       TERM: "$TERM"
+      ASCII_MOVIE_SSH_ADDRESS: ":2222"
+      ASCII_MOVIE_TELNET_ADDRESS: ":2323"
       ASCII_MOVIE_API_ADDRESS: ":1977"
     ports:
-      - "23:23"
-      - "2222:22"
+      - "2323:2323"
+      - "2222:2222"
       - "127.0.0.1:1977:1977"
     read_only: true
     restart: unless-stopped
