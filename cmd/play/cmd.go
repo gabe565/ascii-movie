@@ -23,7 +23,7 @@ func NewCommand() *cobra.Command {
 	return cmd
 }
 
-func run(cmd *cobra.Command, args []string) (err error) {
+func run(cmd *cobra.Command, args []string) error {
 	if !cmd.Flags().Changed(config.LogLevelFlag) {
 		log.SetLevel(log.WarnLevel)
 	}

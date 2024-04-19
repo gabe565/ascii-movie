@@ -9,21 +9,23 @@ type ProgressBar struct {
 	Phases []string
 }
 
-var DefaultPhases = []string{
-	" ",
-	"▏",
-	"▎",
-	"▍",
-	"▌",
-	"▋",
-	"▊",
-	"▉",
-	"█",
+func DefaultPhases() []string {
+	return []string{
+		" ",
+		"▏",
+		"▎",
+		"▍",
+		"▌",
+		"▋",
+		"▊",
+		"▉",
+		"█",
+	}
 }
 
 func New() ProgressBar {
 	return ProgressBar{
-		Phases: DefaultPhases,
+		Phases: DefaultPhases(),
 	}
 }
 
@@ -39,7 +41,7 @@ func (p ProgressBar) Generate(n, total time.Duration, width int) string {
 	result += strings.Repeat(p.Phases[len(p.Phases)-1], filledNum)
 	if phaseIdx > 0 {
 		result += p.Phases[phaseIdx]
-		emptyNum -= 1
+		emptyNum--
 	}
 	result += strings.Repeat(p.Phases[0], emptyNum)
 	return result

@@ -35,7 +35,7 @@ func NewCommand(version, commit string) *cobra.Command {
 
 const EnvPrefix = "ASCII_MOVIE_"
 
-func preRun(cmd *cobra.Command, args []string) error {
+func preRun(cmd *cobra.Command, _ []string) error {
 	if err := loadFlagEnvs(cmd.Flags()); err != nil {
 		return err
 	}

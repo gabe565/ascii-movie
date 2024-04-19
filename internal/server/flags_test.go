@@ -4,15 +4,13 @@ import (
 	"testing"
 
 	flag "github.com/spf13/pflag"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestFlags(t *testing.T) {
 	t.Run("doesn't panic", func(t *testing.T) {
 		flags := flag.NewFlagSet(t.Name(), flag.PanicOnError)
 		Flags(flags)
-		if err := flags.Parse([]string{}); !assert.NoError(t, err) {
-			return
-		}
+		require.NoError(t, flags.Parse([]string{}))
 	})
 }

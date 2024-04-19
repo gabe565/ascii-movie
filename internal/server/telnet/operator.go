@@ -79,8 +79,6 @@ func Write(w io.Writer, cmds ...Operator) (int, error) {
 	return w.Write(Bytes(cmds...))
 }
 
-var ClearLine = []byte("\r\x1B[K")
-
 func WriteAndClear(w io.Writer, cmds ...Operator) (int, error) {
-	return w.Write(append(Bytes(cmds...), ClearLine...))
+	return w.Write(append(Bytes(cmds...), []byte("\r\x1B[K")...))
 }

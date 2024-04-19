@@ -8,6 +8,7 @@ import (
 
 //go:generate go run ./internal/generate/gzip
 
+//nolint:gochecknoglobals
 var (
 	version = "beta"
 	commit  = ""

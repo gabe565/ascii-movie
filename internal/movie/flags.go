@@ -14,10 +14,9 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-var (
-	SpeedFlag       = "speed"
-	ErrInvalidSpeed = errors.New("speed must be greater than 0")
-)
+const SpeedFlag = "speed"
+
+var ErrInvalidSpeed = errors.New("speed must be greater than 0")
 
 func Flags(flags *flag.FlagSet) {
 	flags.Float64(

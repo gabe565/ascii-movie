@@ -5,6 +5,7 @@ import (
 
 	flag "github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewServer(t *testing.T) {
@@ -12,16 +13,11 @@ func TestNewServer(t *testing.T) {
 		flags := flag.NewFlagSet(t.Name(), flag.PanicOnError)
 		Flags(flags)
 
-		if err := flags.Set(prefix+EnabledFlag, "true"); !assert.NoError(t, err) {
-			return
-		}
-
-		if err := flags.Set(prefix+AddressFlag, "127.0.0.1:1977"); !assert.NoError(t, err) {
-			return
-		}
+		require.NoError(t, flags.Set(prefix+EnabledFlag, "true"))
+		require.NoError(t, flags.Set(prefix+AddressFlag, "127.0.0.1:1977"))
 
 		server := NewMovieServer(flags, prefix)
-		assert.Equal(t, true, server.Enabled)
+		assert.True(t, server.Enabled)
 		assert.Equal(t, "127.0.0.1:1977", server.Address)
 		assert.Equal(t, prefix, server.Log.Data["server"])
 	}

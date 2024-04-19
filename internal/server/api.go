@@ -2,11 +2,10 @@ package server
 
 import (
 	"context"
-	_ "embed"
 	"encoding/json"
 	"errors"
 	"net/http"
-	_ "net/http/pprof"
+	_ "net/http/pprof" //nolint:gosec
 	"strings"
 	"time"
 
@@ -15,25 +14,29 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+//nolint:gochecknoglobals
 var serverInfo = NewInfo()
 
-type ApiServer struct {
+type APIServer struct {
 	Server
 	TelnetEnabled bool
 	SSHEnabled    bool
 }
 
-func NewApi(flags *flag.FlagSet) ApiServer {
-	return ApiServer{Server: NewServer(flags, ApiFlagPrefix)}
+func NewAPI(flags *flag.FlagSet) APIServer {
+	return APIServer{Server: NewServer(flags, APIFlagPrefix)}
 }
 
-func (s *ApiServer) Listen(ctx context.Context) error {
+func (s *APIServer) Listen(ctx context.Context) error {
 	s.Log.WithField("address", s.Address).Info("Starting API server")
 
 	http.HandleFunc("/health", s.Health)
 	http.HandleFunc("/streams", s.Streams)
 	http.Handle("/metrics", promhttp.Handler())
-	server := http.Server{Addr: s.Address}
+	server := &http.Server{
+		Addr:        s.Address,
+		ReadTimeout: 5 * time.Second,
+	}
 
 	var group errgroup.Group
 
@@ -64,7 +67,7 @@ type HealthResponse struct {
 	Telnet  bool `json:"telnet"`
 }
 
-func (s *ApiServer) Health(w http.ResponseWriter, r *http.Request) {
+func (s *APIServer) Health(w http.ResponseWriter, _ *http.Request) {
 	response := HealthResponse{
 		Telnet: telnetListeners == 1,
 		SSH:    sshListeners == 1,
@@ -95,7 +98,7 @@ type StreamsResponse struct {
 	Streams *[]Stream `json:"streams,omitempty"`
 }
 
-func (s *ApiServer) Streams(w http.ResponseWriter, r *http.Request) {
+func (s *APIServer) Streams(w http.ResponseWriter, r *http.Request) {
 	var response StreamsResponse
 
 	fields := r.URL.Query().Get("fields")

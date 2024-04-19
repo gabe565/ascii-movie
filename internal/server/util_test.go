@@ -8,7 +8,7 @@ import (
 
 func TestRemoteIp(t *testing.T) {
 	type args struct {
-		remoteIpPort string
+		remoteIPPort string
 	}
 	tests := []struct {
 		name string
@@ -20,7 +20,7 @@ func TestRemoteIp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equalf(t, tt.want, RemoteIp(tt.args.remoteIpPort), "RemoteIp(%v)", tt.args.remoteIpPort)
+			assert.Equalf(t, tt.want, RemoteIP(tt.args.remoteIPPort), "RemoteIP(%v)", tt.args.remoteIPPort)
 		})
 	}
 }

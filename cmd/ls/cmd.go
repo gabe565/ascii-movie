@@ -19,14 +19,14 @@ func NewCommand() *cobra.Command {
 		Long:    "Lists movie files and metadata.\nIf no path is given, embedded movies are listed.",
 		RunE:    run,
 
-		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		ValidArgsFunction: func(cmd *cobra.Command, _ []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			return movie.CompleteMovieName(cmd, []string{}, toComplete)
 		},
 	}
 	return cmd
 }
 
-func run(cmd *cobra.Command, args []string) (err error) {
+func run(cmd *cobra.Command, args []string) error {
 	movieInfos := make([]movie.Info, 0, len(args))
 
 	if len(args) > 0 {
@@ -39,6 +39,7 @@ func run(cmd *cobra.Command, args []string) (err error) {
 			movieInfos = append(movieInfos, movieInfo)
 		}
 	} else {
+		var err error
 		movieInfos, err = movie.ListEmbedded()
 		if err != nil {
 			return err

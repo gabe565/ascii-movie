@@ -1,4 +1,4 @@
-package log_hooks
+package loghooks
 
 import (
 	"time"
@@ -20,7 +20,7 @@ func (d Duration) String() string {
 	return time.Since(d.start).Truncate(d.trunc).String()
 }
 
-func (d Duration) MarshalText() (text []byte, err error) {
+func (d Duration) MarshalText() ([]byte, error) {
 	return []byte(time.Since(d.start).Truncate(d.trunc).String()), nil
 }
 

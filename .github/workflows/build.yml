@@ -16,8 +16,6 @@ jobs:
           cache: false
       - name: Lint
         uses: golangci/golangci-lint-action@v4
-        with:
-          args: --timeout=5m
 
   test:
     name: Test

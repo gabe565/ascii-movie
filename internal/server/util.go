@@ -4,10 +4,10 @@ import (
 	"net"
 )
 
-func RemoteIp(remoteIpPort string) string {
-	remoteIP, _, err := net.SplitHostPort(remoteIpPort)
+func RemoteIP(remoteIPPort string) string {
+	remoteIP, _, err := net.SplitHostPort(remoteIPPort)
 	if err != nil {
-		remoteIP = remoteIpPort
+		remoteIP = remoteIPPort
 	}
 	return remoteIP
 }

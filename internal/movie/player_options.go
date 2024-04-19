@@ -17,7 +17,7 @@ const (
 	Option3xForward PlayerOption = ">>>"
 )
 
-var playerOptions = [...]PlayerOption{
+var playerOptions = [...]PlayerOption{ //nolint:gochecknoglobals
 	Option3xRewind,
 	Option2xRewind,
 	Option1xRewind,

@@ -2,7 +2,7 @@ package serve
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"os"
 	"os/signal"
 	"syscall"
@@ -32,7 +32,9 @@ func NewCommand() *cobra.Command {
 	return cmd
 }
 
-func run(cmd *cobra.Command, args []string) (err error) {
+var ErrAllDisabled = errors.New("all server types are disabled")
+
+func run(cmd *cobra.Command, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -49,7 +51,7 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	defer cancel()
 	group, ctx := errgroup.WithContext(ctx)
 
-	api := server.NewApi(cmd.Flags())
+	api := server.NewAPI(cmd.Flags())
 
 	if ssh := server.NewSSH(cmd.Flags()); ssh.Enabled {
 		api.SSHEnabled = true
@@ -67,7 +69,7 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	if !api.SSHEnabled && !api.TelnetEnabled {
-		return fmt.Errorf("all server types were disabled")
+		return ErrAllDisabled
 	}
 
 	if api.Enabled {

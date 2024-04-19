@@ -1,29 +1,25 @@
 package movie
 
 import (
-	"io/fs"
 	"testing"
 	"time"
 
 	"github.com/gabe565/ascii-movie/movies"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestLoadFile(t *testing.T) {
 	const TestFile = "short_intro.txt"
 
 	f, err := movies.Movies.Open(TestFile)
-	if !assert.NoError(t, err) {
-		return
-	}
-	defer func(f fs.File) {
+	require.NoError(t, err)
+	t.Cleanup(func() {
 		_ = f.Close()
-	}(f)
+	})
 
 	movie := NewMovie()
-	if err := movie.LoadFile(TestFile, f, 1); !assert.NoError(t, err) {
-		return
-	}
+	require.NoError(t, movie.LoadFile(TestFile, f, 1))
 
 	assert.Equal(t, TestFile, movie.Filename)
 	assert.EqualValues(t, 3*time.Second, movie.Duration().Truncate(time.Second))

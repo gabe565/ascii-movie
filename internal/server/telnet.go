@@ -17,6 +17,7 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
+//nolint:gochecknoglobals
 var telnetListeners uint8
 
 type TelnetServer struct {
@@ -43,9 +44,9 @@ func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 	defer serveCancel()
 
 	go func() {
-		telnetListeners += 1
+		telnetListeners++
 		defer func() {
-			telnetListeners -= 1
+			telnetListeners--
 		}()
 
 		for {
@@ -92,7 +93,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 		_ = conn.Close()
 	}(conn)
 
-	remoteIP := RemoteIp(conn.RemoteAddr().String())
+	remoteIP := RemoteIP(conn.RemoteAddr().String())
 	logger := s.Log.WithField("remote_ip", remoteIP)
 
 	id, err := serverInfo.StreamConnect("telnet", remoteIP)

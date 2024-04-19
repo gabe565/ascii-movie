@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CompleteMovieName(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+func CompleteMovieName(_ *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	if len(args) > 0 {
 		return []string{}, cobra.ShellCompDirectiveNoFileComp
 	}
@@ -31,7 +31,6 @@ func CompleteMovieName(cmd *cobra.Command, args []string, toComplete string) ([]
 
 	if len(result) == 0 {
 		return []string{"txt", "txt.gz"}, cobra.ShellCompDirectiveFilterFileExt
-	} else {
-		return result, cobra.ShellCompDirectiveDefault
 	}
+	return result, cobra.ShellCompDirectiveDefault
 }

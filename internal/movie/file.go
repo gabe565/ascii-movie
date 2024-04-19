@@ -28,7 +28,7 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 		ok := scanner.Scan()
 
 		if frameHeadRe.Match(scanner.Bytes()) || !ok {
-			frameNum += 1
+			frameNum++
 			if frameNum != 0 {
 				f.Data = strings.TrimSuffix(buf.String(), "\n")
 				if frameHeight := strings.Count(f.Data, "\n"); m.Height < frameHeight {

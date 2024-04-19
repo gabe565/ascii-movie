@@ -19,6 +19,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+//nolint:gochecknoglobals
 var sshListeners uint8
 
 type SSHServer struct {
@@ -90,12 +91,12 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 
 	group.Go(func() error {
 		if ctx.Err() != nil {
-			return nil
+			return ctx.Err()
 		}
 
-		sshListeners += 1
+		sshListeners++
 		defer func() {
-			sshListeners -= 1
+			sshListeners--
 		}()
 
 		if err = server.ListenAndServe(); err != nil && !errors.Is(err, ssh.ErrServerClosed) {
@@ -120,7 +121,7 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 
 func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 	return func(session ssh.Session) (tea.Model, []tea.ProgramOption) {
-		remoteIP := RemoteIp(session.RemoteAddr().String())
+		remoteIP := RemoteIP(session.RemoteAddr().String())
 		logger := s.Log.WithFields(log.Fields{
 			"remote_ip": remoteIP,
 			"user":      session.User(),
@@ -134,7 +135,7 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 
 func (s *SSHServer) TrackStream(handler ssh.Handler) ssh.Handler {
 	return func(session ssh.Session) {
-		remoteIP := RemoteIp(session.RemoteAddr().String())
+		remoteIP := RemoteIP(session.RemoteAddr().String())
 		id, err := serverInfo.StreamConnect("ssh", remoteIP)
 		if err != nil {
 			logger := s.Log.WithFields(log.Fields{

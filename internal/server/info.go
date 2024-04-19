@@ -12,7 +12,7 @@ import (
 
 type Stream struct {
 	Server    string    `json:"server"`
-	RemoteIp  string    `json:"remote_ip"`
+	RemoteIP  string    `json:"remote_ip"`
 	Connected time.Time `json:"connected"`
 }
 
@@ -24,7 +24,7 @@ func NewInfo() Info {
 		activeConnections: promauto.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Namespace: "ascii_movie",
-				Name:      "active_connections",
+				Name:      "connections_active",
 				Help:      "Count of active connections",
 			},
 			[]string{"server"},
@@ -32,7 +32,7 @@ func NewInfo() Info {
 		totalConnections: promauto.NewCounterVec(
 			prometheus.CounterOpts{
 				Namespace: "ascii_movie",
-				Name:      "total_connections",
+				Name:      "connections_total",
 				Help:      "Total connections",
 			},
 			[]string{"server"},
@@ -40,7 +40,7 @@ func NewInfo() Info {
 		rateLimitedConnections: promauto.NewCounterVec(
 			prometheus.CounterOpts{
 				Namespace: "ascii_movie",
-				Name:      "rate_limited_connections",
+				Name:      "rate_limited_connections_total",
 				Help:      "Total number of rate limited connections",
 			},
 			[]string{"server"},
@@ -70,7 +70,7 @@ type Info struct {
 	streams    map[uint]Stream
 	totalCount atomic.Uint32
 	concurrent map[string]uint
-	nextId     uint
+	nextID     uint
 	mu         sync.Mutex
 
 	activeConnections      *prometheus.GaugeVec
@@ -81,13 +81,13 @@ type Info struct {
 
 var ErrRateLimited = errors.New("rate limited")
 
-func (s *Info) StreamConnect(server, remoteIp string) (uint, error) {
+func (s *Info) StreamConnect(server, remoteIP string) (uint, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	prometheusLabels := prometheus.Labels{"server": server}
 
-	if concurrentStreams != 0 && s.concurrent[remoteIp]+1 > concurrentStreams {
+	if concurrentStreams != 0 && s.concurrent[remoteIP]+1 > concurrentStreams {
 		s.rateLimitedConnections.With(prometheusLabels).Inc()
 		return 0, ErrRateLimited
 	}
@@ -97,15 +97,15 @@ func (s *Info) StreamConnect(server, remoteIp string) (uint, error) {
 	s.totalConnections.With(prometheusLabels).Inc()
 
 	defer func() {
-		s.nextId += 1
+		s.nextID++
 	}()
-	s.streams[s.nextId] = Stream{
+	s.streams[s.nextID] = Stream{
 		Server:    server,
-		RemoteIp:  remoteIp,
+		RemoteIP:  remoteIP,
 		Connected: time.Now(),
 	}
-	s.concurrent[remoteIp] += 1
-	return s.nextId, nil
+	s.concurrent[remoteIP]++
+	return s.nextID, nil
 }
 
 func (s *Info) StreamDisconnect(id uint) {
@@ -122,9 +122,9 @@ func (s *Info) StreamDisconnect(id uint) {
 	s.connectionDuration.With(prometheusLabels).
 		Observe(time.Since(stream.Connected).Seconds())
 
-	s.concurrent[stream.RemoteIp] -= 1
-	if s.concurrent[stream.RemoteIp] == 0 {
-		delete(s.concurrent, stream.RemoteIp)
+	s.concurrent[stream.RemoteIP]--
+	if s.concurrent[stream.RemoteIP] == 0 {
+		delete(s.concurrent, stream.RemoteIP)
 	}
 	delete(s.streams, id)
 

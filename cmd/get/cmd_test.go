@@ -8,6 +8,7 @@ import (
 	"github.com/gabe565/ascii-movie/internal/server"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_preRun(t *testing.T) {
@@ -19,21 +20,16 @@ func Test_preRun(t *testing.T) {
 		name    string
 		args    args
 		want    string
-		wantErr assert.ErrorAssertionFunc
+		wantErr require.ErrorAssertionFunc
 	}{
-		{"simple", args{cmd: NewCommand()}, "http://127.0.0.1", assert.NoError},
-		{"invalid", args{cmd: NewCommand()}, "\x00", assert.Error},
+		{"simple", args{cmd: NewCommand()}, "http://127.0.0.1", require.NoError},
+		{"invalid", args{cmd: NewCommand()}, "\x00", require.Error},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := tt.args.cmd.PersistentFlags().Set(server.ApiFlagPrefix+server.AddressFlag, tt.want)
-			if !assert.NoError(t, err) {
-				return
-			}
-
-			if err := tt.args.cmd.ParseFlags(tt.args.args); !assert.NoError(t, err) {
-				return
-			}
+			err := tt.args.cmd.PersistentFlags().Set(server.APIFlagPrefix+server.AddressFlag, tt.want)
+			require.NoError(t, err)
+			require.NoError(t, tt.args.cmd.ParseFlags(tt.args.args))
 
 			err = preRun(tt.args.cmd, tt.args.args)
 			tt.wantErr(t, err)
@@ -41,11 +37,8 @@ func Test_preRun(t *testing.T) {
 				return
 			}
 
-			u, ok := tt.args.cmd.Context().Value(config.UrlContextKey).(*url.URL)
-			if !assert.True(t, ok) {
-				return
-			}
-
+			u, ok := tt.args.cmd.Context().Value(config.URLContextKey).(*url.URL)
+			require.True(t, ok)
 			assert.Equal(t, tt.want, u.String())
 		})
 	}

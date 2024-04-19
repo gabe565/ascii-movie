@@ -2,8 +2,8 @@ package stream
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"sort"
@@ -40,15 +40,21 @@ func preRun(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func run(cmd *cobra.Command, args []string) error {
+var (
+	ErrInvalidURL      = errors.New("invalid URL from context")
+	ErrInvalidResponse = errors.New("invalid response status")
+	ErrEmptyValue      = errors.New("unexpected nil value")
+)
+
+func run(cmd *cobra.Command, _ []string) error {
 	countFlag, err := cmd.Flags().GetString("count")
 	if err != nil {
 		panic(err)
 	}
 
-	u, ok := cmd.Context().Value(config.UrlContextKey).(*url.URL)
+	u, ok := cmd.Context().Value(config.URLContextKey).(*url.URL)
 	if !ok {
-		panic(fmt.Errorf("invalid URL from context: %v", u))
+		panic(fmt.Errorf("%w: %v", ErrInvalidURL, u))
 	}
 
 	u, err = u.Parse("/streams")
@@ -56,16 +62,21 @@ func run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	resp, err := http.Get(u.String())
+	req, err := http.NewRequestWithContext(cmd.Context(), http.MethodGet, u.String(), nil)
+	if err != nil {
+		return err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Error("Failed to connect to API. Is the server running?")
 		return fmt.Errorf("failed to connect to API: %w", err)
 	}
-	defer func(Body io.ReadCloser) {
-		_ = Body.Close()
-	}(resp.Body)
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("invalid response status: %s", resp.Status)
+		return fmt.Errorf("%w: %s", ErrInvalidResponse, resp.Status)
 	}
 
 	var decoded server.StreamsResponse
@@ -77,7 +88,7 @@ func run(cmd *cobra.Command, args []string) error {
 	case "active":
 		// Print active count
 		if decoded.Active == nil {
-			return fmt.Errorf("unexpected nil value: count")
+			return fmt.Errorf("%w: count", ErrEmptyValue)
 		}
 
 		if _, err := fmt.Fprintln(cmd.OutOrStdout(), *decoded.Active); err != nil {
@@ -86,7 +97,7 @@ func run(cmd *cobra.Command, args []string) error {
 	case "total":
 		// Print total count
 		if decoded.Total == nil {
-			return fmt.Errorf("unexpected nil value: count")
+			return fmt.Errorf("%w: count", ErrEmptyValue)
 		}
 
 		if _, err := fmt.Fprintln(cmd.OutOrStdout(), *decoded.Total); err != nil {
@@ -101,7 +112,7 @@ func run(cmd *cobra.Command, args []string) error {
 
 		if decoded.Streams == nil {
 			_ = w.Flush()
-			return fmt.Errorf("unexpected nil value: streams")
+			return fmt.Errorf("%w: streams", ErrEmptyValue)
 		}
 
 		streams := *decoded.Streams
@@ -114,7 +125,7 @@ func run(cmd *cobra.Command, args []string) error {
 				w,
 				"%s\t%s\t%s\t%s\t\n",
 				stream.Server,
-				stream.RemoteIp,
+				stream.RemoteIP,
 				stream.Connected.Truncate(time.Second),
 				time.Since(stream.Connected).Truncate(time.Second),
 			); err != nil {

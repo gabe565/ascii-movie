@@ -40,7 +40,7 @@ type keymap struct {
 
 func newKeymap() keymap {
 	jumps := make([]key.Binding, 0, 10)
-	for i := 0; i < 10; i += 1 {
+	for i := range 10 {
 		jumps = append(jumps, key.NewBinding(
 			key.WithKeys(strconv.Itoa(i)),
 		))

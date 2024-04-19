@@ -1,32 +1,22 @@
 package cmd
 
 import (
-	"os"
 	"testing"
 
 	flag "github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_loadFlagEnvs(t *testing.T) {
-	defer func() {
-		_ = os.Unsetenv("ASCII_MOVIE_WORKED")
-	}()
-
 	flags := flag.NewFlagSet("loadFlagEnvs", flag.ContinueOnError)
 	flags.Bool("worked", false, "Test flag")
-	if err := os.Setenv("ASCII_MOVIE_WORKED", "true"); !assert.NoError(t, err) {
-		return
-	}
+	t.Setenv("ASCII_MOVIE_WORKED", "true")
 
-	if err := loadFlagEnvs(flags); !assert.NoError(t, err) {
-		return
-	}
+	require.NoError(t, loadFlagEnvs(flags))
 
 	worked, err := flags.GetBool("worked")
-	if !assert.NoError(t, err) {
-		return
-	}
+	require.NoError(t, err)
 
 	assert.True(t, worked)
 }

@@ -11,30 +11,23 @@ import (
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_preRun(t *testing.T) {
 	t.Run("without count", func(t *testing.T) {
 		cmd := NewCommand()
-		if err := preRun(cmd, []string{}); !assert.NoError(t, err) {
-			return
-		}
+		require.NoError(t, preRun(cmd, []string{}))
 		got, err := cmd.Flags().GetString("count")
-		if !assert.NoError(t, err) {
-			return
-		}
+		require.NoError(t, err)
 		assert.Equal(t, "", got)
 	})
 
 	t.Run("with active count", func(t *testing.T) {
 		cmd := NewCommand()
-		if err := preRun(cmd, []string{"count"}); !assert.NoError(t, err) {
-			return
-		}
+		require.NoError(t, preRun(cmd, []string{"count"}))
 		got, err := cmd.Flags().GetString("count")
-		if !assert.NoError(t, err) {
-			return
-		}
+		require.NoError(t, err)
 		assert.Equal(t, "active", got)
 	})
 }
@@ -42,9 +35,7 @@ func Test_preRun(t *testing.T) {
 func Test_run(t *testing.T) {
 	countCmd := func() *cobra.Command {
 		cmd := NewCommand()
-		if err := cmd.Flags().Set("count", "active"); !assert.NoError(t, err) {
-			return cmd
-		}
+		require.NoError(t, cmd.Flags().Set("count", "active"))
 		return cmd
 	}
 
@@ -57,37 +48,33 @@ func Test_run(t *testing.T) {
 		args    args
 		want    string
 		want500 bool
-		wantErr assert.ErrorAssertionFunc
+		wantErr require.ErrorAssertionFunc
 	}{
-		{"0", args{cmd: countCmd()}, "0\n", false, assert.NoError},
-		{"1", args{cmd: countCmd()}, "1\n", false, assert.NoError},
-		{"http error", args{cmd: countCmd()}, "", true, assert.Error},
+		{"0", args{cmd: countCmd()}, "0\n", false, require.NoError},
+		{"1", args{cmd: countCmd()}, "1\n", false, require.NoError},
+		{"http error", args{cmd: countCmd()}, "", true, require.Error},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				if tt.want500 {
 					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}
 				_, _ = w.Write([]byte(`{"active":` + strings.TrimSuffix(tt.want, "\n") + `}`))
 			}))
-			defer svr.Close()
+			t.Cleanup(svr.Close)
 
 			u, err := url.Parse(svr.URL)
-			if !assert.NoError(t, err) {
-				return
-			}
+			require.NoError(t, err)
 
-			ctx := context.WithValue(context.Background(), config.UrlContextKey, u)
+			ctx := context.WithValue(context.Background(), config.URLContextKey, u)
 			tt.args.cmd.SetContext(ctx)
 
 			var buf strings.Builder
 			tt.args.cmd.SetOut(&buf)
 
-			if err := run(tt.args.cmd, tt.args.args); !tt.wantErr(t, err) {
-				return
-			}
+			tt.wantErr(t, run(tt.args.cmd, tt.args.args))
 
 			assert.Equal(t, tt.want, buf.String())
 		})

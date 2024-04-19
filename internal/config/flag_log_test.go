@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestInitLog(t *testing.T) {
@@ -19,40 +20,38 @@ func TestInitLog(t *testing.T) {
 	RegisterLogFlags(cmd)
 
 	t.Run("defaults", func(t *testing.T) {
-		defer cleanupFunc(log.GetLevel(), log.StandardLogger().Formatter)
+		t.Cleanup(func() {
+			cleanupFunc(log.GetLevel(), log.StandardLogger().Formatter)
+		})
 
 		InitLog(cmd.PersistentFlags())
-		assert.Equal(t, log.GetLevel(), DefaultLogLevel)
-		assert.Equal(t, log.StandardLogger().Formatter, &log.TextFormatter{})
+		assert.Equal(t, DefaultLogLevel, log.GetLevel())
+		assert.Equal(t, &log.TextFormatter{}, log.StandardLogger().Formatter)
 	})
 
 	t.Run("warn level/json formatter", func(t *testing.T) {
-		defer cleanupFunc(log.GetLevel(), log.StandardLogger().Formatter)
+		t.Cleanup(func() {
+			cleanupFunc(log.GetLevel(), log.StandardLogger().Formatter)
+		})
 
-		if err := cmd.PersistentFlags().Set(LogLevelFlag, log.WarnLevel.String()); !assert.NoError(t, err) {
-			return
-		}
-		if err := cmd.PersistentFlags().Set(LogFormatFlag, "json"); !assert.NoError(t, err) {
-			return
-		}
+		require.NoError(t, cmd.PersistentFlags().Set(LogLevelFlag, log.WarnLevel.String()))
+		require.NoError(t, cmd.PersistentFlags().Set(LogFormatFlag, "json"))
 		InitLog(cmd.PersistentFlags())
-		assert.Equal(t, log.GetLevel(), log.WarnLevel)
-		assert.Equal(t, log.StandardLogger().Formatter, &log.JSONFormatter{})
+		assert.Equal(t, log.WarnLevel, log.GetLevel())
+		assert.Equal(t, &log.JSONFormatter{}, log.StandardLogger().Formatter)
 	})
 
 	t.Run("invalid level/invalid formatter", func(t *testing.T) {
-		defer cleanupFunc(log.GetLevel(), log.StandardLogger().Formatter)
+		t.Cleanup(func() {
+			cleanupFunc(log.GetLevel(), log.StandardLogger().Formatter)
+		})
 
 		formatter := log.StandardLogger().Formatter
 
-		if err := cmd.PersistentFlags().Set(LogLevelFlag, "invalid"); !assert.NoError(t, err) {
-			return
-		}
-		if err := cmd.PersistentFlags().Set(LogFormatFlag, "invalid"); !assert.NoError(t, err) {
-			return
-		}
+		require.NoError(t, cmd.PersistentFlags().Set(LogLevelFlag, "invalid"))
+		require.NoError(t, cmd.PersistentFlags().Set(LogFormatFlag, "invalid"))
 		InitLog(cmd.PersistentFlags())
-		assert.Equal(t, log.GetLevel(), log.InfoLevel)
-		assert.Equal(t, log.StandardLogger().Formatter, formatter)
+		assert.Equal(t, log.InfoLevel, log.GetLevel())
+		assert.Equal(t, formatter, log.StandardLogger().Formatter)
 	})
 }

@@ -22,15 +22,15 @@ func TestProgressBar_Generate(t *testing.T) {
 		args   args
 		want   string
 	}{
-		{"0%", fields{Phases: DefaultPhases}, args{
+		{"0%", fields{Phases: DefaultPhases()}, args{
 			n: 0, total: 1000,
 			width: 50,
 		}, "                                                "},
-		{"100%", fields{Phases: DefaultPhases}, args{
+		{"100%", fields{Phases: DefaultPhases()}, args{
 			n: 1000, total: 1000,
 			width: 50,
 		}, "████████████████████████████████████████████████"},
-		{"82.3%", fields{Phases: DefaultPhases}, args{
+		{"82.3%", fields{Phases: DefaultPhases()}, args{
 			n: 823, total: 1000,
 			width: 50,
 		}, "███████████████████████████████████████▌        "},

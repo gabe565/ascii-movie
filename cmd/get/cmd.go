@@ -18,7 +18,7 @@ func NewCommand() *cobra.Command {
 		PersistentPreRunE: preRun,
 	}
 
-	cmd.PersistentFlags().String(server.ApiFlagPrefix+server.AddressFlag, "http://127.0.0.1:1977", "API address")
+	cmd.PersistentFlags().String(server.APIFlagPrefix+server.AddressFlag, "http://127.0.0.1:1977", "API address")
 
 	cmd.AddCommand(
 		stream.NewCommand(),
@@ -26,8 +26,8 @@ func NewCommand() *cobra.Command {
 	return cmd
 }
 
-func preRun(cmd *cobra.Command, args []string) error {
-	apiAddr, err := cmd.Flags().GetString(server.ApiFlagPrefix + server.AddressFlag)
+func preRun(cmd *cobra.Command, _ []string) error {
+	apiAddr, err := cmd.Flags().GetString(server.APIFlagPrefix + server.AddressFlag)
 	if err != nil {
 		panic(err)
 	}
@@ -41,7 +41,7 @@ func preRun(cmd *cobra.Command, args []string) error {
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	ctx = context.WithValue(ctx, config.UrlContextKey, u)
+	ctx = context.WithValue(ctx, config.URLContextKey, u)
 	cmd.SetContext(ctx)
 
 	return nil

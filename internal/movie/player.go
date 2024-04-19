@@ -9,7 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/gabe565/ascii-movie/internal/log_hooks"
+	"github.com/gabe565/ascii-movie/internal/loghooks"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -29,7 +29,7 @@ func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) Player 
 	}
 	player.play()
 	if logger != nil {
-		player.durationHook = log_hooks.NewDuration()
+		player.durationHook = loghooks.NewDuration()
 		player.log = logger.WithField("duration", player.durationHook)
 	}
 
@@ -52,7 +52,7 @@ type Player struct {
 	movie        *Movie
 	frame        int
 	log          *log.Entry
-	durationHook log_hooks.Duration
+	durationHook loghooks.Duration
 	renderer     *lipgloss.Renderer
 
 	speed      float64
@@ -73,11 +73,13 @@ func (p Player) Init() tea.Cmd {
 	return tick(p.playCtx, p.movie.Frames[p.frame].Duration, frameTickMsg{})
 }
 
+//nolint:gocyclo
 func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case frameTickMsg:
 		var frameDiff int
-		if p.speed >= 0 {
+		switch {
+		case p.speed >= 0:
 			frameDiff = 1
 			if p.frame+frameDiff >= len(p.movie.Frames) {
 				if p.log != nil {
@@ -85,11 +87,12 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 				return p, tea.Quit
 			}
-		} else if p.frame <= 0 {
+		case p.frame <= 0:
 			p.speed = 1
 			p.activeOption = 4
-			return p, p.pause()
-		} else {
+			p.pause()
+			return p, nil
+		default:
 			frameDiff = -1
 		}
 		p.frame += frameDiff
@@ -107,7 +110,8 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else if p.frame+frameDiff <= 0 {
 				p.speed = 1
 				p.activeOption = 4
-				return p, p.pause()
+				p.pause()
+				return p, nil
 			}
 			p.frame += frameDiff
 			duration += p.movie.Frames[p.frame].CalcDuration(speed)
@@ -120,11 +124,11 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return p, Quit
 		case key.Matches(msg, p.keymap.left):
 			if p.selectedOption > 0 {
-				p.selectedOption -= 1
+				p.selectedOption--
 			}
 		case key.Matches(msg, p.keymap.right):
 			if p.selectedOption < len(playerOptions)-1 {
-				p.selectedOption += 1
+				p.selectedOption++
 			}
 		case key.Matches(msg, p.keymap.choose):
 			return p, chooseOption(playerOptions[p.selectedOption])
@@ -162,7 +166,8 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			p.speed = -1
 		case OptionPause, OptionPlay:
 			if p.isPlaying() {
-				return p, p.pause()
+				p.pause()
+				return p, nil
 			} else {
 				return p, p.play()
 			}
@@ -221,11 +226,12 @@ func (p *Player) OptionsView() string {
 			option = OptionPlay
 		}
 		var rendered string
-		if i == p.selectedOption {
+		switch i {
+		case p.selectedOption:
 			rendered = p.styles.Selected.Render(string(option))
-		} else if i == p.activeOption {
+		case p.activeOption:
 			rendered = p.styles.Active.Render(string(option))
-		} else {
+		default:
 			rendered = p.styles.Options.Render(string(option))
 		}
 		options = append(options, rendered)
@@ -233,9 +239,8 @@ func (p *Player) OptionsView() string {
 	return lipgloss.JoinHorizontal(lipgloss.Top, options...)
 }
 
-func (p *Player) pause() tea.Cmd {
+func (p *Player) pause() {
 	p.clearTimeouts()
-	return nil
 }
 
 func (p *Player) play() tea.Cmd {

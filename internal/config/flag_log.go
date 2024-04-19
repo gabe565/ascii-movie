@@ -23,7 +23,7 @@ func RegisterLogFlags(cmd *cobra.Command) {
 	)
 	if err := cmd.RegisterFlagCompletionFunc(
 		LogLevelFlag,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 			return []string{
 				log.TraceLevel.String(),
 				log.DebugLevel.String(),
@@ -41,7 +41,7 @@ func RegisterLogFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().String(LogFormatFlag, DefaultLogFormat, "log formatter (text, json)")
 	if err := cmd.RegisterFlagCompletionFunc(
 		LogFormatFlag,
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 			return []string{"text", "json"}, cobra.ShellCompDirectiveNoFileComp
 		},
 	); err != nil {

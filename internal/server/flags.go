@@ -9,7 +9,7 @@ import (
 const (
 	SSHFlagPrefix    = "ssh"
 	TelnetFlagPrefix = "telnet"
-	ApiFlagPrefix    = "api"
+	APIFlagPrefix    = "api"
 	EnabledFlag      = "-enabled"
 	AddressFlag      = "-address"
 
@@ -22,6 +22,7 @@ const (
 	MaxTimeoutFlag        = "max-timeout"
 )
 
+//nolint:gochecknoglobals
 var (
 	concurrentStreams uint
 	idleTimeout       time.Duration
@@ -37,8 +38,8 @@ func Flags(flags *flag.FlagSet) {
 	flags.Bool(TelnetFlagPrefix+EnabledFlag, true, "Enables Telnet listener")
 	flags.String(TelnetFlagPrefix+AddressFlag, ":23", "Telnet listen address")
 
-	flags.Bool(ApiFlagPrefix+EnabledFlag, true, "Enables API listener")
-	flags.String(ApiFlagPrefix+AddressFlag, "127.0.0.1:1977", "API listen address")
+	flags.Bool(APIFlagPrefix+EnabledFlag, true, "Enables API listener")
+	flags.String(APIFlagPrefix+AddressFlag, "127.0.0.1:1977", "API listen address")
 
 	flags.UintVar(&concurrentStreams, ConcurrentStreamsFlag, 10, "Number of concurrent streams allowed from an IP address. Set to 0 to disable.")
 	flags.DurationVar(&idleTimeout, IdleTimeoutFlag, 15*time.Minute, "Idle connection timeout.")
