@@ -128,7 +128,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	select {
 	case term := <-termCh:
 		profile = util.Profile(term)
-	case <-time.After(250 * time.Millisecond):
+	case <-time.After(time.Second):
 		profile = termenv.ANSI256
 	}
 
