@@ -19,6 +19,7 @@ func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) Player 
 		renderer = lipgloss.DefaultRenderer()
 	}
 
+	playCtx, playCancel := context.WithCancel(context.Background())
 	player := Player{
 		movie:           m,
 		renderer:        renderer,
@@ -28,14 +29,16 @@ func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) Player 
 		activeOption:    4,
 		styles:          NewStyles(m, renderer),
 		optionViewStale: true,
+		playCtx:         playCtx,
+		playCancel:      playCancel,
+		keymap:          newKeymap(),
 	}
-	player.play()
+
 	if logger != nil {
 		player.durationHook = loghooks.NewDuration()
 		player.log = logger.WithField("duration", player.durationHook)
 	}
 
-	player.keymap = newKeymap()
 	helpModel := help.New()
 	helpModel.Styles.ShortSeparator = helpModel.Styles.ShortSeparator.Renderer(renderer)
 	helpModel.Styles.ShortDesc = helpModel.Styles.ShortDesc.Renderer(renderer)
