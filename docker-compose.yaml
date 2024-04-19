@@ -3,9 +3,7 @@ version: "3.9"
 services:
   app:
     image: "ghcr.io/gabe565/ascii-movie"
-    build:
-      context: .
-      target: debug
+    build: .
     environment:
       COLORTERM: "$COLORTERM"
       TERM: "$TERM"
