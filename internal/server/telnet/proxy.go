@@ -14,10 +14,13 @@ type WindowSize struct {
 	Width, Height uint16
 }
 
+//nolint:gocyclo
 func Proxy(conn net.Conn, proxy io.Writer, termCh chan string, sizeCh chan WindowSize) error {
 	reader := bufio.NewReaderSize(conn, 64)
 	var wroteTelnetCommands bool
 	var wroteTermType bool
+	var willTerminalType bool
+	var willNegotiateAboutWindowSize bool
 
 	// Gets Telnet to send option negotiation commands if explicit port was given.
 	// Also clears the line in case the client isn't Telnet
@@ -102,10 +105,21 @@ outer:
 					return err
 				}
 
-				if b == byte(TerminalType) {
-					log.Trace("Requesting terminal type")
-					if _, err := Write(conn, Iac, Subnegotiation, TerminalType, 1, Iac, Se); err != nil {
-						return err
+				switch Operator(b) {
+				case TerminalType:
+					if !willTerminalType {
+						willTerminalType = true
+						log.Trace("Requesting terminal type")
+						if _, err := Write(conn, Iac, Subnegotiation, TerminalType, 1, Iac, Se); err != nil {
+							return err
+						}
+					}
+				case NegotiateAboutWindowSize:
+					if !willNegotiateAboutWindowSize {
+						willNegotiateAboutWindowSize = true
+						if _, err := Write(conn, Iac, Do, NegotiateAboutWindowSize); err != nil {
+							log.WithError(err).Error("Failed to write Telnet commands")
+						}
 					}
 				}
 			case Wont, Do, Dont:
