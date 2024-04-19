@@ -33,6 +33,8 @@ RUN addgroup -g "$GID" "$USERNAME" \
 
 COPY --from=build /app/ascii-movie /bin
 ENV TERM=xterm-256color
+ENV ASCII_MOVIE_SSH_HOST_KEY=/data/id_ed25519,/data/id_rsa
+VOLUME /data
 USER $UID
 ENTRYPOINT ["ascii-movie"]
 CMD ["serve"]

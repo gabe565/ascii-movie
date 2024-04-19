@@ -1,6 +1,12 @@
 version: "3.9"
 
 services:
+  chown:
+    image: alpine
+    command: chown -R 1000:1000 /data
+    volumes:
+      - data:/data
+
   app:
     image: "ghcr.io/gabe565/ascii-movie"
     build: .
@@ -12,3 +18,11 @@ services:
       - "23:23"
       - "2222:22"
       - "127.0.0.1:1977:1977"
+    depends_on:
+      chown:
+        condition: service_completed_successfully
+    volumes:
+      - data:/data
+
+volumes:
+  data: {}
