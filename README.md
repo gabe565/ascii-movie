@@ -5,6 +5,7 @@
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/gabe565/ascii-movie)](https://github.com/gabe565/ascii-movie/releases)
 [![Build](https://github.com/gabe565/ascii-movie/actions/workflows/build.yml/badge.svg)](https://github.com/gabe565/ascii-movie/actions/workflows/build.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gabe565/ascii-movie)](https://goreportcard.com/report/github.com/gabe565/ascii-movie)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=gabe565_ascii-movie&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=gabe565_ascii-movie)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/gabe565)](https://artifacthub.io/packages/helm/gabe565/ascii-movie)
 
 The original Star Wars telnet server is currently down, so why not implement it in Go? This server will open a TCP server on `0.0.0.0:23` and an SSH server on `0.0.0.0:22` which stream the original Star Wars ASCII movie to command line clients.
