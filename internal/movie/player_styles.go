@@ -1,53 +1,73 @@
 package movie
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"github.com/charmbracelet/lipgloss"
+	"github.com/muesli/termenv"
+)
 
-var (
-	appStyle = lipgloss.NewStyle().
-			Margin(2, 4)
+type Styles struct {
+	App      lipgloss.Style
+	Screen   lipgloss.Style
+	Progress lipgloss.Style
+	Options  lipgloss.Style
+	Active   lipgloss.Style
+	Selected lipgloss.Style
+}
 
-	smallAppStyle = lipgloss.NewStyle()
+func NewStyles(m *Movie, renderer *lipgloss.Renderer) Styles {
+	borderColor := lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
+	activeColor := lipgloss.AdaptiveColor{Light: "8", Dark: "12"}
+	optionsColor := lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
+	selectedColor := lipgloss.AdaptiveColor{Light: "12", Dark: "4"}
 
-	borderColor = lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
+	s := Styles{
+		App: lipgloss.NewStyle().
+			Renderer(renderer).
+			Margin(2, 4),
 
-	screenStyle = lipgloss.NewStyle().
+		Screen: lipgloss.NewStyle().
+			Renderer(renderer).
+			Width(m.Width).
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(borderColor).
-			Foreground(lipgloss.AdaptiveColor{Light: "0", Dark: "15"})
+			Foreground(lipgloss.AdaptiveColor{Light: "0", Dark: "15"}),
 
-	progressStyle = lipgloss.NewStyle().
+		Progress: lipgloss.NewStyle().
+			Renderer(renderer).
 			Margin(1, 0).
 			Foreground(borderColor).
 			Border(lipgloss.InnerHalfBlockBorder(), false, true).
-			BorderForeground(borderColor)
+			BorderForeground(borderColor),
 
-	optionsColor = lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
-	optionsStyle = lipgloss.NewStyle().
+		Options: lipgloss.NewStyle().
+			Renderer(renderer).
 			Padding(0, 2).
 			MarginBottom(1).
 			Border(lipgloss.InnerHalfBlockBorder()).
 			BorderForeground(optionsColor).
-			Background(optionsColor)
+			Background(optionsColor),
+	}
 
-	optionsStyleAnsi = optionsStyle.Copy().
-				Padding(0, 2).
-				Margin(1).
-				Border(lipgloss.InnerHalfBlockBorder(), false)
+	s.Active = s.Options.Copy().
+		Background(activeColor).
+		BorderForeground(activeColor).
+		Foreground(lipgloss.AdaptiveColor{Light: "15"}).
+		Bold(true)
 
-	activeColor = lipgloss.AdaptiveColor{Light: "8", Dark: "12"}
-	activeStyle = optionsStyle.Copy().
-			Background(activeColor).
-			BorderForeground(activeColor).
-			Foreground(lipgloss.AdaptiveColor{Light: "15"}).
-			Bold(true)
+	s.Selected = s.Options.Copy().
+		Background(selectedColor).
+		BorderForeground(selectedColor).
+		Foreground(lipgloss.Color("15")).
+		Bold(true)
 
-	activeStyleAnsi = activeStyle.Copy().
-			BorderStyle(lipgloss.DoubleBorder())
+	if renderer.ColorProfile() == termenv.Ascii {
+		s.Options = s.Options.
+			Padding(0, 2).
+			Margin(1).
+			Border(lipgloss.InnerHalfBlockBorder(), false)
 
-	selectedColor = lipgloss.AdaptiveColor{Light: "12", Dark: "4"}
-	selectedStyle = optionsStyle.Copy().
-			Background(selectedColor).
-			BorderForeground(selectedColor).
-			Foreground(lipgloss.Color("15")).
-			Bold(true)
-)
+		s.Active = s.Active.BorderStyle(lipgloss.DoubleBorder())
+	}
+
+	return s
+}

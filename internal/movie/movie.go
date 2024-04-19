@@ -2,8 +2,6 @@ package movie
 
 import (
 	"time"
-
-	"github.com/charmbracelet/lipgloss"
 )
 
 func NewMovie() Movie {
@@ -18,8 +16,6 @@ type Movie struct {
 	Frames   []Frame
 	Width    int
 	Sections []int
-
-	screenStyle lipgloss.Style
 }
 
 func (m Movie) Duration() time.Duration {

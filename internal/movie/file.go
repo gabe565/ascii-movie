@@ -82,7 +82,5 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 	}
 
 	m.Cap = frameCap
-	m.screenStyle = screenStyle.Copy().Width(m.Width)
-
 	return nil
 }

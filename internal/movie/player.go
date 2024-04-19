@@ -9,24 +9,22 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/gabe565/ascii-movie/internal/log_hooks"
-	"github.com/muesli/termenv"
 	log "github.com/sirupsen/logrus"
 )
 
-func NewPlayer(m *Movie, logger *log.Entry, profile termenv.Profile) Player {
+func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) Player {
+	if renderer == nil {
+		renderer = lipgloss.DefaultRenderer()
+	}
+
 	player := Player{
 		movie:           m,
-		profile:         profile,
+		renderer:        renderer,
 		speed:           1,
 		selectedOption:  3,
 		activeOption:    4,
-		optionsStyle:    &optionsStyle,
-		activeStyle:     &activeStyle,
+		styles:          NewStyles(m, renderer),
 		optionViewStale: true,
-	}
-	if profile == termenv.Ascii {
-		player.optionsStyle = &optionsStyleAnsi
-		player.activeStyle = &activeStyleAnsi
 	}
 	player.play()
 	if logger != nil {
@@ -36,7 +34,10 @@ func NewPlayer(m *Movie, logger *log.Entry, profile termenv.Profile) Player {
 
 	player.keymap = newKeymap()
 	helpModel := help.New()
-	player.helpViewCache = RenderHelpWithProfile(profile, helpModel, []key.Binding{
+	helpModel.Styles.ShortSeparator = helpModel.Styles.ShortSeparator.Renderer(renderer)
+	helpModel.Styles.ShortDesc = helpModel.Styles.ShortDesc.Renderer(renderer)
+	helpModel.Styles.ShortKey = helpModel.Styles.ShortKey.Renderer(renderer)
+	player.helpViewCache = helpModel.ShortHelpView([]key.Binding{
 		player.keymap.quit,
 		player.keymap.left,
 		player.keymap.right,
@@ -51,7 +52,7 @@ type Player struct {
 	frame        int
 	log          *log.Entry
 	durationHook log_hooks.Duration
-	profile      termenv.Profile
+	renderer     *lipgloss.Renderer
 	small        bool
 
 	speed      float64
@@ -60,8 +61,7 @@ type Player struct {
 
 	selectedOption  int
 	activeOption    int
-	optionsStyle    *lipgloss.Style
-	activeStyle     *lipgloss.Style
+	styles          Styles
 	optionViewCache string
 	optionViewStale bool
 
@@ -192,16 +192,16 @@ func (p Player) View() string {
 
 	content := lipgloss.JoinVertical(
 		lipgloss.Center,
-		p.movie.screenStyle.RenderWithProfile(p.profile, p.movie.Frames[p.frame].Data),
-		progressStyle.RenderWithProfile(p.profile, p.movie.Frames[p.frame].Progress),
+		p.styles.Screen.Render(p.movie.Frames[p.frame].Data),
+		p.styles.Progress.Render(p.movie.Frames[p.frame].Progress),
 		p.optionViewCache,
 		p.helpViewCache,
 	)
 
 	if p.small {
-		return smallAppStyle.RenderWithProfile(p.profile, content)
+		return content
 	}
-	return appStyle.RenderWithProfile(p.profile, content)
+	return p.styles.App.Render(content)
 }
 
 func (p *Player) OptionsView() string {
@@ -214,11 +214,11 @@ func (p *Player) OptionsView() string {
 		}
 		var rendered string
 		if i == p.selectedOption {
-			rendered = selectedStyle.RenderWithProfile(p.profile, string(option))
+			rendered = p.styles.Selected.Render(string(option))
 		} else if i == p.activeOption {
-			rendered = p.activeStyle.RenderWithProfile(p.profile, string(option))
+			rendered = p.styles.Active.Render(string(option))
 		} else {
-			rendered = p.optionsStyle.RenderWithProfile(p.profile, string(option))
+			rendered = p.styles.Options.Render(string(option))
 		}
 		options = append(options, rendered)
 	}

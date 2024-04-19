@@ -11,7 +11,6 @@ import (
 	"github.com/charmbracelet/wish"
 	"github.com/charmbracelet/wish/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/movie"
-	"github.com/gabe565/ascii-movie/internal/util"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	gossh "golang.org/x/crypto/ssh"
@@ -114,10 +113,8 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 			"user":      session.User(),
 		})
 
-		pty, _, _ := session.Pty()
-		profile := util.Profile(pty.Term)
-
-		player := movie.NewPlayer(m, logger, profile)
+		renderer := bubbletea.MakeRenderer(session)
+		player := movie.NewPlayer(m, logger, renderer)
 		return player, []tea.ProgramOption{tea.WithFPS(30)}
 	}
 }

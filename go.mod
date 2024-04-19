@@ -2,8 +2,6 @@ module github.com/gabe565/ascii-movie
 
 go 1.22.2
 
-replace github.com/charmbracelet/lipgloss => github.com/gabe565/lipgloss v0.0.0-20231124201931-3d7efac1ed1b
-
 require (
 	github.com/charmbracelet/bubbles v0.18.0
 	github.com/charmbracelet/bubbletea v0.25.0

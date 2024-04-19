@@ -4,7 +4,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/gabe565/ascii-movie/internal/movie"
-	"github.com/muesli/termenv"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -39,7 +38,7 @@ func run(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	program := tea.NewProgram(movie.NewPlayer(&m, nil, termenv.ColorProfile()))
+	program := tea.NewProgram(movie.NewPlayer(&m, nil, nil))
 	if _, err := program.Run(); err != nil {
 		return err
 	}
