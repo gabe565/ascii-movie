@@ -12,7 +12,6 @@ import (
 	"github.com/charmbracelet/wish/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/util"
-	"github.com/muesli/termenv"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	gossh "golang.org/x/crypto/ssh"
@@ -50,7 +49,7 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 		wish.WithIdleTimeout(idleTimeout),
 		wish.WithMaxTimeout(maxTimeout),
 		wish.WithMiddleware(
-			bubbletea.MiddlewareWithProgramHandler(s.Handler(m), termenv.ANSI256),
+			bubbletea.Middleware(s.Handler(m)),
 			s.TrackStream,
 		),
 	}
@@ -107,8 +106,8 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 	return group.Wait()
 }
 
-func (s *SSHServer) Handler(m *movie.Movie) bubbletea.ProgramHandler {
-	return func(session ssh.Session) *tea.Program {
+func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
+	return func(session ssh.Session) (tea.Model, []tea.ProgramOption) {
 		remoteIP := RemoteIp(session.RemoteAddr().String())
 		logger := s.Log.WithFields(log.Fields{
 			"remote_ip": remoteIP,
@@ -119,12 +118,7 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.ProgramHandler {
 		profile := util.Profile(pty.Term)
 
 		player := movie.NewPlayer(m, logger, profile)
-		return tea.NewProgram(
-			player,
-			tea.WithInput(session),
-			tea.WithOutput(session),
-			tea.WithFPS(30),
-		)
+		return player, []tea.ProgramOption{tea.WithFPS(30)}
 	}
 }
 
