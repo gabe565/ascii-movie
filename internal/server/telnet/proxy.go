@@ -26,6 +26,7 @@ func Proxy(conn net.Conn, proxy io.Writer, termCh chan string, sizeCh chan Windo
 		return err
 	}
 
+outer:
 	for {
 		b, err := reader.ReadByte()
 		if err != nil {
@@ -56,35 +57,45 @@ func Proxy(conn net.Conn, proxy io.Writer, termCh chan string, sizeCh chan Windo
 
 			switch Operator(b) {
 			case Subnegotiation:
-				scanner := bufio.NewScanner(reader)
-				scanner.Split(ScanIacSe)
-				if scanner.Scan() {
-					command := scanner.Bytes()
-					command = bytes.ReplaceAll(command, []byte{byte(Iac), byte(Iac)}, []byte{byte(Iac)})
-
-					if len(command) != 0 {
-						switch Operator(command[0]) {
-						case TerminalType:
-							if !wroteTermType && len(command) > 2 {
-								log.Trace("Got terminal type")
-								termCh <- string(command[2:])
-								wroteTermType = true
-							}
-						case NegotiateAboutWindowSize:
-							if len(command) >= 5 {
-								log.Trace("Got window size")
-								r := bytes.NewReader(command[1:])
-								var size WindowSize
-								if err := binary.Read(r, binary.BigEndian, &size); err != nil {
-									return err
-								}
-								sizeCh <- size
-							}
-						}
+				command, err := reader.ReadBytes(byte(Se))
+				if err != nil {
+					return err
+				}
+				if len(command) < 2 {
+					continue
+				}
+				for i := 0; command[len(command)-2] != byte(Iac); i++ {
+					commandExt, err := reader.ReadBytes(byte(Se))
+					if err != nil {
+						return err
+					}
+					command = append(command, commandExt...)
+					if i == 2 {
+						continue outer
 					}
 				}
-				if scanner.Err() != nil {
-					return scanner.Err()
+
+				command = bytes.ReplaceAll(command, []byte{byte(Iac), byte(Iac)}, []byte{byte(Iac)})
+
+				if len(command) != 0 {
+					switch Operator(command[0]) {
+					case TerminalType:
+						if !wroteTermType && len(command) > 2 {
+							log.Trace("Got terminal type")
+							termCh <- string(command[2:])
+							wroteTermType = true
+						}
+					case NegotiateAboutWindowSize:
+						if len(command) >= 5 {
+							log.Trace("Got window size")
+							r := bytes.NewReader(command[1:])
+							var size WindowSize
+							if err := binary.Read(r, binary.BigEndian, &size); err != nil {
+								return err
+							}
+							sizeCh <- size
+						}
+					}
 				}
 			case Will:
 				if b, err = reader.ReadByte(); err != nil {
@@ -111,27 +122,4 @@ func Proxy(conn net.Conn, proxy io.Writer, termCh chan string, sizeCh chan Windo
 			}
 		}
 	}
-}
-
-func ScanIacSe(data []byte, atEOF bool) (int, []byte, error) {
-	if atEOF && len(data) == 0 {
-		return 0, nil, nil
-	}
-	if i := bytes.Index(data, []byte{byte(Iac), byte(Se)}); i > 0 {
-		// We have a full newline-terminated line.
-		return i + 2, trimIac(data[:i]), nil
-	}
-	// If we're at EOF, we have a final, non-terminated line. Return it.
-	if atEOF {
-		return len(data), trimIac(data), nil
-	}
-	// Request more data.
-	return 0, nil, nil
-}
-
-func trimIac(data []byte) []byte {
-	if len(data) != 0 && data[len(data)-1] == byte(Iac) {
-		return data[:len(data)-1]
-	}
-	return data
 }
