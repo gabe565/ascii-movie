@@ -29,7 +29,7 @@ require (
 	github.com/charmbracelet/log v0.4.0 // indirect
 	github.com/charmbracelet/x/errors v0.0.0-20240117030013-d31dba354651 // indirect
 	github.com/charmbracelet/x/exp/term v0.0.0-20240328150354-ab9afc214dfd // indirect
-	github.com/containerd/console v1.0.4-0.20230313162750-1ae8d489ac81 // indirect
+	github.com/containerd/console v1.0.4 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
 	github.com/creack/pty v1.1.21 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect

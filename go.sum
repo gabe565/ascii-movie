@@ -24,8 +24,8 @@ github.com/charmbracelet/x/errors v0.0.0-20240117030013-d31dba354651 h1:3RXpZWGW
 github.com/charmbracelet/x/errors v0.0.0-20240117030013-d31dba354651/go.mod h1:2P0UgXMEa6TsToMSuFqKFQR+fZTO9CNGUNokkPatT/0=
 github.com/charmbracelet/x/exp/term v0.0.0-20240328150354-ab9afc214dfd h1:HqBjkSFXXfW4IgX3TMKipWoPEN08T3Pi4SA/3DLss/U=
 github.com/charmbracelet/x/exp/term v0.0.0-20240328150354-ab9afc214dfd/go.mod h1:6GZ13FjIP6eOCqWU4lqgveGnYxQo9c3qBzHPeFu4HBE=
-github.com/containerd/console v1.0.4-0.20230313162750-1ae8d489ac81 h1:q2hJAaP1k2wIvVRd/hEHD7lacgqrCPS+k8g1MndzfWY=
-github.com/containerd/console v1.0.4-0.20230313162750-1ae8d489ac81/go.mod h1:YynlIjWYF8myEu6sdkwKIvGQq+cOckRm6So2avqoYAk=
+github.com/containerd/console v1.0.4 h1:F2g4+oChYvBTsASRTz8NP6iIAi97J3TtSAsLbIFn4ro=
+github.com/containerd/console v1.0.4/go.mod h1:YynlIjWYF8myEu6sdkwKIvGQq+cOckRm6So2avqoYAk=
 github.com/cpuguy83/go-md2man/v2 v2.0.3 h1:qMCsGGgs+MAzDFyp9LpAe1Lqy/fY/qCovCm0qnXZOBM=
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
