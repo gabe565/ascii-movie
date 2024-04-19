@@ -31,6 +31,9 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 			frameNum += 1
 			if frameNum != 0 {
 				f.Data = strings.TrimSuffix(buf.String(), "\n")
+				if frameHeight := strings.Count(f.Data, "\n"); m.Height < frameHeight {
+					m.Height = frameHeight
+				}
 				buf.Reset()
 				frames = append(frames, f)
 			}

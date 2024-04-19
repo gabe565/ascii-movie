@@ -25,6 +25,7 @@ func NewStyles(m *Movie, renderer *lipgloss.Renderer) Styles {
 		Screen: lipgloss.NewStyle().
 			Renderer(renderer).
 			Width(m.Width).
+			Height(m.Height).
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(borderColor).
 			Foreground(lipgloss.AdaptiveColor{Light: "0", Dark: "15"}),

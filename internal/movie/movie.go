@@ -14,6 +14,7 @@ type Movie struct {
 	Filename string
 	Cap      int
 	Frames   []Frame
+	Height   int
 	Width    int
 	Sections []int
 }
