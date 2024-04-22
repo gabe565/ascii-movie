@@ -124,23 +124,26 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 		cancel()
 	}()
 
+	var gotProfile bool
 	var profile termenv.Profile
 	select {
 	case term := <-termCh:
 		profile = util.Profile(term)
+		gotProfile = true
 	case <-time.After(time.Second):
 		profile = termenv.ANSI256
 	}
 
 	player := movie.NewPlayer(m, logger, telnet.MakeRenderer(outW, profile))
-	program := tea.NewProgram(
-		player,
+	opts := []tea.ProgramOption{
 		tea.WithInput(inR),
 		tea.WithOutput(outW),
 		tea.WithFPS(30),
-		tea.WithAltScreen(),
-		tea.WithMouseCellMotion(),
-	)
+	}
+	if gotProfile {
+		opts = append(opts, tea.WithAltScreen(), tea.WithMouseCellMotion())
+	}
+	program := tea.NewProgram(player, opts...)
 
 	go func() {
 		for {
