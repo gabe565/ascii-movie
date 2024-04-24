@@ -158,7 +158,7 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		p.clearTimeouts()
 		p.zone.Close()
-		return p, tea.Quit
+		return p, tea.Quit //nolint:forbidigo
 	case PlayerOption:
 		p.optionViewStale = true
 		return p, p.doPlayerOption(msg)
