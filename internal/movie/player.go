@@ -91,7 +91,7 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if p.log != nil {
 					p.log.Info("Finished movie")
 				}
-				return p, tea.Quit
+				return p, Quit
 			}
 		case p.frame <= 0:
 			p.speed = 1
@@ -112,7 +112,7 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if p.log != nil {
 					p.log.Info("Finished movie")
 				}
-				return p, tea.Quit
+				return p, Quit
 			} else if p.frame+frameDiff <= 0 {
 				p.speed = 1
 				p.activeOption = 4
