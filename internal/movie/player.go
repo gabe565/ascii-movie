@@ -138,6 +138,24 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, p.keymap.help):
 			p.help.ShowAll = !p.help.ShowAll
 			p.helpViewStale = true
+		case key.Matches(msg, p.keymap.jumpPrev):
+			var d time.Duration
+			for d < 5*time.Second && p.frame > 0 {
+				p.frame--
+				d += p.movie.Frames[p.frame].Duration
+			}
+			if p.isPlaying() {
+				return p, p.play()
+			}
+		case key.Matches(msg, p.keymap.jumpNext):
+			var d time.Duration
+			for d < 5*time.Second && p.frame < len(p.movie.Frames)-1 {
+				p.frame++
+				d += p.movie.Frames[p.frame].Duration
+			}
+			if p.isPlaying() {
+				return p, p.play()
+			}
 		case key.Matches(msg, p.keymap.jumps...):
 			for i, binding := range p.keymap.jumps {
 				if key.Matches(msg, binding) {

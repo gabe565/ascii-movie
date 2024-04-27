@@ -52,6 +52,14 @@ func newKeymap() keymap {
 			key.WithKeys("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"),
 			key.WithHelp("0-9", "jump to position"),
 		),
+		jumpPrev: key.NewBinding(
+			key.WithKeys("shift+left", "H", "A"),
+			key.WithHelp("shift+left", "jump backward"),
+		),
+		jumpNext: key.NewBinding(
+			key.WithKeys("shift+right", "L", "D"),
+			key.WithHelp("shift+right", "jump forward"),
+		),
 		help: key.NewBinding(
 			key.WithKeys("?"),
 			key.WithHelp("?", "help"),
@@ -70,6 +78,8 @@ type keymap struct {
 	chooseFull key.Binding
 	jumps      []key.Binding
 	jump       key.Binding
+	jumpPrev   key.Binding
+	jumpNext   key.Binding
 	help       key.Binding
 }
 
@@ -93,6 +103,8 @@ func (k keymap) FullHelp() [][]key.Binding {
 		},
 		{
 			k.jump,
+			k.jumpPrev,
+			k.jumpNext,
 			k.help,
 			k.quit,
 		},
