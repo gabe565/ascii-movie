@@ -72,7 +72,7 @@ func newKeymap() keymap {
 		),
 		choose: key.NewBinding(
 			key.WithKeys(" ", "enter"),
-			key.WithHelp("enter", "choose"),
+			key.WithHelp("enter", "select"),
 		),
 		jumps: jumps,
 	}
