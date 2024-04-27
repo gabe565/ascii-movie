@@ -32,7 +32,7 @@ func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) Player 
 		playCtx:         playCtx,
 		playCancel:      playCancel,
 		keymap:          newKeymap(),
-		help:            help.New(),
+		help:            newHelp(renderer),
 		helpViewStale:   true,
 	}
 
@@ -40,14 +40,6 @@ func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) Player 
 		player.durationHook = loghooks.NewDuration()
 		player.log = logger.WithField("duration", player.durationHook)
 	}
-
-	player.help.Styles.Ellipsis = player.help.Styles.Ellipsis.Renderer(renderer)
-	player.help.Styles.ShortKey = player.help.Styles.ShortKey.Renderer(renderer)
-	player.help.Styles.ShortDesc = player.help.Styles.ShortDesc.Renderer(renderer)
-	player.help.Styles.ShortSeparator = player.help.Styles.ShortSeparator.Renderer(renderer)
-	player.help.Styles.FullKey = player.help.Styles.FullKey.Renderer(renderer)
-	player.help.Styles.FullDesc = player.help.Styles.FullDesc.Renderer(renderer)
-	player.help.Styles.FullSeparator = player.help.Styles.FullSeparator.Renderer(renderer)
 
 	return player
 }
