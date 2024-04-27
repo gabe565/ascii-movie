@@ -309,7 +309,11 @@ func (p *Player) OptionsView() string {
 
 func (p *Player) HelpView() string {
 	p.helpViewStale = false
-	return p.zone.Mark("help", p.help.View(p.keymap))
+	v := p.help.View(p.keymap)
+	if p.help.ShowAll {
+		v = lipgloss.JoinHorizontal(lipgloss.Top, strings.Repeat(" ", 5), v)
+	}
+	return p.zone.Mark("help", v)
 }
 
 func (p *Player) pause() {
