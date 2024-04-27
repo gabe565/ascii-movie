@@ -29,13 +29,14 @@ func Quit() tea.Msg {
 }
 
 type keymap struct {
-	quit   key.Binding
-	left   key.Binding
-	right  key.Binding
-	home   key.Binding
-	end    key.Binding
-	choose key.Binding
-	jumps  []key.Binding
+	quit     key.Binding
+	left     key.Binding
+	right    key.Binding
+	navigate key.Binding
+	home     key.Binding
+	end      key.Binding
+	choose   key.Binding
+	jumps    []key.Binding
 }
 
 func newKeymap() keymap {
@@ -58,6 +59,10 @@ func newKeymap() keymap {
 		right: key.NewBinding(
 			key.WithKeys("right", "l"),
 			key.WithHelp("→/l", "right"),
+		),
+		navigate: key.NewBinding(
+			key.WithKeys("left", "h", "right", "l"),
+			key.WithHelp("←→", "navigate"),
 		),
 		home: key.NewBinding(
 			key.WithKeys("home"),

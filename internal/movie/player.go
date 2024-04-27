@@ -45,8 +45,7 @@ func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) Player 
 	helpModel.Styles.ShortKey = helpModel.Styles.ShortKey.Renderer(renderer)
 	player.helpViewCache = helpModel.ShortHelpView([]key.Binding{
 		player.keymap.quit,
-		player.keymap.left,
-		player.keymap.right,
+		player.keymap.navigate,
 		player.keymap.choose,
 	})
 
