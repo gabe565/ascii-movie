@@ -6,6 +6,6 @@
 .pre-commit-config.yaml
 Dockerfile
 data/
-docker-compose.yml
+compose.yml
 ascii-movie
 vendor/
