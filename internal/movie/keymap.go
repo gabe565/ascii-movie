@@ -32,12 +32,12 @@ func newKeymap() keymap {
 			key.WithHelp("←→", "navigate"),
 		),
 		home: key.NewBinding(
-			key.WithKeys("home"),
-			key.WithHelp("home", "go to start"),
+			key.WithKeys("g", "home"),
+			key.WithHelp("g/home", "go to start"),
 		),
 		end: key.NewBinding(
-			key.WithKeys("end"),
-			key.WithHelp("end", "go to end"),
+			key.WithKeys("G", "end"),
+			key.WithHelp("G/end", "go to end"),
 		),
 		choose: key.NewBinding(
 			key.WithKeys(" ", "enter"),
