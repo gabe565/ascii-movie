@@ -7,18 +7,18 @@ import (
 
 func newHelp(renderer *lipgloss.Renderer) help.Model {
 	keyStyle := lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{
-		Light: "#909090",
-		Dark:  "#626262",
+		Light: "246",
+		Dark:  "242",
 	}).Renderer(renderer)
 
 	descStyle := lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{
-		Light: "#B2B2B2",
-		Dark:  "#4A4A4A",
+		Light: "249",
+		Dark:  "239",
 	}).Renderer(renderer)
 
 	sepStyle := lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{
-		Light: "#DDDADA",
-		Dark:  "#3C3C3C",
+		Light: "253",
+		Dark:  "237",
 	}).Renderer(renderer)
 
 	return help.Model{
