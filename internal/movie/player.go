@@ -32,6 +32,8 @@ func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) Player 
 		playCtx:         playCtx,
 		playCancel:      playCancel,
 		keymap:          newKeymap(),
+		help:            help.New(),
+		helpViewStale:   true,
 	}
 
 	if logger != nil {
@@ -39,15 +41,13 @@ func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) Player 
 		player.log = logger.WithField("duration", player.durationHook)
 	}
 
-	helpModel := help.New()
-	helpModel.Styles.ShortSeparator = helpModel.Styles.ShortSeparator.Renderer(renderer)
-	helpModel.Styles.ShortDesc = helpModel.Styles.ShortDesc.Renderer(renderer)
-	helpModel.Styles.ShortKey = helpModel.Styles.ShortKey.Renderer(renderer)
-	player.helpViewCache = helpModel.ShortHelpView([]key.Binding{
-		player.keymap.navigate,
-		player.keymap.choose,
-		player.keymap.quit,
-	})
+	player.help.Styles.Ellipsis = player.help.Styles.Ellipsis.Renderer(renderer)
+	player.help.Styles.ShortKey = player.help.Styles.ShortKey.Renderer(renderer)
+	player.help.Styles.ShortDesc = player.help.Styles.ShortDesc.Renderer(renderer)
+	player.help.Styles.ShortSeparator = player.help.Styles.ShortSeparator.Renderer(renderer)
+	player.help.Styles.FullKey = player.help.Styles.FullKey.Renderer(renderer)
+	player.help.Styles.FullDesc = player.help.Styles.FullDesc.Renderer(renderer)
+	player.help.Styles.FullSeparator = player.help.Styles.FullSeparator.Renderer(renderer)
 
 	return player
 }
@@ -71,6 +71,8 @@ type Player struct {
 	optionViewStale bool
 
 	keymap        keymap
+	help          help.Model
+	helpViewStale bool
 	helpViewCache string
 }
 
@@ -141,6 +143,9 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			p.selectedOption = 0
 		case key.Matches(msg, p.keymap.end):
 			p.selectedOption = len(playerOptions) - 1
+		case key.Matches(msg, p.keymap.help):
+			p.help.ShowAll = !p.help.ShowAll
+			p.helpViewStale = true
 		case key.Matches(msg, p.keymap.jumps...):
 			for i, binding := range p.keymap.jumps {
 				if key.Matches(msg, binding) {
@@ -199,6 +204,9 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return p, p.doPlayerOption(Option2xForward)
 		case p.zone.Get(string(Option1xForward)).InBounds(msg):
 			return p, p.doPlayerOption(Option1xForward)
+		case p.zone.Get("help").InBounds(msg):
+			p.help.ShowAll = !p.help.ShowAll
+			p.helpViewStale = true
 		}
 
 	case tea.WindowSizeMsg:
@@ -216,6 +224,9 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (p Player) View() string {
 	if p.optionViewStale {
 		p.optionViewCache = p.OptionsView()
+	}
+	if p.helpViewStale {
+		p.helpViewCache = p.HelpView()
 	}
 
 	content := lipgloss.JoinHorizontal(
@@ -254,6 +265,11 @@ func (p *Player) OptionsView() string {
 		options = append(options, p.zone.Mark(string(option), rendered))
 	}
 	return lipgloss.JoinHorizontal(lipgloss.Top, options...)
+}
+
+func (p *Player) HelpView() string {
+	p.helpViewStale = false
+	return p.zone.Mark("help", p.help.View(p.keymap))
 }
 
 func (p *Player) pause() {
