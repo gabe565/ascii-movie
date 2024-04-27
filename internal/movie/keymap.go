@@ -20,15 +20,15 @@ func newKeymap() keymap {
 			key.WithHelp("q", "quit"),
 		),
 		left: key.NewBinding(
-			key.WithKeys("left", "h"),
-			key.WithHelp("←/h", "left"),
+			key.WithKeys("left", "h", "a"),
+			key.WithHelp("←/h/a", "left"),
 		),
 		right: key.NewBinding(
-			key.WithKeys("right", "l"),
-			key.WithHelp("→/l", "right"),
+			key.WithKeys("right", "l", "d"),
+			key.WithHelp("→/l/d", "right"),
 		),
 		navigate: key.NewBinding(
-			key.WithKeys("left", "h", "right", "l"),
+			key.WithKeys("left", "h", "a", "right", "l", "d"),
 			key.WithHelp("←→", "navigate"),
 		),
 		home: key.NewBinding(
