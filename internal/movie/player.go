@@ -14,13 +14,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) Player {
+func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) *Player {
 	if renderer == nil {
 		renderer = lipgloss.DefaultRenderer()
 	}
 
 	playCtx, playCancel := context.WithCancel(context.Background())
-	player := Player{
+	player := &Player{
 		movie:           m,
 		renderer:        renderer,
 		zone:            zone.New(),
@@ -68,12 +68,12 @@ type Player struct {
 	helpViewCache string
 }
 
-func (p Player) Init() tea.Cmd {
+func (p *Player) Init() tea.Cmd {
 	return tick(p.playCtx, p.movie.Frames[p.frame].Duration, frameTickMsg{})
 }
 
 //nolint:gocyclo
-func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case frameTickMsg:
 		var frameDiff int
@@ -174,7 +174,6 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		p.zone.Close()
 		return p, tea.Quit //nolint:forbidigo
 	case PlayerOption:
-		p.optionViewStale = true
 		return p, p.doPlayerOption(msg)
 	case tea.MouseMsg:
 		if msg.Action == tea.MouseActionRelease || msg.Button != tea.MouseButtonLeft {
@@ -231,7 +230,7 @@ func (p Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return p, nil
 }
 
-func (p Player) View() string {
+func (p *Player) View() string {
 	if p.optionViewStale {
 		p.optionViewCache = p.OptionsView()
 	}
@@ -294,7 +293,7 @@ func (p *Player) play() tea.Cmd {
 	}
 }
 
-func (p Player) isPlaying() bool {
+func (p *Player) isPlaying() bool {
 	return p.playCtx.Err() == nil
 }
 
@@ -305,6 +304,7 @@ func (p *Player) clearTimeouts() {
 }
 
 func (p *Player) doPlayerOption(opt PlayerOption) tea.Cmd {
+	p.optionViewStale = true
 	switch opt {
 	case Option3xRewind:
 		p.activeOption = 0
