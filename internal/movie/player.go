@@ -317,10 +317,12 @@ func (p *Player) HelpView() string {
 }
 
 func (p *Player) pause() {
+	p.optionViewStale = true
 	p.clearTimeouts()
 }
 
 func (p *Player) play() tea.Cmd {
+	p.optionViewStale = true
 	p.clearTimeouts()
 	p.playCtx, p.playCancel = context.WithCancel(context.Background())
 	return func() tea.Msg {
