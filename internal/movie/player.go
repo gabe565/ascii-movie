@@ -174,7 +174,38 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		p.zone.Close()
 		return p, tea.Quit //nolint:forbidigo
 	case PlayerOption:
-		return p, p.doPlayerOption(msg)
+		p.optionViewStale = true
+		switch msg {
+		case Option3xRewind:
+			p.activeOption = 0
+			p.speed = -15
+		case Option2xRewind:
+			p.activeOption = 1
+			p.speed = -3
+		case Option1xRewind:
+			p.activeOption = 2
+			p.speed = -1
+		case OptionPause, OptionPlay:
+			if p.isPlaying() {
+				p.pause()
+				return p, nil
+			} else {
+				return p, p.play()
+			}
+		case Option1xForward:
+			p.activeOption = 4
+			p.speed = 1
+		case Option2xForward:
+			p.activeOption = 5
+			p.speed = 3
+		case Option3xForward:
+			p.activeOption = 6
+			p.speed = 15
+		}
+		if !p.isPlaying() {
+			return p, p.play()
+		}
+		return p, nil
 	case tea.MouseMsg:
 		if msg.Action == tea.MouseActionRelease || msg.Button != tea.MouseButtonLeft {
 			return p, nil
@@ -198,21 +229,21 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		switch {
 		case p.zone.Get(string(Option3xRewind)).InBounds(msg):
-			return p, p.doPlayerOption(Option3xRewind)
+			return p, chooseOption(Option3xRewind)
 		case p.zone.Get(string(Option2xRewind)).InBounds(msg):
-			return p, p.doPlayerOption(Option2xRewind)
+			return p, chooseOption(Option2xRewind)
 		case p.zone.Get(string(Option1xRewind)).InBounds(msg):
-			return p, p.doPlayerOption(Option1xRewind)
+			return p, chooseOption(Option1xRewind)
 		case p.zone.Get(string(OptionPause)).InBounds(msg):
-			return p, p.doPlayerOption(OptionPause)
+			return p, chooseOption(OptionPause)
 		case p.zone.Get(string(OptionPlay)).InBounds(msg):
-			return p, p.doPlayerOption(OptionPlay)
+			return p, chooseOption(OptionPlay)
 		case p.zone.Get(string(Option3xForward)).InBounds(msg):
-			return p, p.doPlayerOption(Option3xForward)
+			return p, chooseOption(Option3xForward)
 		case p.zone.Get(string(Option2xForward)).InBounds(msg):
-			return p, p.doPlayerOption(Option2xForward)
+			return p, chooseOption(Option2xForward)
 		case p.zone.Get(string(Option1xForward)).InBounds(msg):
-			return p, p.doPlayerOption(Option1xForward)
+			return p, chooseOption(Option1xForward)
 		case p.zone.Get("help").InBounds(msg):
 			p.help.ShowAll = !p.help.ShowAll
 			p.helpViewStale = true
@@ -301,39 +332,4 @@ func (p *Player) clearTimeouts() {
 	if p.playCancel != nil {
 		p.playCancel()
 	}
-}
-
-func (p *Player) doPlayerOption(opt PlayerOption) tea.Cmd {
-	p.optionViewStale = true
-	switch opt {
-	case Option3xRewind:
-		p.activeOption = 0
-		p.speed = -15
-	case Option2xRewind:
-		p.activeOption = 1
-		p.speed = -3
-	case Option1xRewind:
-		p.activeOption = 2
-		p.speed = -1
-	case OptionPause, OptionPlay:
-		if p.isPlaying() {
-			p.pause()
-			return nil
-		} else {
-			return p.play()
-		}
-	case Option1xForward:
-		p.activeOption = 4
-		p.speed = 1
-	case Option2xForward:
-		p.activeOption = 5
-		p.speed = 3
-	case Option3xForward:
-		p.activeOption = 6
-		p.speed = 15
-	}
-	if !p.isPlaying() {
-		return p.play()
-	}
-	return nil
 }
