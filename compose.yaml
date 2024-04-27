@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   chown:
     image: alpine
@@ -27,6 +25,10 @@ services:
         condition: service_completed_successfully
     volumes:
       - data:/data
+    develop:
+      watch:
+        - action: rebuild
+          path: .
 
 volumes:
   data: {}

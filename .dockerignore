@@ -4,7 +4,6 @@
 .github/
 .idea/
 .pre-commit-config.yaml
-Dockerfile
 data/
 compose.yml
 ascii-movie
