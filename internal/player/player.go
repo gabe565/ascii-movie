@@ -1,4 +1,4 @@
-package movie
+package player
 
 import (
 	"context"
@@ -10,11 +10,12 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/gabe565/ascii-movie/internal/loghooks"
+	"github.com/gabe565/ascii-movie/internal/movie"
 	zone "github.com/lrstanley/bubblezone"
 	"github.com/rs/zerolog"
 )
 
-func NewPlayer(m *Movie, logger zerolog.Logger, renderer *lipgloss.Renderer) *Player {
+func NewPlayer(m *movie.Movie, logger zerolog.Logger, renderer *lipgloss.Renderer) *Player {
 	if renderer == nil {
 		renderer = lipgloss.DefaultRenderer()
 	}
@@ -41,7 +42,7 @@ func NewPlayer(m *Movie, logger zerolog.Logger, renderer *lipgloss.Renderer) *Pl
 }
 
 type Player struct {
-	movie    *Movie
+	movie    *movie.Movie
 	frame    int
 	log      zerolog.Logger
 	renderer *lipgloss.Renderer
@@ -162,7 +163,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		p.clearTimeouts()
 		p.zone.Close()
 		return p, tea.Quit //nolint:forbidigo
-	case PlayerOption:
+	case Option:
 		p.optionViewStale = true
 		switch msg {
 		case Option3xRewind:

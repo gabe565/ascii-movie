@@ -4,6 +4,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/gabe565/ascii-movie/internal/movie"
+	"github.com/gabe565/ascii-movie/internal/player"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -40,7 +41,7 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	program := tea.NewProgram(
-		movie.NewPlayer(&m, log.Level(zerolog.ErrorLevel), nil),
+		player.NewPlayer(&m, log.Level(zerolog.ErrorLevel), nil),
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(),
 	)

@@ -10,6 +10,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/movie"
+	"github.com/gabe565/ascii-movie/internal/player"
 	"github.com/gabe565/ascii-movie/internal/server/idleconn"
 	"github.com/gabe565/ascii-movie/internal/server/telnet"
 	"github.com/gabe565/ascii-movie/internal/util"
@@ -134,7 +135,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 		profile = termenv.ANSI256
 	}
 
-	player := movie.NewPlayer(m, logger, telnet.MakeRenderer(outW, profile))
+	p := player.NewPlayer(m, logger, telnet.MakeRenderer(outW, profile))
 	opts := []tea.ProgramOption{
 		tea.WithInput(inR),
 		tea.WithOutput(outW),
@@ -143,7 +144,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	if gotProfile {
 		opts = append(opts, tea.WithAltScreen(), tea.WithMouseCellMotion())
 	}
-	program := tea.NewProgram(player, opts...)
+	program := tea.NewProgram(p, opts...)
 
 	go func() {
 		for {
@@ -156,7 +157,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 					})
 				}
 			case <-ctx.Done():
-				program.Send(movie.Quit())
+				program.Send(player.Quit())
 				return
 			}
 		}

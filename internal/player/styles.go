@@ -1,7 +1,8 @@
-package movie
+package player
 
 import (
 	"github.com/charmbracelet/lipgloss"
+	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/muesli/termenv"
 )
 
@@ -15,7 +16,7 @@ type Styles struct {
 	MarginX, MarginY string
 }
 
-func NewStyles(m *Movie, renderer *lipgloss.Renderer) Styles {
+func NewStyles(m *movie.Movie, renderer *lipgloss.Renderer) Styles {
 	borderColor := lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
 	activeColor := lipgloss.AdaptiveColor{Light: "8", Dark: "12"}
 	optionsColor := lipgloss.AdaptiveColor{Light: "7", Dark: "8"}

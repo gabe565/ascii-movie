@@ -1,4 +1,4 @@
-package movie
+package player
 
 import (
 	"github.com/charmbracelet/bubbles/help"
