@@ -65,7 +65,6 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 	copy(m.Frames, frames)
 
 	// Compute the total duration
-	var frameCap int
 	bar := progressbar.New()
 	totalDuration := m.Duration()
 
@@ -79,12 +78,8 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 		if percent < len(m.Sections)-1 {
 			m.Sections[percent+1] = i
 		}
-		if frameCap < len(f.Data) {
-			frameCap = len(f.Data)
-		}
 		currentPosition += f.Duration
 	}
 
-	m.Cap = frameCap
 	return nil
 }

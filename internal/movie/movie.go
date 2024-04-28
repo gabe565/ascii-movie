@@ -10,7 +10,6 @@ func NewMovie() Movie {
 
 type Movie struct {
 	Filename string
-	Cap      int
 	Frames   []Frame
 	Height   int
 	Width    int

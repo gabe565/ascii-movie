@@ -10,7 +10,6 @@ import (
 func TestMovie_Duration(t *testing.T) {
 	type fields struct {
 		Filename string
-		Cap      int
 		Frames   []Frame
 	}
 	tests := []struct {
@@ -25,7 +24,6 @@ func TestMovie_Duration(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := Movie{
 				Filename: tt.fields.Filename,
-				Cap:      tt.fields.Cap,
 				Frames:   tt.fields.Frames,
 			}
 			assert.Equal(t, tt.want, m.Duration())
