@@ -229,21 +229,29 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		switch {
 		case p.zone.Get(string(Option3xRewind)).InBounds(msg):
+			p.selectedOption = 0
 			return p, chooseOption(Option3xRewind)
 		case p.zone.Get(string(Option2xRewind)).InBounds(msg):
+			p.selectedOption = 1
 			return p, chooseOption(Option2xRewind)
 		case p.zone.Get(string(Option1xRewind)).InBounds(msg):
+			p.selectedOption = 2
 			return p, chooseOption(Option1xRewind)
 		case p.zone.Get(string(OptionPause)).InBounds(msg):
+			p.selectedOption = 3
 			return p, chooseOption(OptionPause)
 		case p.zone.Get(string(OptionPlay)).InBounds(msg):
+			p.selectedOption = 3
 			return p, chooseOption(OptionPlay)
-		case p.zone.Get(string(Option3xForward)).InBounds(msg):
-			return p, chooseOption(Option3xForward)
-		case p.zone.Get(string(Option2xForward)).InBounds(msg):
-			return p, chooseOption(Option2xForward)
 		case p.zone.Get(string(Option1xForward)).InBounds(msg):
+			p.selectedOption = 4
 			return p, chooseOption(Option1xForward)
+		case p.zone.Get(string(Option2xForward)).InBounds(msg):
+			p.selectedOption = 5
+			return p, chooseOption(Option2xForward)
+		case p.zone.Get(string(Option3xForward)).InBounds(msg):
+			p.selectedOption = 6
+			return p, chooseOption(Option3xForward)
 		case p.zone.Get("help").InBounds(msg):
 			p.help.ShowAll = !p.help.ShowAll
 			p.helpViewStale = true
