@@ -21,13 +21,18 @@ func NewStyles(m *Movie, renderer *lipgloss.Renderer) Styles {
 	optionsColor := lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
 	selectedColor := lipgloss.AdaptiveColor{Light: "12", Dark: "4"}
 
+	isTTY := renderer.Output().TTY() != nil
+	screenStyle := renderer.NewStyle().
+		Width(m.Width).
+		Height(m.Height).
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(borderColor)
+	if isTTY {
+		screenStyle = screenStyle.Foreground(lipgloss.AdaptiveColor{Light: "0", Dark: "15"})
+	}
+
 	s := Styles{
-		Screen: renderer.NewStyle().
-			Width(m.Width).
-			Height(m.Height).
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(borderColor).
-			Foreground(lipgloss.AdaptiveColor{Light: "0", Dark: "15"}),
+		Screen: screenStyle,
 
 		Progress: renderer.NewStyle().
 			Margin(1, 0).
@@ -40,13 +45,13 @@ func NewStyles(m *Movie, renderer *lipgloss.Renderer) Styles {
 			MarginBottom(1).
 			Border(lipgloss.InnerHalfBlockBorder()).
 			BorderForeground(optionsColor).
-			Background(optionsColor),
+			Background(optionsColor).
+			Foreground(lipgloss.AdaptiveColor{Light: "15", Dark: "7"}),
 	}
 
 	s.Active = s.Options.Copy().
 		Background(activeColor).
 		BorderForeground(activeColor).
-		Foreground(lipgloss.AdaptiveColor{Light: "15"}).
 		Bold(true)
 
 	s.Selected = s.Options.Copy().
