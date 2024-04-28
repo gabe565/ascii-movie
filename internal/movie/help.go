@@ -6,20 +6,20 @@ import (
 )
 
 func newHelp(renderer *lipgloss.Renderer) help.Model {
-	keyStyle := lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{
+	keyStyle := renderer.NewStyle().Foreground(lipgloss.AdaptiveColor{
 		Light: "246",
 		Dark:  "242",
-	}).Renderer(renderer)
+	})
 
-	descStyle := lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{
+	descStyle := renderer.NewStyle().Foreground(lipgloss.AdaptiveColor{
 		Light: "249",
 		Dark:  "239",
-	}).Renderer(renderer)
+	})
 
-	sepStyle := lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{
+	sepStyle := renderer.NewStyle().Foreground(lipgloss.AdaptiveColor{
 		Light: "253",
 		Dark:  "237",
-	}).Renderer(renderer)
+	})
 
 	return help.Model{
 		ShortSeparator: " • ",

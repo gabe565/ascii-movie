@@ -22,23 +22,20 @@ func NewStyles(m *Movie, renderer *lipgloss.Renderer) Styles {
 	selectedColor := lipgloss.AdaptiveColor{Light: "12", Dark: "4"}
 
 	s := Styles{
-		Screen: lipgloss.NewStyle().
-			Renderer(renderer).
+		Screen: renderer.NewStyle().
 			Width(m.Width).
 			Height(m.Height).
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(borderColor).
 			Foreground(lipgloss.AdaptiveColor{Light: "0", Dark: "15"}),
 
-		Progress: lipgloss.NewStyle().
-			Renderer(renderer).
+		Progress: renderer.NewStyle().
 			Margin(1, 0).
 			Foreground(borderColor).
 			Border(lipgloss.InnerHalfBlockBorder(), false, true).
 			BorderForeground(borderColor),
 
-		Options: lipgloss.NewStyle().
-			Renderer(renderer).
+		Options: renderer.NewStyle().
 			Padding(0, 2).
 			MarginBottom(1).
 			Border(lipgloss.InnerHalfBlockBorder()).
