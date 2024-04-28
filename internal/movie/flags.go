@@ -34,7 +34,7 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 
 	movie := NewMovie()
 
-	var src io.Reader
+	var src io.ReadCloser
 	if path == "" {
 		// Use default embedded movie
 		path = movies.Default
@@ -88,6 +88,10 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	}
 
 	if err := movie.LoadFile(path, src, speed); err != nil {
+		return movie, err
+	}
+
+	if err := src.Close(); err != nil {
 		return movie, err
 	}
 
