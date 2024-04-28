@@ -16,8 +16,8 @@ ascii-movie play [movie] [flags]
 ### Options inherited from parent commands
 
 ```
-      --log-format string   log formatter (text, json) (default "text")
-  -l, --log-level string    log level (trace, debug, info, warning, error, fatal, panic) (default "info")
+      --log-format string   log formatter (auto, color, plain, json) (default "auto")
+  -l, --log-level string    log level (trace, debug, info, warn, error, fatal, panic) (default "info")
 ```
 
 ### SEE ALSO

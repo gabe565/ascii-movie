@@ -1,6 +1,7 @@
 package server
 
 import (
+	"strings"
 	"testing"
 
 	flag "github.com/spf13/pflag"
@@ -19,7 +20,10 @@ func TestNewServer(t *testing.T) {
 		server := NewMovieServer(flags, prefix)
 		assert.True(t, server.Enabled)
 		assert.Equal(t, "127.0.0.1:1977", server.Address)
-		assert.Equal(t, prefix, server.Log.Data["server"])
+		var logBuf strings.Builder
+		server.Log = server.Log.Output(&logBuf)
+		server.Log.Info().Msg("Test")
+		assert.Contains(t, logBuf.String(), prefix)
 	}
 
 	t.Run("SSH gets config from flags", func(t *testing.T) {

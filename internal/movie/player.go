@@ -11,10 +11,10 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/gabe565/ascii-movie/internal/loghooks"
 	zone "github.com/lrstanley/bubblezone"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
 )
 
-func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) *Player {
+func NewPlayer(m *Movie, logger zerolog.Logger, renderer *lipgloss.Renderer) *Player {
 	if renderer == nil {
 		renderer = lipgloss.DefaultRenderer()
 	}
@@ -22,6 +22,7 @@ func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) *Player
 	playCtx, playCancel := context.WithCancel(context.Background())
 	player := &Player{
 		movie:           m,
+		log:             logger.Hook(loghooks.NewDuration()),
 		renderer:        renderer,
 		zone:            zone.New(),
 		speed:           1,
@@ -36,21 +37,15 @@ func NewPlayer(m *Movie, logger *log.Entry, renderer *lipgloss.Renderer) *Player
 		helpViewStale:   true,
 	}
 
-	if logger != nil {
-		player.durationHook = loghooks.NewDuration()
-		player.log = logger.WithField("duration", player.durationHook)
-	}
-
 	return player
 }
 
 type Player struct {
-	movie        *Movie
-	frame        int
-	log          *log.Entry
-	durationHook loghooks.Duration
-	renderer     *lipgloss.Renderer
-	zone         *zone.Manager
+	movie    *Movie
+	frame    int
+	log      zerolog.Logger
+	renderer *lipgloss.Renderer
+	zone     *zone.Manager
 
 	speed      float64
 	playCtx    context.Context
@@ -81,9 +76,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case p.speed >= 0:
 			frameDiff = 1
 			if p.frame+frameDiff >= len(p.movie.Frames) {
-				if p.log != nil {
-					p.log.Info("Finished movie")
-				}
+				p.log.Info().Msg("Finished movie")
 				return p, Quit
 			}
 		case p.frame <= 0:
@@ -102,9 +95,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		duration := p.movie.Frames[p.frame].CalcDuration(speed)
 		for duration < time.Second/15 {
 			if p.frame+frameDiff >= len(p.movie.Frames) {
-				if p.log != nil {
-					p.log.Info("Finished movie")
-				}
+				p.log.Info().Msg("Finished movie")
 				return p, Quit
 			} else if p.frame+frameDiff <= 0 {
 				p.speed = 1
@@ -167,9 +158,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case quitMsg:
-		if p.log != nil {
-			p.log.Info("Disconnected early")
-		}
+		p.log.Info().Msg("Disconnected early")
 		p.clearTimeouts()
 		p.zone.Close()
 		return p, tea.Quit //nolint:forbidigo

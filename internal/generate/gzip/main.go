@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 
 	"github.com/gabe565/ascii-movie/movies"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
@@ -24,19 +24,19 @@ func main() {
 		}
 
 		outPath := filepath.Join("movies", path+".gz")
-		log.WithField("path", outPath).Debug("Create output")
+		log.Debug().Str("path", outPath).Msg("Create output")
 		out, err := os.Create(outPath)
 		if err != nil {
 			return err
 		}
 
-		log.WithField("path", path).Debug("Open input")
+		log.Debug().Str("path", path).Msg("Open input")
 		in, err := movies.Movies.Open(path)
 		if err != nil {
 			return err
 		}
 
-		log.Debug("Copy input to gzip writer")
+		log.Debug().Msg("Copy input to gzip writer")
 		gz := gzip.NewWriter(out)
 		if _, err := io.Copy(gz, in); err != nil {
 			return err
@@ -46,9 +46,9 @@ func main() {
 			return err
 		}
 
-		log.Debug("Close output")
+		log.Debug().Msg("Close output")
 		return out.Close()
 	}); err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("Failed to walk movies")
 	}
 }

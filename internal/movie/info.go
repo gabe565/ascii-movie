@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/gabe565/ascii-movie/movies"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func GetInfo(fsys fs.FS, path string) (Info, error) {
@@ -87,7 +87,7 @@ func ListEmbedded() ([]Info, error) {
 
 			info, err := GetInfo(movies.Movies, path)
 			if err != nil {
-				log.WithError(err).WithField("path", path).Warn("failed to get movie info")
+				log.Warn().Err(err).Str("path", path).Msg("Failed to get movie info")
 				return nil
 			}
 

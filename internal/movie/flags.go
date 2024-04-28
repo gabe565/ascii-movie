@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/gabe565/ascii-movie/movies"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 	flag "github.com/spf13/pflag"
 )
 
@@ -29,7 +29,7 @@ func Flags(flags *flag.FlagSet) {
 func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	var err error
 
-	log.Info("Loading movie...")
+	log.Info().Msg("Loading movie...")
 	start := time.Now()
 
 	movie := NewMovie()
@@ -45,7 +45,7 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 		embeddedPath += FileSuffix
 	}
 	if src, err = movies.Movies.Open(embeddedPath); err == nil {
-		log.WithField("name", embeddedPath).Debug("Using embedded movie")
+		log.Debug().Str("name", embeddedPath).Msg("Using embedded movie")
 
 		if strings.HasSuffix(embeddedPath, ".gz") {
 			src, err = gzip.NewReader(src)
@@ -56,12 +56,12 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	} else {
 		if errors.Is(err, os.ErrNotExist) {
 			// Fallback to loading file
-			log.WithField("name", embeddedPath).Trace("No embedded movie matches name. Searching filesystem.")
+			log.Trace().Str("name", embeddedPath).Msg("No embedded movie matches name. Searching filesystem.")
 			f, err := os.Open(path)
 			if err != nil {
 				return movie, err
 			}
-			log.WithField("name", path).Debug("Found movie file")
+			log.Debug().Str("name", path).Msg("Found movie file")
 
 			src = f
 			defer func(f *os.File) {
@@ -91,10 +91,10 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 		return movie, err
 	}
 
-	log.WithFields(log.Fields{
-		"duration": movie.Duration().Round(time.Second),
-		"took":     time.Since(start).Round(time.Microsecond),
-	}).Info("Movie loaded")
+	log.Info().
+		Str("duration", movie.Duration().Round(time.Second).String()).
+		Str("took", time.Since(start).Round(time.Microsecond).String()).
+		Msg("Movie loaded")
 
 	return movie, nil
 }

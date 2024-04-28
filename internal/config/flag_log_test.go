@@ -1,57 +1,65 @@
 package config
 
 import (
+	"io"
+	"os"
 	"testing"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestInitLog(t *testing.T) {
-	cleanupFunc := func(level log.Level, formatter log.Formatter) {
-		// Set back to default
-		log.SetLevel(level)
-		log.SetFormatter(formatter)
+func Test_logLevel(t *testing.T) {
+	type args struct {
+		level string
 	}
-
-	cmd := &cobra.Command{}
-	RegisterLogFlags(cmd)
-
-	t.Run("defaults", func(t *testing.T) {
-		t.Cleanup(func() {
-			cleanupFunc(log.GetLevel(), log.StandardLogger().Formatter)
+	tests := []struct {
+		name string
+		args args
+		want zerolog.Level
+	}{
+		{"trace", args{"trace"}, zerolog.TraceLevel},
+		{"debug", args{"debug"}, zerolog.DebugLevel},
+		{"info", args{"info"}, zerolog.InfoLevel},
+		{"warning", args{"warning"}, zerolog.WarnLevel},
+		{"error", args{"error"}, zerolog.ErrorLevel},
+		{"fatal", args{"fatal"}, zerolog.FatalLevel},
+		{"panic", args{"panic"}, zerolog.PanicLevel},
+		{"unknown", args{""}, zerolog.InfoLevel},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := logLevel(tt.args.level)
+			assert.Equal(t, tt.want, got)
 		})
+	}
+}
 
-		InitLog(cmd.PersistentFlags())
-		assert.Equal(t, DefaultLogLevel, log.GetLevel())
-		assert.Equal(t, &log.TextFormatter{}, log.StandardLogger().Formatter)
-	})
-
-	t.Run("warn level/json formatter", func(t *testing.T) {
-		t.Cleanup(func() {
-			cleanupFunc(log.GetLevel(), log.StandardLogger().Formatter)
+func Test_logFormat(t *testing.T) {
+	type args struct {
+		format string
+	}
+	tests := []struct {
+		name string
+		args args
+		want io.Writer
+	}{
+		{"default", args{"auto"}, zerolog.ConsoleWriter{Out: os.Stderr, NoColor: true}},
+		{"color", args{"color"}, zerolog.ConsoleWriter{Out: os.Stderr}},
+		{"plain", args{"plain"}, zerolog.ConsoleWriter{Out: os.Stderr, NoColor: true}},
+		{"json", args{"json"}, os.Stderr},
+		{"unknown", args{""}, zerolog.ConsoleWriter{Out: os.Stderr, NoColor: true}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := logFormat(os.Stderr, tt.args.format)
+			require.IsType(t, tt.want, got)
+			if want, ok := tt.want.(zerolog.ConsoleWriter); ok {
+				got := got.(zerolog.ConsoleWriter)
+				assert.Equal(t, want.Out, got.Out)
+				assert.Equal(t, want.NoColor, got.NoColor)
+			}
 		})
-
-		require.NoError(t, cmd.PersistentFlags().Set(LogLevelFlag, log.WarnLevel.String()))
-		require.NoError(t, cmd.PersistentFlags().Set(LogFormatFlag, "json"))
-		InitLog(cmd.PersistentFlags())
-		assert.Equal(t, log.WarnLevel, log.GetLevel())
-		assert.Equal(t, &log.JSONFormatter{}, log.StandardLogger().Formatter)
-	})
-
-	t.Run("invalid level/invalid formatter", func(t *testing.T) {
-		t.Cleanup(func() {
-			cleanupFunc(log.GetLevel(), log.StandardLogger().Formatter)
-		})
-
-		formatter := log.StandardLogger().Formatter
-
-		require.NoError(t, cmd.PersistentFlags().Set(LogLevelFlag, "invalid"))
-		require.NoError(t, cmd.PersistentFlags().Set(LogFormatFlag, "invalid"))
-		InitLog(cmd.PersistentFlags())
-		assert.Equal(t, log.InfoLevel, log.GetLevel())
-		assert.Equal(t, formatter, log.StandardLogger().Formatter)
-	})
+	}
 }

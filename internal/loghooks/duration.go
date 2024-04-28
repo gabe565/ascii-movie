@@ -2,6 +2,8 @@ package loghooks
 
 import (
 	"time"
+
+	"github.com/rs/zerolog"
 )
 
 func NewDuration() Duration {
@@ -16,14 +18,6 @@ type Duration struct {
 	trunc time.Duration
 }
 
-func (d Duration) String() string {
-	return time.Since(d.start).Truncate(d.trunc).String()
-}
-
-func (d Duration) MarshalText() ([]byte, error) {
-	return []byte(time.Since(d.start).Truncate(d.trunc).String()), nil
-}
-
-func (d Duration) GetStart() time.Time {
-	return d.start
+func (d Duration) Run(e *zerolog.Event, _ zerolog.Level, _ string) {
+	e.Str("duration", time.Since(d.start).Truncate(d.trunc).String())
 }

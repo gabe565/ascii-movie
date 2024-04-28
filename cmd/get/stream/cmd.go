@@ -12,7 +12,6 @@ import (
 
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/gabe565/ascii-movie/internal/server"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -69,7 +68,6 @@ func run(cmd *cobra.Command, _ []string) error {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Error("Failed to connect to API. Is the server running?")
 		return fmt.Errorf("failed to connect to API: %w", err)
 	}
 	defer func() {

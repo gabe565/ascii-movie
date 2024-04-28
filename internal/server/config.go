@@ -2,14 +2,15 @@ package server
 
 import (
 	"github.com/gabe565/ascii-movie/internal/movie"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	flag "github.com/spf13/pflag"
 )
 
 type Server struct {
 	Enabled bool
 	Address string
-	Log     *log.Entry
+	Log     zerolog.Logger
 }
 
 type MovieServer struct {
@@ -21,7 +22,7 @@ func NewServer(flags *flag.FlagSet, prefix string) Server {
 	var config Server
 	var err error
 
-	config.Log = log.WithField("server", prefix)
+	config.Log = log.With().Str("server", prefix).Logger()
 
 	if config.Enabled, err = flags.GetBool(prefix + EnabledFlag); err != nil {
 		panic(err)

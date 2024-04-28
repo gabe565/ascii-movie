@@ -29,7 +29,7 @@ func NewTelnet(flags *flag.FlagSet) TelnetServer {
 }
 
 func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
-	s.Log.WithField("address", s.Address).Info("Starting Telnet server")
+	s.Log.Info().Str("address", s.Address).Msg("Starting Telnet server")
 
 	listen, err := net.Listen("tcp", s.Address)
 	if err != nil {
@@ -56,7 +56,7 @@ func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 				case <-ctx.Done():
 					return
 				default:
-					s.Log.WithError(err).Error("Failed to accept connection")
+					s.Log.Err(err).Msg("Failed to accept connection")
 					continue
 				}
 			}
@@ -72,8 +72,8 @@ func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 	}()
 
 	<-ctx.Done()
-	s.Log.Info("Stopping Telnet server")
-	defer s.Log.Info("Stopped Telnet server")
+	s.Log.Info().Msg("Stopping Telnet server")
+	defer s.Log.Info().Msg("Stopped Telnet server")
 
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()
@@ -94,11 +94,11 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	}(conn)
 
 	remoteIP := RemoteIP(conn.RemoteAddr().String())
-	logger := s.Log.WithField("remote_ip", remoteIP)
+	logger := s.Log.With().Str("remote_ip", remoteIP).Logger()
 
 	id, err := serverInfo.StreamConnect("telnet", remoteIP)
 	if err != nil {
-		logger.Error(err)
+		logger.Err(err).Msg("Failed to begin stream")
 		_, _ = conn.Write([]byte(ErrorText(err) + "\n"))
 		return
 	}
@@ -170,7 +170,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	}()
 
 	if _, err := program.Run(); err != nil && !errors.Is(err, tea.ErrProgramKilled) {
-		logger.WithError(err).Error("Stream failed")
+		logger.Err(err).Msg("Program failed")
 	}
 
 	program.Kill()

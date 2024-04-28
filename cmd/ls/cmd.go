@@ -7,7 +7,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/gabe565/ascii-movie/internal/movie"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +33,7 @@ func run(cmd *cobra.Command, args []string) error {
 		for _, arg := range args {
 			movieInfo, err := movie.GetInfo(nil, arg)
 			if err != nil {
-				log.WithError(err).WithField("path", arg).Warn("failed to get movie info")
+				log.Warn().Err(err).Str("path", arg).Msg("Failed to get movie info")
 				continue
 			}
 			movieInfos = append(movieInfos, movieInfo)

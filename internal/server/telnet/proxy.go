@@ -7,7 +7,7 @@ import (
 	"io"
 	"net"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 type WindowSize struct {
@@ -42,14 +42,14 @@ outer:
 			// https://ibm.com/docs/zos/2.5.0?topic=problems-telnet-commands-options
 			if !wroteTelnetCommands {
 				wroteTelnetCommands = true
-				log.Trace("Configuring Telnet")
+				log.Trace().Msg("Configuring Telnet")
 				if _, err := Write(conn,
 					Iac, Will, Echo,
 					Iac, Will, SuppressGoAhead,
 					Iac, Do, TerminalType,
 					Iac, Do, NegotiateAboutWindowSize,
 				); err != nil {
-					log.WithError(err).Error("Failed to write Telnet commands")
+					log.Err(err).Msg("Failed to write telnet commands")
 				}
 			}
 
@@ -83,13 +83,13 @@ outer:
 					switch Operator(command[0]) {
 					case TerminalType:
 						if !wroteTermType && len(command) > 2 {
-							log.Trace("Got terminal type")
+							log.Trace().Msg("Got terminal type")
 							termCh <- string(command[2:])
 							wroteTermType = true
 						}
 					case NegotiateAboutWindowSize:
 						if len(command) >= 5 {
-							log.Trace("Got window size")
+							log.Trace().Msg("Got window size")
 							r := bytes.NewReader(command[1:])
 							var size WindowSize
 							if err := binary.Read(r, binary.BigEndian, &size); err != nil {
@@ -108,7 +108,7 @@ outer:
 				case TerminalType:
 					if !willTerminalType {
 						willTerminalType = true
-						log.Trace("Requesting terminal type")
+						log.Trace().Msg("Requesting terminal type")
 						if _, err := Write(conn, Iac, Subnegotiation, TerminalType, 1, Iac, Se); err != nil {
 							return err
 						}
@@ -117,7 +117,7 @@ outer:
 					if !willNegotiateAboutWindowSize {
 						willNegotiateAboutWindowSize = true
 						if _, err := Write(conn, Iac, Do, NegotiateAboutWindowSize); err != nil {
-							log.WithError(err).Error("Failed to write Telnet commands")
+							log.Err(err).Msg("Failed to write telnet commands")
 						}
 					}
 				}

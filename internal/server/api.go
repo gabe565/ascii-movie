@@ -28,7 +28,7 @@ func NewAPI(flags *flag.FlagSet) APIServer {
 }
 
 func (s *APIServer) Listen(ctx context.Context) error {
-	s.Log.WithField("address", s.Address).Info("Starting API server")
+	s.Log.Info().Str("address", s.Address).Msg("Starting API server")
 
 	http.HandleFunc("/health", s.Health)
 	http.HandleFunc("/streams", s.Streams)
@@ -49,8 +49,8 @@ func (s *APIServer) Listen(ctx context.Context) error {
 
 	group.Go(func() error {
 		<-ctx.Done()
-		s.Log.Info("Stopping API server")
-		defer s.Log.Info("Stopped API server")
+		s.Log.Info().Msg("Stopping API server")
+		defer s.Log.Info().Msg("Stopped API server")
 
 		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer shutdownCancel()
@@ -76,7 +76,7 @@ func (s *APIServer) Health(w http.ResponseWriter, _ *http.Request) {
 
 	buf, err := json.Marshal(response)
 	if err != nil {
-		s.Log.WithError(err).Error("Failed to marshal API response")
+		s.Log.Err(err).Msg("Failed to marshal API response")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -88,7 +88,7 @@ func (s *APIServer) Health(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusServiceUnavailable)
 	}
 	if _, err := w.Write(buf); err != nil {
-		s.Log.WithError(err).Error("Failed to write API response")
+		s.Log.Err(err).Msg("Failed to write API response")
 	}
 }
 
@@ -120,12 +120,12 @@ func (s *APIServer) Streams(w http.ResponseWriter, r *http.Request) {
 
 	buf, err := json.Marshal(response)
 	if err != nil {
-		s.Log.WithError(err).Error("Failed to marshal API response")
+		s.Log.Err(err).Msg("Failed to marshal API response")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
 	if _, err := w.Write(buf); err != nil {
-		s.Log.WithError(err).Error("Failed to write API response")
+		s.Log.Err(err).Msg("Failed to write API response")
 	}
 }

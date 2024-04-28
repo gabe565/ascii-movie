@@ -4,7 +4,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/gabe565/ascii-movie/internal/movie"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -25,7 +26,7 @@ func NewCommand() *cobra.Command {
 
 func run(cmd *cobra.Command, args []string) error {
 	if !cmd.Flags().Changed(config.LogLevelFlag) {
-		log.SetLevel(log.WarnLevel)
+		zerolog.SetGlobalLevel(zerolog.WarnLevel)
 	}
 
 	var path string
@@ -39,7 +40,7 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	program := tea.NewProgram(
-		movie.NewPlayer(&m, nil, nil),
+		movie.NewPlayer(&m, log.Level(zerolog.ErrorLevel), nil),
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(),
 	)

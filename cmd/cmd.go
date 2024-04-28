@@ -39,7 +39,7 @@ func preRun(cmd *cobra.Command, _ []string) error {
 	if err := loadFlagEnvs(cmd.Flags()); err != nil {
 		return err
 	}
-	config.InitLog(cmd.Flags())
+	config.InitLog(cmd)
 	return nil
 }
 

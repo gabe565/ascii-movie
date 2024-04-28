@@ -13,7 +13,6 @@ import (
 	"github.com/charmbracelet/wish"
 	"github.com/charmbracelet/wish/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/movie"
-	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	gossh "golang.org/x/crypto/ssh"
 	"golang.org/x/sync/errgroup"
@@ -48,7 +47,7 @@ func NewSSH(flags *flag.FlagSet) SSHServer {
 }
 
 func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
-	s.Log.WithField("address", s.Address).Info("Starting SSH server")
+	s.Log.Info().Str("address", s.Address).Msg("Starting SSH server")
 
 	sshOptions := []ssh.Option{
 		wish.WithAddress(s.Address),
@@ -81,10 +80,10 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 	}
 
 	for _, signer := range server.HostSigners {
-		s.Log.WithFields(log.Fields{
-			"type":        signer.PublicKey().Type(),
-			"fingerprint": gossh.FingerprintSHA256(signer.PublicKey()),
-		}).Debug("Using host key")
+		s.Log.Debug().
+			Str("type", signer.PublicKey().Type()).
+			Str("fingerprint", gossh.FingerprintSHA256(signer.PublicKey())).
+			Msg("Using host key")
 	}
 
 	group, ctx := errgroup.WithContext(ctx)
@@ -107,8 +106,8 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 
 	group.Go(func() error {
 		<-ctx.Done()
-		s.Log.Info("Stopping SSH server")
-		defer s.Log.Info("Stopped SSH server")
+		s.Log.Info().Msg("Stopping SSH server")
+		defer s.Log.Info().Msg("Stopped SSH server")
 
 		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer shutdownCancel()
@@ -122,10 +121,10 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 	return func(session ssh.Session) (tea.Model, []tea.ProgramOption) {
 		remoteIP := RemoteIP(session.RemoteAddr().String())
-		logger := s.Log.WithFields(log.Fields{
-			"remote_ip": remoteIP,
-			"user":      session.User(),
-		})
+		logger := s.Log.With().
+			Str("remote_ip", remoteIP).
+			Str("user", session.User()).
+			Logger()
 
 		renderer := bubbletea.MakeRenderer(session)
 		player := movie.NewPlayer(m, logger, renderer)
@@ -142,11 +141,10 @@ func (s *SSHServer) TrackStream(handler ssh.Handler) ssh.Handler {
 		remoteIP := RemoteIP(session.RemoteAddr().String())
 		id, err := serverInfo.StreamConnect("ssh", remoteIP)
 		if err != nil {
-			logger := s.Log.WithFields(log.Fields{
-				"remote_ip": remoteIP,
-				"user":      session.User(),
-			})
-			logger.Error(err)
+			s.Log.Err(err).
+				Str("remote_ip", remoteIP).
+				Str("user", session.User()).
+				Msg("Failed to begin stream")
 			_, _ = session.Write([]byte(ErrorText(err) + "\n"))
 			return
 		}
