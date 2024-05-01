@@ -148,6 +148,16 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if p.isPlaying() {
 				return p, p.play()
 			}
+		case key.Matches(msg, p.keymap.stepPrev):
+			if !p.isPlaying() && p.frame > 0 {
+				p.frame--
+				return p, nil
+			}
+		case key.Matches(msg, p.keymap.stepNext):
+			if !p.isPlaying() && p.frame < len(p.movie.Frames)-1 {
+				p.frame++
+				return p, nil
+			}
 		case key.Matches(msg, p.keymap.jumps...):
 			for i, binding := range p.keymap.jumps {
 				if key.Matches(msg, binding) {

@@ -60,6 +60,14 @@ func newKeymap() keymap {
 			key.WithKeys("shift+right", "L", "D"),
 			key.WithHelp("shift+right", "jump forward"),
 		),
+		stepPrev: key.NewBinding(
+			key.WithKeys(","),
+			key.WithHelp(", (when paused)", "step backward"),
+		),
+		stepNext: key.NewBinding(
+			key.WithKeys("."),
+			key.WithHelp(". (when paused)", "step forward"),
+		),
 		help: key.NewBinding(
 			key.WithKeys("?"),
 			key.WithHelp("?", "help"),
@@ -80,6 +88,8 @@ type keymap struct {
 	jump       key.Binding
 	jumpPrev   key.Binding
 	jumpNext   key.Binding
+	stepPrev   key.Binding
+	stepNext   key.Binding
 	help       key.Binding
 }
 
@@ -105,6 +115,10 @@ func (k keymap) FullHelp() [][]key.Binding {
 			k.jump,
 			k.jumpPrev,
 			k.jumpNext,
+			k.stepPrev,
+			k.stepNext,
+		},
+		{
 			k.help,
 			k.quit,
 		},
