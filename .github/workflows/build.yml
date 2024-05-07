@@ -15,7 +15,7 @@ jobs:
           go-version-file: go.mod
           cache: false
       - name: Lint
-        uses: golangci/golangci-lint-action@v5
+        uses: golangci/golangci-lint-action@v6
 
   test:
     name: Test
