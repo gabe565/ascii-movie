@@ -14,6 +14,8 @@ import (
 	"github.com/charmbracelet/wish/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/player"
+	"github.com/gabe565/ascii-movie/internal/util"
+	"github.com/muesli/termenv"
 	flag "github.com/spf13/pflag"
 	gossh "golang.org/x/crypto/ssh"
 	"golang.org/x/sync/errgroup"
@@ -128,6 +130,12 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 			Logger()
 
 		renderer := bubbletea.MakeRenderer(session)
+		if renderer.ColorProfile() == termenv.Ascii {
+			if pty, _, ok := session.Pty(); ok {
+				renderer.SetColorProfile(util.Profile(pty.Term))
+			}
+		}
+
 		player := player.NewPlayer(m, logger, renderer)
 		return player, []tea.ProgramOption{
 			tea.WithFPS(30),
