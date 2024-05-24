@@ -202,10 +202,8 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			p.activeOption = 6
 			p.speed = 15
 		}
-		if !p.isPlaying() {
-			return p, p.play()
-		}
-		return p, nil
+		p.pause()
+		return p, p.play()
 	case tea.MouseMsg:
 		if msg.Action == tea.MouseActionRelease || msg.Button != tea.MouseButtonLeft {
 			return p, nil
