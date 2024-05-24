@@ -50,12 +50,12 @@ func NewStyles(m *movie.Movie, renderer *lipgloss.Renderer) Styles {
 			Foreground(lipgloss.AdaptiveColor{Light: "15", Dark: "7"}),
 	}
 
-	s.Active = s.Options.Copy().
+	s.Active = s.Options.
 		Background(activeColor).
 		BorderForeground(activeColor).
 		Bold(true)
 
-	s.Selected = s.Options.Copy().
+	s.Selected = s.Options.
 		Background(selectedColor).
 		BorderForeground(selectedColor).
 		Foreground(lipgloss.Color("15")).
