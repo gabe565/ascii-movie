@@ -6,7 +6,7 @@ require (
 	github.com/charmbracelet/bubbles v0.18.0
 	github.com/charmbracelet/bubbletea v0.26.3
 	github.com/charmbracelet/lipgloss v0.11.0
-	github.com/charmbracelet/ssh v0.0.0-20240515141028-546b2ee33a4d
+	github.com/charmbracelet/ssh v0.0.0-20240531200420-04041eb117c7
 	github.com/charmbracelet/wish v1.4.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/lrstanley/bubblezone v0.0.0-20240125042004-b7bafc493195
@@ -30,9 +30,10 @@ require (
 	github.com/charmbracelet/log v0.4.0 // indirect
 	github.com/charmbracelet/x/ansi v0.1.1 // indirect
 	github.com/charmbracelet/x/errors v0.0.0-20240408110044-525ba71bb562 // indirect
-	github.com/charmbracelet/x/exp/term v0.0.0-20240408110044-525ba71bb562 // indirect
+	github.com/charmbracelet/x/exp/term v0.0.0-20240531163045-e5176ed4ece8 // indirect
 	github.com/charmbracelet/x/input v0.1.0 // indirect
 	github.com/charmbracelet/x/term v0.1.1 // indirect
+	github.com/charmbracelet/x/termios v0.1.0 // indirect
 	github.com/charmbracelet/x/windows v0.1.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
 	github.com/creack/pty v1.1.21 // indirect
