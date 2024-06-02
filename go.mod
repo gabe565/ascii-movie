@@ -9,7 +9,7 @@ require (
 	github.com/charmbracelet/ssh v0.0.0-20240515141028-546b2ee33a4d
 	github.com/charmbracelet/wish v1.4.0
 	github.com/dustin/go-humanize v1.0.1
-	github.com/lrstanley/bubblezone v0.0.0-20240125042004-b7bafc493195
+	github.com/lrstanley/bubblezone v0.0.0-20240602193536-d14e6b69d7f9
 	github.com/mattn/go-isatty v0.0.20
 	github.com/muesli/termenv v0.15.2
 	github.com/prometheus/client_golang v1.19.1
