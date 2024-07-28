@@ -106,9 +106,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	defer serverInfo.StreamDisconnect(id)
 
 	inR, inW := io.Pipe()
-	outR, outW := io.Pipe()
 	defer func() {
-		_ = outR.Close()
 		_ = inR.Close()
 	}()
 
@@ -135,12 +133,12 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 		profile = termenv.ANSI256
 	}
 
-	p := player.NewPlayer(m, logger, telnet.MakeRenderer(outW, profile))
+	p := player.NewPlayer(m, logger, telnet.MakeRenderer(conn, profile))
 	defer p.Close()
 
 	opts := []tea.ProgramOption{
 		tea.WithInput(inR),
-		tea.WithOutput(outW),
+		tea.WithOutput(conn),
 		tea.WithFPS(30),
 	}
 	if gotProfile {
@@ -163,13 +161,6 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 				return
 			}
 		}
-	}()
-
-	go func() {
-		// Proxy output to client
-		_, _ = io.Copy(conn, outR)
-		cancel()
-		_, _ = io.Copy(io.Discard, outR)
 	}()
 
 	if _, err := program.Run(); err != nil && !errors.Is(err, tea.ErrProgramKilled) {
