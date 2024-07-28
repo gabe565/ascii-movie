@@ -136,6 +136,8 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	}
 
 	p := player.NewPlayer(m, logger, telnet.MakeRenderer(outW, profile))
+	defer p.Close()
+
 	opts := []tea.ProgramOption{
 		tea.WithInput(inR),
 		tea.WithOutput(outW),
@@ -157,7 +159,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 					})
 				}
 			case <-ctx.Done():
-				program.Send(player.Quit())
+				program.Send(tea.Quit())
 				return
 			}
 		}

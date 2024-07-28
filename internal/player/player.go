@@ -75,7 +75,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case p.speed >= 0:
 			frameDiff = 1
 			if p.frame+frameDiff >= len(p.movie.Frames) {
-				return p, Quit
+				return p, tea.Quit
 			}
 		case p.frame <= 0:
 			p.speed = 1
@@ -93,7 +93,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		duration := p.movie.Frames[p.frame].CalcDuration(speed)
 		for duration < time.Second/15 {
 			if p.frame+frameDiff >= len(p.movie.Frames) {
-				return p, Quit
+				return p, tea.Quit
 			} else if p.frame+frameDiff <= 0 {
 				p.speed = 1
 				p.activeOption = 4
@@ -108,7 +108,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		p.optionViewStale = true
 		switch {
 		case key.Matches(msg, p.keymap.quit):
-			return p, Quit
+			return p, tea.Quit
 		case key.Matches(msg, p.keymap.left):
 			if p.selectedOption > 0 {
 				p.selectedOption--
@@ -164,15 +164,6 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
-	case quitMsg:
-		if p.frame >= len(p.movie.Frames)-1 {
-			p.log.Info().Msg("Finished movie")
-		} else {
-			p.log.Info().Msg("Disconnected early")
-		}
-		p.clearTimeouts()
-		p.zone.Close()
-		return p, tea.Quit //nolint:forbidigo
 	case Option:
 		p.optionViewStale = true
 		switch msg {
@@ -351,4 +342,14 @@ func (p *Player) clearTimeouts() {
 	if p.playCancel != nil {
 		p.playCancel()
 	}
+}
+
+func (p *Player) Close() {
+	if p.frame >= len(p.movie.Frames)-1 {
+		p.log.Info().Msg("Finished movie")
+	} else {
+		p.log.Info().Msg("Disconnected early")
+	}
+	p.clearTimeouts()
+	p.zone.Close()
 }

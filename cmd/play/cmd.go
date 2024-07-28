@@ -40,8 +40,10 @@ func run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	program := tea.NewProgram(
-		player.NewPlayer(&m, log.Level(zerolog.ErrorLevel), nil),
+	p := player.NewPlayer(&m, log.Level(zerolog.ErrorLevel), nil)
+	defer p.Close()
+
+	program := tea.NewProgram(p,
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(),
 	)

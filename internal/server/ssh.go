@@ -136,8 +136,12 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 			}
 		}
 
-		player := player.NewPlayer(m, logger, renderer)
-		return player, []tea.ProgramOption{
+		p := player.NewPlayer(m, logger, renderer)
+		go func() {
+			<-session.Context().Done()
+			p.Close()
+		}()
+		return p, []tea.ProgramOption{
 			tea.WithFPS(30),
 			tea.WithAltScreen(),
 			tea.WithMouseCellMotion(),

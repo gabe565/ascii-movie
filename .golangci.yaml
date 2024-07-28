@@ -8,11 +8,6 @@ linters-settings:
   gosec:
     excludes:
       - G306
-  forbidigo:
-    forbid:
-      - "^(fmt\\.Print(|f|ln)|print|println)$"
-      - p: "^tea\\.Quit$"
-        msg: tea.Quit may cause a memory leak
 
 linters:
   enable:

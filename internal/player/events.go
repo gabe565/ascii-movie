@@ -19,9 +19,3 @@ func tick(ctx context.Context, d time.Duration, msg tea.Msg) tea.Cmd {
 		}
 	}
 }
-
-type quitMsg struct{}
-
-func Quit() tea.Msg {
-	return quitMsg{}
-}
