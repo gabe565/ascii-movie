@@ -24,7 +24,6 @@ func NewPlayer(m *movie.Movie, logger zerolog.Logger, renderer *lipgloss.Rendere
 	player := &Player{
 		movie:           m,
 		log:             logger.Hook(loghooks.NewDuration()),
-		renderer:        renderer,
 		zone:            zone.New(),
 		speed:           1,
 		selectedOption:  3,
@@ -42,11 +41,10 @@ func NewPlayer(m *movie.Movie, logger zerolog.Logger, renderer *lipgloss.Rendere
 }
 
 type Player struct {
-	movie    *movie.Movie
-	frame    int
-	log      zerolog.Logger
-	renderer *lipgloss.Renderer
-	zone     *zone.Manager
+	movie *movie.Movie
+	frame int
+	log   zerolog.Logger
+	zone  *zone.Manager
 
 	speed      float64
 	playCtx    context.Context
