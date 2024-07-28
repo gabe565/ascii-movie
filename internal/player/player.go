@@ -22,20 +22,20 @@ func NewPlayer(m *movie.Movie, logger zerolog.Logger, renderer *lipgloss.Rendere
 
 	playCtx, playCancel := context.WithCancel(context.Background())
 	player := &Player{
-		movie:           m,
-		log:             logger.Hook(loghooks.NewDuration()),
-		zone:            zone.New(),
-		speed:           1,
-		selectedOption:  3,
-		activeOption:    4,
-		styles:          NewStyles(m, renderer),
-		optionViewStale: true,
-		playCtx:         playCtx,
-		playCancel:      playCancel,
-		keymap:          newKeymap(),
-		help:            newHelp(renderer),
-		helpViewStale:   true,
+		movie:          m,
+		log:            logger.Hook(loghooks.NewDuration()),
+		zone:           zone.New(),
+		speed:          1,
+		selectedOption: 3,
+		activeOption:   4,
+		styles:         NewStyles(m, renderer),
+		playCtx:        playCtx,
+		playCancel:     playCancel,
+		keymap:         newKeymap(),
+		help:           newHelp(renderer),
 	}
+	player.optionsCache = NewCache(player.OptionsView)
+	player.helpCache = NewCache(player.HelpView)
 
 	return player
 }
@@ -50,16 +50,14 @@ type Player struct {
 	playCtx    context.Context
 	playCancel context.CancelFunc
 
-	selectedOption  int
-	activeOption    int
-	styles          Styles
-	optionViewCache string
-	optionViewStale bool
+	selectedOption int
+	activeOption   int
+	styles         Styles
+	optionsCache   *ViewCache
 
-	keymap        keymap
-	help          help.Model
-	helpViewStale bool
-	helpViewCache string
+	keymap    keymap
+	help      help.Model
+	helpCache *ViewCache
 }
 
 func (p *Player) Init() tea.Cmd {
@@ -105,7 +103,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return p, tick(p.playCtx, duration, frameTickMsg{})
 	case tea.KeyMsg:
-		p.optionViewStale = true
+		p.optionsCache.Invalidate()
 		switch {
 		case key.Matches(msg, p.keymap.quit):
 			return p, tea.Quit
@@ -125,7 +123,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			p.selectedOption = len(playerOptions) - 1
 		case key.Matches(msg, p.keymap.help):
 			p.help.ShowAll = !p.help.ShowAll
-			p.helpViewStale = true
+			p.helpCache.Invalidate()
 		case key.Matches(msg, p.keymap.jumpPrev):
 			var d time.Duration
 			for d < 5*time.Second && p.frame > 0 {
@@ -165,7 +163,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case Option:
-		p.optionViewStale = true
+		p.optionsCache.Invalidate()
 		switch msg {
 		case Option3xRewind:
 			p.activeOption = 0
@@ -243,7 +241,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return p, chooseOption(Option3xForward)
 		case p.zone.Get("help").InBounds(msg):
 			p.help.ShowAll = !p.help.ShowAll
-			p.helpViewStale = true
+			p.helpCache.Invalidate()
 		}
 
 	case tea.WindowSizeMsg:
@@ -259,13 +257,6 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (p *Player) View() string {
-	if p.optionViewStale {
-		p.optionViewCache = p.OptionsView()
-	}
-	if p.helpViewStale {
-		p.helpViewCache = p.HelpView()
-	}
-
 	content := lipgloss.JoinHorizontal(
 		lipgloss.Top,
 		p.styles.MarginX,
@@ -274,8 +265,8 @@ func (p *Player) View() string {
 			p.styles.MarginY,
 			p.styles.Screen.Render(p.movie.Frames[p.frame].Data),
 			p.zone.Mark("progress", p.styles.Progress.Render(p.movie.Frames[p.frame].Progress)),
-			p.optionViewCache,
-			p.helpViewCache,
+			p.optionsCache.String(),
+			p.helpCache.String(),
 		),
 	)
 
@@ -283,8 +274,6 @@ func (p *Player) View() string {
 }
 
 func (p *Player) OptionsView() string {
-	p.optionViewStale = false
-
 	options := make([]string, 0, len(playerOptions))
 	for i, option := range playerOptions {
 		if option == OptionPause && !p.isPlaying() {
@@ -305,7 +294,6 @@ func (p *Player) OptionsView() string {
 }
 
 func (p *Player) HelpView() string {
-	p.helpViewStale = false
 	v := p.help.View(p.keymap)
 	if p.help.ShowAll {
 		sep := p.help.Styles.FullSeparator.Render(p.help.FullSeparator)
@@ -321,12 +309,12 @@ func (p *Player) HelpView() string {
 }
 
 func (p *Player) pause() {
-	p.optionViewStale = true
+	p.optionsCache.Invalidate()
 	p.clearTimeouts()
 }
 
 func (p *Player) play() tea.Cmd {
-	p.optionViewStale = true
+	p.optionsCache.Invalidate()
 	p.clearTimeouts()
 	p.playCtx, p.playCancel = context.WithCancel(context.Background())
 	return func() tea.Msg {
