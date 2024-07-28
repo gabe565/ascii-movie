@@ -26,8 +26,8 @@ func NewPlayer(m *movie.Movie, logger zerolog.Logger, renderer *lipgloss.Rendere
 		log:            logger.Hook(loghooks.NewDuration()),
 		zone:           zone.New(),
 		speed:          1,
-		selectedOption: 3,
-		activeOption:   4,
+		selectedOption: OptionPlayPause,
+		activeOption:   Option1xForward,
 		styles:         NewStyles(m, renderer),
 		playCtx:        playCtx,
 		playCancel:     playCancel,
@@ -50,8 +50,8 @@ type Player struct {
 	playCtx    context.Context
 	playCancel context.CancelFunc
 
-	selectedOption int
-	activeOption   int
+	selectedOption Option
+	activeOption   Option
 	styles         Styles
 	optionsCache   *ViewCache
 
@@ -108,19 +108,20 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, p.keymap.quit):
 			return p, tea.Quit
 		case key.Matches(msg, p.keymap.left):
-			if p.selectedOption > 0 {
+			if (p.selectedOption - 1).IsAOption() {
 				p.selectedOption--
 			}
 		case key.Matches(msg, p.keymap.right):
-			if p.selectedOption < len(playerOptions)-1 {
+			if (p.selectedOption + 1).IsAOption() {
 				p.selectedOption++
 			}
 		case key.Matches(msg, p.keymap.choose):
-			return p, chooseOption(playerOptions[p.selectedOption])
+			return p, chooseOption(p.selectedOption)
 		case key.Matches(msg, p.keymap.home):
 			p.selectedOption = 0
 		case key.Matches(msg, p.keymap.end):
-			p.selectedOption = len(playerOptions) - 1
+			opts := OptionValues()
+			p.selectedOption = Option(len(opts) - 1)
 		case key.Matches(msg, p.keymap.help):
 			p.help.ShowAll = !p.help.ShowAll
 			p.helpCache.Invalidate()
@@ -165,31 +166,16 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case Option:
 		p.optionsCache.Invalidate()
 		switch msg {
-		case Option3xRewind:
-			p.activeOption = 0
-			p.speed = -15
-		case Option2xRewind:
-			p.activeOption = 1
-			p.speed = -3
-		case Option1xRewind:
-			p.activeOption = 2
-			p.speed = -1
-		case OptionPause, OptionPlay:
+		case OptionPlayPause:
 			if p.isPlaying() {
 				p.pause()
 				return p, nil
 			} else {
 				return p, p.play()
 			}
-		case Option1xForward:
-			p.activeOption = 4
-			p.speed = 1
-		case Option2xForward:
-			p.activeOption = 5
-			p.speed = 3
-		case Option3xForward:
-			p.activeOption = 6
-			p.speed = 15
+		default:
+			p.activeOption = msg
+			p.speed = msg.Speed()
 		}
 		p.pause()
 		return p, p.play()
@@ -214,36 +200,17 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return p, nil
 		}
 
-		switch {
-		case p.zone.Get(string(Option3xRewind)).InBounds(msg):
-			p.selectedOption = 0
-			return p, chooseOption(Option3xRewind)
-		case p.zone.Get(string(Option2xRewind)).InBounds(msg):
-			p.selectedOption = 1
-			return p, chooseOption(Option2xRewind)
-		case p.zone.Get(string(Option1xRewind)).InBounds(msg):
-			p.selectedOption = 2
-			return p, chooseOption(Option1xRewind)
-		case p.zone.Get(string(OptionPause)).InBounds(msg):
-			p.selectedOption = 3
-			return p, chooseOption(OptionPause)
-		case p.zone.Get(string(OptionPlay)).InBounds(msg):
-			p.selectedOption = 3
-			return p, chooseOption(OptionPlay)
-		case p.zone.Get(string(Option1xForward)).InBounds(msg):
-			p.selectedOption = 4
-			return p, chooseOption(Option1xForward)
-		case p.zone.Get(string(Option2xForward)).InBounds(msg):
-			p.selectedOption = 5
-			return p, chooseOption(Option2xForward)
-		case p.zone.Get(string(Option3xForward)).InBounds(msg):
-			p.selectedOption = 6
-			return p, chooseOption(Option3xForward)
-		case p.zone.Get("help").InBounds(msg):
+		for _, opt := range OptionValues() {
+			if p.zone.Get(opt.String()).InBounds(msg) {
+				p.selectedOption = opt
+				return p, chooseOption(p.selectedOption)
+			}
+		}
+
+		if p.zone.Get("help").InBounds(msg) {
 			p.help.ShowAll = !p.help.ShowAll
 			p.helpCache.Invalidate()
 		}
-
 	case tea.WindowSizeMsg:
 		p.styles.MarginX, p.styles.MarginY = "", ""
 		if width := msg.Width/2 - p.movie.Width/2 - 1; width > 0 {
@@ -274,21 +241,20 @@ func (p *Player) View() string {
 }
 
 func (p *Player) OptionsView() string {
-	options := make([]string, 0, len(playerOptions))
-	for i, option := range playerOptions {
-		if option == OptionPause && !p.isPlaying() {
-			option = OptionPlay
-		}
+	opts := OptionValues()
+	options := make([]string, 0, len(opts))
+	isPlaying := p.isPlaying()
+	for _, option := range opts {
 		var rendered string
-		switch i {
+		switch option {
 		case p.selectedOption:
-			rendered = p.styles.Selected.Render(string(option))
+			rendered = p.styles.Selected.Render(option.DynamicString(isPlaying))
 		case p.activeOption:
-			rendered = p.styles.Active.Render(string(option))
+			rendered = p.styles.Active.Render(option.DynamicString(isPlaying))
 		default:
-			rendered = p.styles.Options.Render(string(option))
+			rendered = p.styles.Options.Render(option.DynamicString(isPlaying))
 		}
-		options = append(options, p.zone.Mark(string(option), rendered))
+		options = append(options, p.zone.Mark(option.String(), rendered))
 	}
 	return lipgloss.JoinHorizontal(lipgloss.Top, options...)
 }
