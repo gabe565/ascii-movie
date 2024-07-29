@@ -56,7 +56,8 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 			f.Duration = time.Duration(v) * time.Second / 15
 			f.Duration = time.Duration(float64(f.Duration) / speed)
 		} else {
-			buf.WriteString(scanner.Text() + "\n")
+			buf.Write(scanner.Bytes())
+			buf.WriteByte('\n')
 		}
 	}
 	if err := scanner.Err(); err != nil {
