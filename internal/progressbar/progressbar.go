@@ -31,18 +31,21 @@ func New() ProgressBar {
 
 func (p ProgressBar) Generate(n, total time.Duration, width int) string {
 	width -= 2
+
 	percent := float64(n) / float64(total)
 	filledLen := percent * float64(width)
 	filledNum := int(filledLen)
 	phaseIdx := int((filledLen - float64(filledNum)) * float64(len(p.Phases)))
 	emptyNum := width - filledNum
 
-	var result string
-	result += strings.Repeat(p.Phases[len(p.Phases)-1], filledNum)
+	var buf strings.Builder
+	buf.Grow(width * 3)
+
+	buf.WriteString(strings.Repeat(p.Phases[len(p.Phases)-1], filledNum))
 	if phaseIdx > 0 {
-		result += p.Phases[phaseIdx]
+		buf.WriteString(p.Phases[phaseIdx])
 		emptyNum--
 	}
-	result += strings.Repeat(p.Phases[0], emptyNum)
-	return result
+	buf.WriteString(strings.Repeat(p.Phases[0], emptyNum))
+	return buf.String()
 }
