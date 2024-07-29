@@ -21,7 +21,7 @@ func main() {
 		log.Fatal().Err(err).Msg("failed to create completions dir")
 	}
 
-	rootCmd := cmd.NewCommand("latest", "")
+	rootCmd := cmd.NewCommand()
 	name := rootCmd.Name()
 	var buf bytes.Buffer
 	rootCmd.SetOut(&buf)

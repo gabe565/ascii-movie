@@ -40,7 +40,7 @@ func main() {
 		log.Fatal().Err(err).Msg("failed to create manpages dir")
 	}
 
-	rootCmd := cmd.NewCommand("beta", "")
+	rootCmd := cmd.NewCommand()
 	rootName := rootCmd.Name()
 
 	date, err := time.Parse(time.RFC3339, dateParam)

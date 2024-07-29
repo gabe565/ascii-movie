@@ -22,7 +22,7 @@ func main() {
 		log.Fatal().Err(err).Msg("failed to create directory")
 	}
 
-	rootCmd := cmd.NewCommand("latest", "")
+	rootCmd := cmd.NewCommand()
 	if err := doc.GenMarkdownTree(rootCmd, output); err != nil {
 		log.Fatal().Err(err).Msg("failed to generate docs")
 	}

@@ -8,14 +8,8 @@ import (
 
 //go:generate go run ./internal/generate/gzip
 
-//nolint:gochecknoglobals
-var (
-	version = "beta"
-	commit  = ""
-)
-
 func main() {
-	if err := cmd.NewCommand(version, commit).Execute(); err != nil {
+	if err := cmd.NewCommand().Execute(); err != nil {
 		os.Exit(1)
 	}
 }

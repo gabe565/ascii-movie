@@ -11,11 +11,12 @@ import (
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/server"
 	"github.com/muesli/termenv"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )
 
-func NewCommand() *cobra.Command {
+func NewCommand(version, commit string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "serve [movie]",
 		Aliases: []string{"server", "listen"},
@@ -23,6 +24,7 @@ func NewCommand() *cobra.Command {
 		Short:   "Serve an ASCII movie over Telnet and SSH.",
 		RunE:    run,
 
+		Annotations:       map[string]string{"version": version, "commit": commit},
 		ValidArgsFunction: movie.CompleteMovieName,
 	}
 
@@ -35,6 +37,11 @@ func NewCommand() *cobra.Command {
 var ErrAllDisabled = errors.New("all server types are disabled")
 
 func run(cmd *cobra.Command, args []string) error {
+	log.Info().
+		Str("version", cmd.Annotations["version"]).
+		Str("commit", cmd.Annotations["commit"]).
+		Msg("ASCII Movie")
+
 	var path string
 	if len(args) > 0 {
 		path = args[0]

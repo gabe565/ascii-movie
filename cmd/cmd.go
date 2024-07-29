@@ -14,18 +14,21 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-func NewCommand(version, commit string) *cobra.Command {
+var version = "beta"
+
+func NewCommand() *cobra.Command {
+	cmdVersion, commit := buildVersion(version)
 	cmd := &cobra.Command{
 		Use:     "ascii-movie",
 		Short:   "Command line ASCII movie player.",
-		Version: buildVersion(version, commit),
+		Version: cmdVersion,
 
 		PersistentPreRunE: preRun,
 		DisableAutoGenTag: true,
 	}
 	cmd.AddCommand(
 		play.NewCommand(),
-		serve.NewCommand(),
+		serve.NewCommand(version, commit),
 		ls.NewCommand(),
 		get.NewCommand(),
 	)
@@ -56,11 +59,4 @@ func loadFlagEnvs(flags *flag.FlagSet) error {
 		}
 	})
 	return errors.Join(errs...)
-}
-
-func buildVersion(version, commit string) string {
-	if commit != "" {
-		version += " (" + commit + ")"
-	}
-	return version
 }
