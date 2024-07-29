@@ -137,6 +137,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	defer p.Close()
 
 	opts := []tea.ProgramOption{
+		tea.WithContext(ctx),
 		tea.WithInput(inR),
 		tea.WithOutput(conn),
 		tea.WithFPS(30),
@@ -149,6 +150,8 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	go func() {
 		for {
 			select {
+			case <-ctx.Done():
+				return
 			case info := <-sizeCh:
 				if info.Width != 0 && info.Height != 0 {
 					program.Send(tea.WindowSizeMsg{
@@ -156,9 +159,6 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 						Height: int(info.Height),
 					})
 				}
-			case <-ctx.Done():
-				program.Send(tea.Quit())
-				return
 			}
 		}
 	}()
