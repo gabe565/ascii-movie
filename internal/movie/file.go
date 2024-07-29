@@ -40,6 +40,7 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 					m.Height = frameHeight
 				}
 				buf.Reset()
+				buf.Grow(m.Width * m.Height)
 				m.Frames = append(m.Frames, f)
 			}
 			if !ok {
