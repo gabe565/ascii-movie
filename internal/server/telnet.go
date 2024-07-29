@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"errors"
-	"io"
 	"net"
 	"sync"
 	"time"
@@ -13,7 +12,6 @@ import (
 	"github.com/gabe565/ascii-movie/internal/player"
 	"github.com/gabe565/ascii-movie/internal/server/idleconn"
 	"github.com/gabe565/ascii-movie/internal/server/telnet"
-	"github.com/gabe565/ascii-movie/internal/util"
 	"github.com/muesli/termenv"
 	flag "github.com/spf13/pflag"
 )
@@ -105,31 +103,20 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	}
 	defer serverInfo.StreamDisconnect(id)
 
-	inR, inW := io.Pipe()
-	defer func() {
-		_ = inR.Close()
-	}()
-
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	termCh := make(chan string, 1)
-	defer close(termCh)
-	sizeCh := make(chan telnet.WindowSize, 1)
-	defer close(sizeCh)
+	in, profile, sizeCh, errCh := telnet.Proxy(conn)
+	defer func() {
+		_ = in.Close()
+	}()
 	go func() {
-		// Proxy input to program
-		_ = telnet.Proxy(conn, inW, termCh, sizeCh)
+		<-errCh
 		cancel()
 	}()
 
-	var gotProfile bool
-	var profile termenv.Profile
-	select {
-	case term := <-termCh:
-		profile = util.Profile(term)
-		gotProfile = true
-	case <-time.After(time.Second):
+	gotProfile := profile != -1
+	if !gotProfile {
 		profile = termenv.ANSI256
 	}
 
@@ -138,7 +125,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 
 	opts := []tea.ProgramOption{
 		tea.WithContext(ctx),
-		tea.WithInput(inR),
+		tea.WithInput(in),
 		tea.WithOutput(conn),
 		tea.WithFPS(30),
 	}
@@ -148,17 +135,12 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	program := tea.NewProgram(p, opts...)
 
 	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case info := <-sizeCh:
-				if info.Width != 0 && info.Height != 0 {
-					program.Send(tea.WindowSizeMsg{
-						Width:  int(info.Width),
-						Height: int(info.Height),
-					})
-				}
+		for info := range sizeCh {
+			if info.Width != 0 && info.Height != 0 {
+				program.Send(tea.WindowSizeMsg{
+					Width:  int(info.Width),
+					Height: int(info.Height),
+				})
 			}
 		}
 	}()

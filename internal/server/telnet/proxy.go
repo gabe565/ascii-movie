@@ -6,7 +6,10 @@ import (
 	"encoding/binary"
 	"io"
 	"net"
+	"time"
 
+	"github.com/gabe565/ascii-movie/internal/util"
+	"github.com/muesli/termenv"
 	"github.com/rs/zerolog/log"
 )
 
@@ -14,8 +17,35 @@ type WindowSize struct {
 	Width, Height uint16
 }
 
+func Proxy(conn net.Conn) (io.ReadCloser, termenv.Profile, <-chan WindowSize, <-chan error) {
+	pr, pw := io.Pipe()
+	termCh := make(chan string, 1)
+	sizeCh := make(chan WindowSize, 1)
+	errCh := make(chan error)
+
+	go func() {
+		defer func() {
+			_ = pw.Close()
+			close(termCh)
+			close(sizeCh)
+			close(errCh)
+		}()
+
+		errCh <- proxy(conn, pw, termCh, sizeCh)
+	}()
+
+	profile := termenv.Profile(-1)
+	select {
+	case term := <-termCh:
+		profile = util.Profile(term)
+	case <-time.After(time.Second):
+	}
+
+	return pr, profile, sizeCh, errCh
+}
+
 //nolint:gocyclo
-func Proxy(conn net.Conn, proxy io.Writer, termCh chan string, sizeCh chan WindowSize) error {
+func proxy(conn net.Conn, proxy io.Writer, termCh chan<- string, sizeCh chan<- WindowSize) error {
 	reader := bufio.NewReaderSize(conn, 64)
 	var wroteTelnetCommands bool
 	var wroteTermType bool
