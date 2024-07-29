@@ -114,7 +114,8 @@ outer:
 					case TerminalType:
 						if !wroteTermType && len(command) > 2 {
 							log.Trace().Msg("Got terminal type")
-							termCh <- string(command[2:])
+							term := command[2 : len(command)-2]
+							termCh <- string(term)
 							wroteTermType = true
 						}
 					case NegotiateAboutWindowSize:
