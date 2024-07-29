@@ -19,8 +19,8 @@ func NewCommand() *cobra.Command {
 		Long:    "Lists movie files and metadata.\nIf no path is given, embedded movies are listed.",
 		RunE:    run,
 
-		ValidArgsFunction: func(cmd *cobra.Command, _ []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return movie.CompleteMovieName(cmd, []string{}, toComplete)
+		ValidArgsFunction: func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+			return []string{".txt", ".txt.gz"}, cobra.ShellCompDirectiveFilterFileExt
 		},
 	}
 	return cmd
