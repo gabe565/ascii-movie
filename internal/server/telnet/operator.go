@@ -19,7 +19,7 @@ const (
 	EraseChar
 	EraseLine
 	GoAhead
-	Subnegotiation
+	SubNegotiation
 	Will
 	Wont
 	Do
@@ -41,8 +41,8 @@ const (
 	OutputCarriageReturnDisposition
 	OutputHorizontalTabStops
 	OutputHorizontalTabDisposition
-	OutputFormfeedDisposition
-	OutputVerticalTabstops
+	OutputFormFeedDisposition
+	OutputVerticalTabStops
 	OutputVerticalTabDisposition
 	OutputLinefeedDisposition
 	ExtendedASCII
@@ -53,7 +53,7 @@ const (
 	SUPDUPOutput
 	SendLocation
 	TerminalType
-	EndofRecord
+	EndOfRecord
 	TACACSUserIdentification
 	OutputMarking
 	TerminalLocationNumber
@@ -62,7 +62,7 @@ const (
 	NegotiateAboutWindowSize
 	TerminalSpeed
 	RemoteFlowControl
-	Linemode
+	LineMode
 	XDisplayLocation
 	ExtendedOptionsList
 )

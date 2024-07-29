@@ -61,7 +61,7 @@ func proxy(conn net.Conn, proxy io.Writer, termCh chan<- string, sizeCh chan<- W
 	// Gets Telnet to send option negotiation commands if explicit port was given.
 	// Also clears the line in case the client isn't Telnet
 	// https://ibm.com/docs/zos/latest?topic=problems-telnet-commands-options
-	if _, err := WriteAndClear(conn, Iac, Do, Linemode); err != nil {
+	if _, err := WriteAndClear(conn, Iac, Do, LineMode); err != nil {
 		return err
 	}
 
@@ -94,7 +94,7 @@ outer:
 			}
 
 			switch Operator(b) {
-			case Subnegotiation:
+			case SubNegotiation:
 				command, err := reader.ReadBytes(byte(Se))
 				if err != nil {
 					return err
@@ -146,7 +146,7 @@ outer:
 					if !willTerminalType {
 						willTerminalType = true
 						log.Trace().Msg("Requesting terminal type")
-						if _, err := Write(conn, Iac, Subnegotiation, TerminalType, 1, Iac, Se); err != nil {
+						if _, err := Write(conn, Iac, SubNegotiation, TerminalType, 1, Iac, Se); err != nil {
 							return err
 						}
 					}

@@ -18,7 +18,7 @@ func _() {
 	_ = x[EraseChar-247]
 	_ = x[EraseLine-248]
 	_ = x[GoAhead-249]
-	_ = x[Subnegotiation-250]
+	_ = x[SubNegotiation-250]
 	_ = x[Will-251]
 	_ = x[Wont-252]
 	_ = x[Do-253]
@@ -37,8 +37,8 @@ func _() {
 	_ = x[OutputCarriageReturnDisposition-10]
 	_ = x[OutputHorizontalTabStops-11]
 	_ = x[OutputHorizontalTabDisposition-12]
-	_ = x[OutputFormfeedDisposition-13]
-	_ = x[OutputVerticalTabstops-14]
+	_ = x[OutputFormFeedDisposition-13]
+	_ = x[OutputVerticalTabStops-14]
 	_ = x[OutputVerticalTabDisposition-15]
 	_ = x[OutputLinefeedDisposition-16]
 	_ = x[ExtendedASCII-17]
@@ -49,7 +49,7 @@ func _() {
 	_ = x[SUPDUPOutput-22]
 	_ = x[SendLocation-23]
 	_ = x[TerminalType-24]
-	_ = x[EndofRecord-25]
+	_ = x[EndOfRecord-25]
 	_ = x[TACACSUserIdentification-26]
 	_ = x[OutputMarking-27]
 	_ = x[TerminalLocationNumber-28]
@@ -58,14 +58,14 @@ func _() {
 	_ = x[NegotiateAboutWindowSize-31]
 	_ = x[TerminalSpeed-32]
 	_ = x[RemoteFlowControl-33]
-	_ = x[Linemode-34]
+	_ = x[LineMode-34]
 	_ = x[XDisplayLocation-35]
 	_ = x[ExtendedOptionsList-36]
 }
 
 const (
-	_Operator_name_0 = "BinaryTransmissionEchoReconnectionSuppressGoAheadApproxMessageSizeNegotiationStatusTimingMarkRemoteControlledTransAndEchoOutputLineWidthOutputPageSizeOutputCarriageReturnDispositionOutputHorizontalTabStopsOutputHorizontalTabDispositionOutputFormfeedDispositionOutputVerticalTabstopsOutputVerticalTabDispositionOutputLinefeedDispositionExtendedASCIILogoutByteMacroDataEntryTerminalSUPDUPSUPDUPOutputSendLocationTerminalTypeEndofRecordTACACSUserIdentificationOutputMarkingTerminalLocationNumberTelnet3270RegimeX3PADNegotiateAboutWindowSizeTerminalSpeedRemoteFlowControlLinemodeXDisplayLocationExtendedOptionsList"
-	_Operator_name_1 = "SeNopDataMarkBreakInterruptAbortAreYouThereEraseCharEraseLineGoAheadSubnegotiationWillWontDoDontIac"
+	_Operator_name_0 = "BinaryTransmissionEchoReconnectionSuppressGoAheadApproxMessageSizeNegotiationStatusTimingMarkRemoteControlledTransAndEchoOutputLineWidthOutputPageSizeOutputCarriageReturnDispositionOutputHorizontalTabStopsOutputHorizontalTabDispositionOutputFormFeedDispositionOutputVerticalTabStopsOutputVerticalTabDispositionOutputLinefeedDispositionExtendedASCIILogoutByteMacroDataEntryTerminalSUPDUPSUPDUPOutputSendLocationTerminalTypeEndOfRecordTACACSUserIdentificationOutputMarkingTerminalLocationNumberTelnet3270RegimeX3PADNegotiateAboutWindowSizeTerminalSpeedRemoteFlowControlLineModeXDisplayLocationExtendedOptionsList"
+	_Operator_name_1 = "SeNopDataMarkBreakInterruptAbortAreYouThereEraseCharEraseLineGoAheadSubNegotiationWillWontDoDontIac"
 )
 
 var (
