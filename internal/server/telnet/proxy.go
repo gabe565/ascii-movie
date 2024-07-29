@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"io"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/gabe565/ascii-movie/internal/util"
@@ -15,6 +17,10 @@ import (
 
 type WindowSize struct {
 	Width, Height uint16
+}
+
+func (w WindowSize) String() string {
+	return fmt.Sprintf("%dx%d", w.Width, w.Height)
 }
 
 func Proxy(conn net.Conn) (io.ReadCloser, termenv.Profile, <-chan WindowSize, <-chan error) {
@@ -112,20 +118,20 @@ outer:
 				if len(command) != 0 {
 					switch Operator(command[0]) {
 					case TerminalType:
-						if !wroteTermType && len(command) > 2 {
-							log.Trace().Msg("Got terminal type")
-							term := command[2 : len(command)-2]
-							termCh <- string(term)
+						if !wroteTermType && len(command) > 4 {
 							wroteTermType = true
+							term := strings.ToLower(string(command[2 : len(command)-2]))
+							log.Trace().Str("type", term).Msg("Got terminal type")
+							termCh <- term
 						}
 					case NegotiateAboutWindowSize:
 						if len(command) >= 5 {
-							log.Trace().Msg("Got window size")
 							r := bytes.NewReader(command[1:])
 							var size WindowSize
 							if err := binary.Read(r, binary.BigEndian, &size); err != nil {
 								return err
 							}
+							log.Trace().Stringer("size", size).Msg("Got window size")
 							sizeCh <- size
 						}
 					}
