@@ -75,8 +75,7 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 	var currentPosition time.Duration
 	m.Sections = make([]int, m.Width+1)
 	for i, f := range m.Frames {
-		f.Progress = bar.Generate(currentPosition+f.Duration/2, totalDuration, m.Width+2)
-		m.Frames[i] = f
+		m.Frames[i].Progress = bar.Generate(currentPosition+f.Duration/2, totalDuration, m.Width+2)
 		percent := int(currentPosition * time.Duration(m.Width) / totalDuration)
 		if percent < len(m.Sections)-1 {
 			m.Sections[percent+1] = i
