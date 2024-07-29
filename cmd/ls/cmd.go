@@ -2,11 +2,14 @@ package ls
 
 import (
 	"fmt"
+	"io/fs"
+	"path/filepath"
 	"text/tabwriter"
 	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gabe565/ascii-movie/internal/movie"
+	"github.com/gabe565/ascii-movie/internal/util"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
@@ -29,14 +32,23 @@ func NewCommand() *cobra.Command {
 func run(cmd *cobra.Command, args []string) error {
 	movieInfos := make([]movie.Info, 0, len(args))
 
-	if len(args) > 0 {
+	if len(args) != 0 {
 		for _, arg := range args {
-			movieInfo, err := movie.GetInfo(nil, arg)
-			if err != nil {
-				log.Warn().Err(err).Str("path", arg).Msg("Failed to get movie info")
-				continue
+			if err := filepath.WalkDir(arg, func(path string, d fs.DirEntry, err error) error {
+				if err != nil || d.IsDir() || !util.HasMovieExt(path) {
+					return err
+				}
+
+				movieInfo, err := movie.GetInfo(nil, path)
+				if err != nil {
+					log.Warn().Err(err).Str("path", arg).Msg("Failed to get movie info")
+					return nil
+				}
+				movieInfos = append(movieInfos, movieInfo)
+				return nil
+			}); err != nil {
+				return err
 			}
-			movieInfos = append(movieInfos, movieInfo)
 		}
 	} else {
 		var err error
