@@ -60,7 +60,7 @@ func proxy(conn net.Conn, proxy io.Writer, termCh chan<- string, sizeCh chan<- W
 
 	// Gets Telnet to send option negotiation commands if explicit port was given.
 	// Also clears the line in case the client isn't Telnet
-	// https://ibm.com/docs/zos/2.5.0?topic=problems-telnet-commands-options
+	// https://ibm.com/docs/zos/latest?topic=problems-telnet-commands-options
 	if _, err := WriteAndClear(conn, Iac, Do, Linemode); err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ outer:
 		switch Operator(b) {
 		case BinaryTransmission:
 		case Iac:
-			// https://ibm.com/docs/zos/2.5.0?topic=problems-telnet-commands-options
+			// https://ibm.com/docs/zos/latest?topic=problems-telnet-commands-options
 			if !wroteTelnetCommands {
 				wroteTelnetCommands = true
 				log.Trace().Msg("Configuring Telnet")
