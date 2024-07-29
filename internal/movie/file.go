@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/gabe565/ascii-movie/internal/progressbar"
 )
 
@@ -31,7 +32,10 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 			frameNum++
 			if frameNum != 0 {
 				f.Data = strings.TrimSuffix(buf.String(), "\n")
-				if frameHeight := strings.Count(f.Data, "\n"); m.Height < frameHeight {
+				if frameWidth := lipgloss.Width(f.Data); frameWidth > m.Width {
+					m.Width = frameWidth
+				}
+				if frameHeight := lipgloss.Height(f.Data); frameHeight > m.Height {
 					m.Height = frameHeight
 				}
 				buf.Reset()
@@ -51,9 +55,6 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 			f.Duration = time.Duration(v) * time.Second / 15
 			f.Duration = time.Duration(float64(f.Duration) / speed)
 		} else {
-			if len(scanner.Bytes()) > m.Width {
-				m.Width = len(scanner.Bytes())
-			}
 			buf.WriteString(scanner.Text() + "\n")
 		}
 	}
