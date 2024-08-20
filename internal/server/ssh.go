@@ -125,7 +125,7 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 	return func(session ssh.Session) (tea.Model, []tea.ProgramOption) {
 		remoteIP := RemoteIP(session.RemoteAddr().String())
 		logger := s.Log.With(
-			"remote_ip", remoteIP,
+			"remoteIP", remoteIP,
 			"user", session.User(),
 		)
 
@@ -155,7 +155,7 @@ func (s *SSHServer) TrackStream(handler ssh.Handler) ssh.Handler {
 		id, err := serverInfo.StreamConnect("ssh", remoteIP)
 		if err != nil {
 			s.Log.Error("Failed to begin stream",
-				"remote_ip", remoteIP,
+				"remoteIP", remoteIP,
 				"user", session.User(),
 			)
 			_, _ = session.Write([]byte(ErrorText(err) + "\n"))
