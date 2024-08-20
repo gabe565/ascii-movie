@@ -13,7 +13,7 @@ builds:
     ldflags:
       - -s
       - -w
-      - -X github.com/gabe565/ascii-movie/cmd.version={{ .Version }}
+      - -X main.version={{ .Version }}
     tags:
       - gzip
     goarch:

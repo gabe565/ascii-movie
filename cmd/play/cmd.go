@@ -4,13 +4,14 @@ import (
 	"log/slog"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/gabe565/ascii-movie/cmd/util"
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/player"
 	"github.com/spf13/cobra"
 )
 
-func NewCommand() *cobra.Command {
+func NewCommand(opts ...util.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "play [movie]",
 		Short: "Play an ASCII movie locally.",
@@ -21,6 +22,10 @@ func NewCommand() *cobra.Command {
 	}
 
 	movie.Flags(cmd.Flags())
+
+	for _, opt := range opts {
+		opt(cmd)
+	}
 
 	return cmd
 }

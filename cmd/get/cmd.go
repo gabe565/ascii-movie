@@ -5,12 +5,13 @@ import (
 	"net/url"
 
 	"github.com/gabe565/ascii-movie/cmd/get/stream"
+	"github.com/gabe565/ascii-movie/cmd/util"
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/gabe565/ascii-movie/internal/server"
 	"github.com/spf13/cobra"
 )
 
-func NewCommand() *cobra.Command {
+func NewCommand(opts ...util.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get",
 		Short: "Fetches data from a running server.",
@@ -23,6 +24,9 @@ func NewCommand() *cobra.Command {
 	cmd.AddCommand(
 		stream.NewCommand(),
 	)
+	for _, opt := range opts {
+		opt(cmd)
+	}
 	return cmd
 }
 

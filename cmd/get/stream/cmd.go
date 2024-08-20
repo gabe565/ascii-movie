@@ -10,12 +10,13 @@ import (
 	"text/tabwriter"
 	"time"
 
+	"github.com/gabe565/ascii-movie/cmd/util"
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/gabe565/ascii-movie/internal/server"
 	"github.com/spf13/cobra"
 )
 
-func NewCommand() *cobra.Command {
+func NewCommand(opts ...util.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "stream",
 		Aliases: []string{"streams", "connection", "connections", "client", "clients"},
@@ -26,6 +27,10 @@ func NewCommand() *cobra.Command {
 	}
 
 	cmd.Flags().StringP("count", "c", "", "Gets stream count (active, total)")
+
+	for _, opt := range opts {
+		opt(cmd)
+	}
 
 	return cmd
 }

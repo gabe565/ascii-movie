@@ -9,30 +9,32 @@ import (
 	"github.com/gabe565/ascii-movie/cmd/ls"
 	"github.com/gabe565/ascii-movie/cmd/play"
 	"github.com/gabe565/ascii-movie/cmd/serve"
+	"github.com/gabe565/ascii-movie/cmd/util"
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 )
 
-var version = "beta"
-
-func NewCommand() *cobra.Command {
-	cmdVersion, commit := buildVersion(version)
+func NewCommand(opts ...util.Option) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "ascii-movie",
-		Short:   "Command line ASCII movie player.",
-		Version: cmdVersion,
+		Use:   "ascii-movie",
+		Short: "Command line ASCII movie player.",
 
 		PersistentPreRunE: preRun,
 		DisableAutoGenTag: true,
 	}
 	cmd.AddCommand(
 		play.NewCommand(),
-		serve.NewCommand(version, commit),
+		serve.NewCommand(),
 		ls.NewCommand(),
 		get.NewCommand(),
 	)
 	config.RegisterLogFlags(cmd)
+
+	for _, opt := range opts {
+		opt(cmd)
+	}
+
 	return cmd
 }
 

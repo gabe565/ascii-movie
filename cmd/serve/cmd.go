@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/gabe565/ascii-movie/cmd/util"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/server"
 	"github.com/muesli/termenv"
@@ -16,7 +17,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func NewCommand(version, commit string) *cobra.Command {
+func NewCommand(opts ...util.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "serve [movie]",
 		Aliases: []string{"server", "listen"},
@@ -24,12 +25,15 @@ func NewCommand(version, commit string) *cobra.Command {
 		Short:   "Serve an ASCII movie over Telnet and SSH.",
 		RunE:    run,
 
-		Annotations:       map[string]string{"version": version, "commit": commit},
 		ValidArgsFunction: movie.CompleteMovieName,
 	}
 
 	movie.Flags(cmd.Flags())
 	server.Flags(cmd.Flags())
+
+	for _, opt := range opts {
+		opt(cmd)
+	}
 
 	return cmd
 }
@@ -37,10 +41,12 @@ func NewCommand(version, commit string) *cobra.Command {
 var ErrAllDisabled = errors.New("all server types are disabled")
 
 func run(cmd *cobra.Command, args []string) error {
-	slog.Info("ASCII Movie",
-		"version", cmd.Annotations["version"],
-		"commit", cmd.Annotations["commit"],
-	)
+	if parent := cmd.Parent(); parent != nil {
+		slog.Info("ASCII Movie",
+			"version", parent.Annotations["version"],
+			"commit", parent.Annotations["commit"],
+		)
+	}
 
 	var path string
 	if len(args) > 0 {

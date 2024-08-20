@@ -9,12 +9,13 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
+	cmdutil "github.com/gabe565/ascii-movie/cmd/util"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/util"
 	"github.com/spf13/cobra"
 )
 
-func NewCommand() *cobra.Command {
+func NewCommand(opts ...cmdutil.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "ls [PATH]...",
 		Aliases: []string{"ls-embedded"},
@@ -25,6 +26,9 @@ func NewCommand() *cobra.Command {
 		ValidArgsFunction: func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 			return []string{".txt", ".txt.gz"}, cobra.ShellCompDirectiveFilterFileExt
 		},
+	}
+	for _, opt := range opts {
+		opt(cmd)
 	}
 	return cmd
 }

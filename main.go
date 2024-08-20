@@ -4,12 +4,16 @@ import (
 	"os"
 
 	"github.com/gabe565/ascii-movie/cmd"
+	"github.com/gabe565/ascii-movie/cmd/util"
 )
 
 //go:generate go run ./internal/generate/gzip
 
+var version = "beta"
+
 func main() {
-	if err := cmd.NewCommand().Execute(); err != nil {
+	root := cmd.NewCommand(util.WithVersion(version))
+	if err := root.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
