@@ -23,6 +23,7 @@ func NewCommand(opts ...util.Option) *cobra.Command {
 		PersistentPreRunE: preRun,
 		DisableAutoGenTag: true,
 		SilenceUsage:      true,
+		SilenceErrors:     true,
 	}
 	cmd.AddCommand(
 		play.NewCommand(),
