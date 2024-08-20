@@ -109,6 +109,7 @@ func run(cmd *cobra.Command, _ []string) error {
 	if err := json.NewDecoder(resp.Body).Decode(&decoded); err != nil {
 		return fmt.Errorf("failed to parse API response: %w", err)
 	}
+	_ = resp.Body.Close()
 
 	switch countFlag {
 	case CountActive:
