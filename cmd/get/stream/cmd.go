@@ -24,6 +24,15 @@ func NewCommand(opts ...util.Option) *cobra.Command {
 
 		PreRunE: preRun,
 		RunE:    run,
+
+		Args: cobra.MaximumNArgs(1),
+		ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+			var completion []string
+			if len(args) == 0 {
+				completion = []string{"count"}
+			}
+			return completion, cobra.ShellCompDirectiveNoFileComp
+		},
 	}
 
 	cmd.Flags().StringP("count", "c", "", "Gets stream count (active, total)")
