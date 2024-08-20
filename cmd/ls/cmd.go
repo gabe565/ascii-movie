@@ -3,6 +3,7 @@ package ls
 import (
 	"fmt"
 	"io/fs"
+	"log/slog"
 	"path/filepath"
 	"text/tabwriter"
 	"time"
@@ -10,7 +11,6 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/util"
-	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -41,8 +41,8 @@ func run(cmd *cobra.Command, args []string) error {
 
 				movieInfo, err := movie.GetInfo(nil, path)
 				if err != nil {
-					log.Warn().Err(err).Str("path", arg).Msg("Failed to get movie info")
-					return nil
+					slog.Warn("Failed to get movie info", "path", arg)
+					return err
 				}
 				movieInfos = append(movieInfos, movieInfo)
 				return nil

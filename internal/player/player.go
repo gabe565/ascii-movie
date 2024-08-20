@@ -2,6 +2,7 @@ package player
 
 import (
 	"context"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -9,13 +10,11 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/gabe565/ascii-movie/internal/loghooks"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	zone "github.com/lrstanley/bubblezone"
-	"github.com/rs/zerolog"
 )
 
-func NewPlayer(m *movie.Movie, logger zerolog.Logger, renderer *lipgloss.Renderer) *Player {
+func NewPlayer(m *movie.Movie, logger *slog.Logger, renderer *lipgloss.Renderer) *Player {
 	if renderer == nil {
 		renderer = lipgloss.DefaultRenderer()
 	}
@@ -23,7 +22,8 @@ func NewPlayer(m *movie.Movie, logger zerolog.Logger, renderer *lipgloss.Rendere
 	playCtx, playCancel := context.WithCancel(context.Background())
 	player := &Player{
 		movie:          m,
-		log:            logger.Hook(loghooks.NewDuration()),
+		log:            logger,
+		start:          time.Now(),
 		zone:           zone.New(),
 		speed:          1,
 		selectedOption: OptionPlayPause,
@@ -43,7 +43,8 @@ func NewPlayer(m *movie.Movie, logger zerolog.Logger, renderer *lipgloss.Rendere
 type Player struct {
 	movie *movie.Movie
 	frame int
-	log   zerolog.Logger
+	log   *slog.Logger
+	start time.Time
 	zone  *zone.Manager
 
 	speed      float64
@@ -299,10 +300,11 @@ func (p *Player) clearTimeouts() {
 }
 
 func (p *Player) Close() {
+	p.log = p.log.With("duration", time.Since(p.start).Truncate(100*time.Millisecond))
 	if p.frame >= len(p.movie.Frames)-1 {
-		p.log.Info().Msg("Finished movie")
+		p.log.Info("Finished movie")
 	} else {
-		p.log.Info().Msg("Disconnected early")
+		p.log.Info("Disconnected early")
 	}
 	p.clearTimeouts()
 	p.zone.Close()

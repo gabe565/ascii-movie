@@ -3,16 +3,18 @@ package telnet
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"encoding/binary"
 	"fmt"
 	"io"
+	"log/slog"
 	"net"
 	"strings"
 	"time"
 
+	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/gabe565/ascii-movie/internal/util"
 	"github.com/muesli/termenv"
-	"github.com/rs/zerolog/log"
 )
 
 type WindowSize struct {
@@ -78,14 +80,14 @@ outer:
 			// https://ibm.com/docs/zos/latest?topic=problems-telnet-commands-options
 			if !wroteTelnetCommands {
 				wroteTelnetCommands = true
-				log.Trace().Msg("Configuring Telnet")
+				slog.Log(context.Background(), config.LevelTrace, "Configuring Telnet")
 				if _, err := Write(conn,
 					Iac, Will, Echo,
 					Iac, Will, SuppressGoAhead,
 					Iac, Do, TerminalType,
 					Iac, Do, NegotiateAboutWindowSize,
 				); err != nil {
-					log.Err(err).Msg("Failed to write telnet commands")
+					slog.Error("Failed to write telnet commands", "error", err)
 				}
 			}
 
@@ -121,7 +123,7 @@ outer:
 						if !wroteTermType && len(command) > 4 {
 							wroteTermType = true
 							term := strings.ToLower(string(command[2 : len(command)-2]))
-							log.Trace().Str("type", term).Msg("Got terminal type")
+							slog.Log(context.Background(), config.LevelTrace, "Got terminal type", "type", term)
 							termCh <- term
 						}
 					case NegotiateAboutWindowSize:
@@ -131,7 +133,7 @@ outer:
 							if err := binary.Read(r, binary.BigEndian, &size); err != nil {
 								return err
 							}
-							log.Trace().Stringer("size", size).Msg("Got window size")
+							slog.Log(context.Background(), config.LevelTrace, "Got window size", "size", size)
 							sizeCh <- size
 						}
 					}
@@ -145,7 +147,7 @@ outer:
 				case TerminalType:
 					if !willTerminalType {
 						willTerminalType = true
-						log.Trace().Msg("Requesting terminal type")
+						slog.Log(context.Background(), config.LevelTrace, "Requesting terminal type")
 						if _, err := Write(conn, Iac, SubNegotiation, TerminalType, 1, Iac, Se); err != nil {
 							return err
 						}
@@ -154,7 +156,7 @@ outer:
 					if !willNegotiateAboutWindowSize {
 						willNegotiateAboutWindowSize = true
 						if _, err := Write(conn, Iac, Do, NegotiateAboutWindowSize); err != nil {
-							log.Err(err).Msg("Failed to write telnet commands")
+							slog.Error("Failed to write telnet commands", "error", err)
 						}
 					}
 				}

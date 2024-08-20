@@ -5,20 +5,20 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/gabe565/ascii-movie/cmd"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/spf13/cobra/doc"
 	flag "github.com/spf13/pflag"
 )
 
 func main() {
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	config.InitLog(os.Stderr, slog.LevelInfo, config.FormatAuto)
 
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 
@@ -29,15 +29,23 @@ func main() {
 	flags.StringVar(&dateParam, "date", time.Now().Format(time.RFC3339), "Build date")
 
 	if err := flags.Parse(os.Args); err != nil {
-		log.Fatal().Err(err).Msg("failed to parse arguments")
+		slog.Error("Failed to parse arguments", "error", err)
+		os.Exit(1)
 	}
 
+	if err := run(version, dateParam); err != nil {
+		slog.Error(err.Error())
+		os.Exit(1)
+	}
+}
+
+func run(version, dateParam string) error {
 	if err := os.RemoveAll("manpages"); err != nil {
-		log.Fatal().Err(err).Msg("failed to remove manpages dir")
+		return fmt.Errorf("failed to remove manpages dir: %w", err)
 	}
 
 	if err := os.MkdirAll("manpages", 0o755); err != nil {
-		log.Fatal().Err(err).Msg("failed to create manpages dir")
+		return fmt.Errorf("failed to create manpages dir: %w", err)
 	}
 
 	rootCmd := cmd.NewCommand()
@@ -45,7 +53,7 @@ func main() {
 
 	date, err := time.Parse(time.RFC3339, dateParam)
 	if err != nil {
-		log.Fatal().Err(err).Str("raw", dateParam).Msg("failed to parse date")
+		return fmt.Errorf("failed to parse date: %w", err)
 	}
 
 	header := doc.GenManHeader{
@@ -57,7 +65,7 @@ func main() {
 	}
 
 	if err := doc.GenManTree(rootCmd, &header, "manpages"); err != nil {
-		log.Fatal().Err(err).Msg("failed to generate manpages")
+		return fmt.Errorf("failed to generate manpages: %w", err)
 	}
 
 	if err := filepath.WalkDir("manpages", func(path string, d fs.DirEntry, err error) error {
@@ -96,6 +104,8 @@ func main() {
 
 		return nil
 	}); err != nil {
-		log.Fatal().Err(err).Msg("failed to gzip manpages")
+		return fmt.Errorf("failed to gzip manpages: %w", err)
 	}
+
+	return nil
 }

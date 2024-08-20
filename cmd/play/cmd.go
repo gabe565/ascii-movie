@@ -1,12 +1,12 @@
 package play
 
 import (
+	"log/slog"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/player"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +27,10 @@ func NewCommand() *cobra.Command {
 
 func run(cmd *cobra.Command, args []string) error {
 	if !cmd.Flags().Changed(config.LogLevelFlag) {
-		zerolog.SetGlobalLevel(zerolog.WarnLevel)
+		if err := cmd.Flags().Set(config.LogLevelFlag, slog.LevelWarn.String()); err != nil {
+			slog.Warn("Failed to decrease log level", "error", err)
+		}
+		config.InitLogCmd(cmd)
 	}
 
 	var path string
@@ -40,7 +43,7 @@ func run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	p := player.NewPlayer(&m, log.Level(zerolog.ErrorLevel), nil)
+	p := player.NewPlayer(&m, slog.Default(), nil)
 	defer p.Close()
 
 	program := tea.NewProgram(p,

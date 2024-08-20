@@ -9,11 +9,11 @@ require (
 	github.com/charmbracelet/ssh v0.0.0-20240725163421-eb71b85b27aa
 	github.com/charmbracelet/wish v1.4.0
 	github.com/dustin/go-humanize v1.0.1
+	github.com/lmittmann/tint v1.0.5
 	github.com/lrstanley/bubblezone v0.0.0-20240723130623-7fd58a7b1f91
 	github.com/mattn/go-isatty v0.0.20
 	github.com/muesli/termenv v0.15.2
 	github.com/prometheus/client_golang v1.20.2
-	github.com/rs/zerolog v1.33.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.9.0
@@ -42,7 +42,6 @@ require (
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-localereader v0.0.1 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6 // indirect

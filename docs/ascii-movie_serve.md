@@ -27,8 +27,8 @@ ascii-movie serve [movie] [flags]
 ### Options inherited from parent commands
 
 ```
-      --log-format string   log formatter (auto, color, plain, json) (default "auto")
-  -l, --log-level string    log level (trace, debug, info, warn, error, fatal, panic) (default "info")
+      --log-format string   log formatter (one of auto, color, plain, json) (default "auto")
+  -l, --log-level string    log level (one of debug, info, warn, error) (default "info")
 ```
 
 ### SEE ALSO

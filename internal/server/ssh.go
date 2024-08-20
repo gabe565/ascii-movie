@@ -50,7 +50,7 @@ func NewSSH(flags *flag.FlagSet) SSHServer {
 }
 
 func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
-	s.Log.Info().Str("address", s.Address).Msg("Starting SSH server")
+	s.Log.Info("Starting SSH server", "address", s.Address)
 
 	sshOptions := []ssh.Option{
 		wish.WithAddress(s.Address),
@@ -83,10 +83,10 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 	}
 
 	for _, signer := range server.HostSigners {
-		s.Log.Debug().
-			Str("type", signer.PublicKey().Type()).
-			Str("fingerprint", gossh.FingerprintSHA256(signer.PublicKey())).
-			Msg("Using host key")
+		s.Log.Debug("Using host key",
+			"type", signer.PublicKey().Type(),
+			"fingerprint", gossh.FingerprintSHA256(signer.PublicKey()),
+		)
 	}
 
 	group, ctx := errgroup.WithContext(ctx)
@@ -109,8 +109,8 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 
 	group.Go(func() error {
 		<-ctx.Done()
-		s.Log.Info().Msg("Stopping SSH server")
-		defer s.Log.Info().Msg("Stopped SSH server")
+		s.Log.Info("Stopping SSH server")
+		defer s.Log.Info("Stopped SSH server")
 
 		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer shutdownCancel()
@@ -124,10 +124,10 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 	return func(session ssh.Session) (tea.Model, []tea.ProgramOption) {
 		remoteIP := RemoteIP(session.RemoteAddr().String())
-		logger := s.Log.With().
-			Str("remote_ip", remoteIP).
-			Str("user", session.User()).
-			Logger()
+		logger := s.Log.With(
+			"remote_ip", remoteIP,
+			"user", session.User(),
+		)
 
 		renderer := bubbletea.MakeRenderer(session)
 		if renderer.ColorProfile() == termenv.Ascii {
@@ -154,10 +154,10 @@ func (s *SSHServer) TrackStream(handler ssh.Handler) ssh.Handler {
 		remoteIP := RemoteIP(session.RemoteAddr().String())
 		id, err := serverInfo.StreamConnect("ssh", remoteIP)
 		if err != nil {
-			s.Log.Err(err).
-				Str("remote_ip", remoteIP).
-				Str("user", session.User()).
-				Msg("Failed to begin stream")
+			s.Log.Error("Failed to begin stream",
+				"remote_ip", remoteIP,
+				"user", session.User(),
+			)
 			_, _ = session.Write([]byte(ErrorText(err) + "\n"))
 			return
 		}

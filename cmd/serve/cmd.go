@@ -3,6 +3,7 @@ package serve
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,7 +12,6 @@ import (
 	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/gabe565/ascii-movie/internal/server"
 	"github.com/muesli/termenv"
-	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )
@@ -37,10 +37,10 @@ func NewCommand(version, commit string) *cobra.Command {
 var ErrAllDisabled = errors.New("all server types are disabled")
 
 func run(cmd *cobra.Command, args []string) error {
-	log.Info().
-		Str("version", cmd.Annotations["version"]).
-		Str("commit", cmd.Annotations["commit"]).
-		Msg("ASCII Movie")
+	slog.Info("ASCII Movie",
+		"version", cmd.Annotations["version"],
+		"commit", cmd.Annotations["commit"],
+	)
 
 	var path string
 	if len(args) > 0 {

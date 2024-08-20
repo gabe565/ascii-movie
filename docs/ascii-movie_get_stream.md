@@ -17,8 +17,8 @@ ascii-movie get stream [flags]
 
 ```
       --api-address string   API address (default "http://127.0.0.1:1977")
-      --log-format string    log formatter (auto, color, plain, json) (default "auto")
-  -l, --log-level string     log level (trace, debug, info, warn, error, fatal, panic) (default "info")
+      --log-format string    log formatter (one of auto, color, plain, json) (default "auto")
+  -l, --log-level string     log level (one of debug, info, warn, error) (default "info")
 ```
 
 ### SEE ALSO

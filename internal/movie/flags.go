@@ -2,15 +2,17 @@ package movie
 
 import (
 	"compress/gzip"
+	"context"
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/gabe565/ascii-movie/internal/config"
 	"github.com/gabe565/ascii-movie/movies"
-	"github.com/rs/zerolog/log"
 	flag "github.com/spf13/pflag"
 )
 
@@ -29,7 +31,7 @@ func Flags(flags *flag.FlagSet) {
 func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	var err error
 
-	log.Info().Msg("Loading movie...")
+	slog.Info("Loading movie...")
 	start := time.Now()
 
 	movie := NewMovie()
@@ -45,7 +47,7 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 		embeddedPath += FileSuffix
 	}
 	if src, err = movies.Movies.Open(embeddedPath); err == nil {
-		log.Debug().Str("name", embeddedPath).Msg("Using embedded movie")
+		slog.Debug("Using embedded movie", "name", embeddedPath)
 
 		if strings.HasSuffix(embeddedPath, ".gz") {
 			src, err = gzip.NewReader(src)
@@ -56,12 +58,12 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	} else {
 		if errors.Is(err, os.ErrNotExist) {
 			// Fallback to loading file
-			log.Trace().Str("name", embeddedPath).Msg("No embedded movie matches name. Searching filesystem.")
+			slog.Log(context.Background(), config.LevelTrace, "No embedded movie matches name. Searching filesystem.")
 			f, err := os.Open(path)
 			if err != nil {
 				return movie, err
 			}
-			log.Debug().Str("name", path).Msg("Found movie file")
+			slog.Debug("Found movie file", "name", path)
 
 			src = f
 			defer func(f *os.File) {
@@ -95,10 +97,10 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 		return movie, err
 	}
 
-	log.Info().
-		Str("duration", movie.Duration().Round(time.Second).String()).
-		Str("took", time.Since(start).Round(time.Microsecond).String()).
-		Msg("Movie loaded")
+	slog.Info("Movie loaded",
+		"duration", movie.Duration().Round(time.Second),
+		"took", time.Since(start).Round(time.Microsecond),
+	)
 
 	return movie, nil
 }
