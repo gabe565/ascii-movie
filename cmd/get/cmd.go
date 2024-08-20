@@ -41,12 +41,6 @@ func preRun(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	ctx := cmd.Context()
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	ctx = context.WithValue(ctx, config.URLContextKey, u)
-	cmd.SetContext(ctx)
-
+	cmd.SetContext(context.WithValue(cmd.Context(), config.URLContextKey, u))
 	return nil
 }
