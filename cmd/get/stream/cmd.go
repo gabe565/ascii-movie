@@ -16,6 +16,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	CountActive = "active"
+	CountTotal  = "total"
+)
+
 func NewCommand(opts ...util.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "stream",
@@ -29,13 +34,13 @@ func NewCommand(opts ...util.Option) *cobra.Command {
 		ValidArgsFunction: func(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 			var completion []string
 			if len(args) == 0 {
-				completion = []string{"count"}
+				completion = []string{"count", CountActive, CountTotal}
 			}
 			return completion, cobra.ShellCompDirectiveNoFileComp
 		},
 	}
 
-	cmd.Flags().StringP("count", "c", "", "Gets stream count (active, total)")
+	cmd.Flags().StringP("count", "c", "", "Gets stream count (one of "+CountActive+", "+CountTotal+")")
 
 	for _, opt := range opts {
 		opt(cmd)
@@ -45,9 +50,18 @@ func NewCommand(opts ...util.Option) *cobra.Command {
 }
 
 func preRun(cmd *cobra.Command, args []string) error {
-	if len(args) != 0 && args[0] == "count" {
-		if err := cmd.Flags().Set("count", "active"); err != nil {
-			panic(err)
+	if len(args) != 0 {
+		var count string
+		switch args[0] {
+		case "count", CountActive:
+			count = "active"
+		case CountTotal:
+			count = "total"
+		}
+		if count != "" {
+			if err := cmd.Flags().Set("count", count); err != nil {
+				panic(err)
+			}
 		}
 	}
 	return nil
@@ -97,7 +111,7 @@ func run(cmd *cobra.Command, _ []string) error {
 	}
 
 	switch countFlag {
-	case "active":
+	case CountActive:
 		// Print active count
 		if decoded.Active == nil {
 			return fmt.Errorf("%w: count", ErrEmptyValue)
@@ -106,7 +120,7 @@ func run(cmd *cobra.Command, _ []string) error {
 		if _, err := fmt.Fprintln(cmd.OutOrStdout(), *decoded.Active); err != nil {
 			return err
 		}
-	case "total":
+	case CountTotal:
 		// Print total count
 		if decoded.Total == nil {
 			return fmt.Errorf("%w: count", ErrEmptyValue)
