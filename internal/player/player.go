@@ -122,7 +122,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			p.selectedOption = 0
 		case key.Matches(msg, p.keymap.end):
 			opts := OptionValues()
-			p.selectedOption = Option(len(opts) - 1)
+			p.selectedOption = Option(len(opts) - 1) //nolint:gosec
 		case key.Matches(msg, p.keymap.help):
 			p.help.ShowAll = !p.help.ShowAll
 			p.helpCache.Invalidate()
