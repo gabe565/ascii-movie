@@ -74,7 +74,7 @@ func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
 	bar := progressbar.New()
 	totalDuration := m.Duration()
 
-	// Build the rest of every frame and write to disk
+	// Build the rest of every frame
 	var currentPosition time.Duration
 	m.Sections = make([]int, m.Width+1)
 	for i, f := range m.Frames {
