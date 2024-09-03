@@ -4,10 +4,16 @@ import (
 	"net"
 )
 
-func RemoteIP(remoteIPPort string) string {
-	remoteIP, _, err := net.SplitHostPort(remoteIPPort)
-	if err != nil {
-		remoteIP = remoteIPPort
+func RemoteIP(addr net.Addr) string {
+	switch addr := addr.(type) {
+	case *net.TCPAddr:
+		return addr.IP.String()
+	default:
+		ipPort := addr.String()
+		ip, _, err := net.SplitHostPort(ipPort)
+		if err != nil {
+			ip = ipPort
+		}
+		return ip
 	}
-	return remoteIP
 }

@@ -92,7 +92,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 		_ = conn.Close()
 	}(conn)
 
-	remoteIP := RemoteIP(conn.RemoteAddr().String())
+	remoteIP := RemoteIP(conn.RemoteAddr())
 	logger := s.Log.With("remoteIP", remoteIP)
 
 	id, err := serverInfo.StreamConnect("telnet", remoteIP)
