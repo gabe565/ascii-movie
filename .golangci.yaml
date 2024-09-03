@@ -16,6 +16,7 @@ linters:
     - bidichk
     - bodyclose
     - copyloopvar
+    - copyloopvar
     - decorder
     - dupl
     - durationcheck
@@ -23,7 +24,6 @@ linters:
     - errcheck
     - errname
     - errorlint
-    - exportloopref
     - forbidigo
     - gci
     - ginkgolinter
