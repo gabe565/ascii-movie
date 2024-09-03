@@ -16,11 +16,14 @@ import (
 )
 
 func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {
+	const defaultWidth, defaultHeight = 67, 13
+
 	m.Filename = filepath.Base(path)
 
 	m.Frames = make([]Frame, 0, 2000)
 	var f Frame
 	var buf bytes.Buffer
+	buf.Grow(defaultWidth * defaultHeight)
 	scanner := bufio.NewScanner(src)
 
 	// Build part of every frame, excluding progress bar and bottom padding
