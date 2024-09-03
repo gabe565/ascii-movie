@@ -57,8 +57,8 @@ github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/lmittmann/tint v1.0.5 h1:NQclAutOfYsqs2F1Lenue6OoWCajs5wJcP3DfWVpePw=
 github.com/lmittmann/tint v1.0.5/go.mod h1:HIS3gSy7qNwGCj+5oRjAutErFBl4BzdQP6cJZ0NfMwE=
-github.com/lrstanley/bubblezone v0.0.0-20240723130623-7fd58a7b1f91 h1:NIU7JKWRT1sQcopTxZJ6h5zNAaTy1WE1i6phrMKj8mw=
-github.com/lrstanley/bubblezone v0.0.0-20240723130623-7fd58a7b1f91/go.mod h1:fMHACHXouhQO+NLAFvHEeKdVSzG7L/O1khqsvswCTmk=
+github.com/lrstanley/bubblezone v0.0.0-20240820044643-3964e2111228 h1:XYsJHGSdg54uDr465T4Ta1yDIE9TfxPHE9GXN52zmfw=
+github.com/lrstanley/bubblezone v0.0.0-20240820044643-3964e2111228/go.mod h1:zfTU1cXexU7r0A0YgjxjoT6ZXPFHQeD4EebE2Nb0uq0=
 github.com/lucasb-eyer/go-colorful v1.2.0 h1:1nnpGOrhyZZuNyfu1QjKiUICQ74+3FNCN69Aj6K7nkY=
 github.com/lucasb-eyer/go-colorful v1.2.0/go.mod h1:R4dSotOR9KMtayYi1e77YzuveK+i7ruzyGqttikkLy0=
 github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=

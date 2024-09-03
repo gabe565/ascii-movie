@@ -10,7 +10,7 @@ require (
 	github.com/charmbracelet/wish v1.4.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/lmittmann/tint v1.0.5
-	github.com/lrstanley/bubblezone v0.0.0-20240723130623-7fd58a7b1f91
+	github.com/lrstanley/bubblezone v0.0.0-20240820044643-3964e2111228
 	github.com/mattn/go-isatty v0.0.20
 	github.com/muesli/termenv v0.15.2
 	github.com/prometheus/client_golang v1.20.2
