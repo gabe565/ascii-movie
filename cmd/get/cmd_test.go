@@ -13,8 +13,8 @@ import (
 
 func Test_preRun(t *testing.T) {
 	type args struct {
-		cmd  *cobra.Command
-		args []string
+		cmd *cobra.Command
+		_   []string
 	}
 	tests := []struct {
 		name    string
@@ -29,9 +29,9 @@ func Test_preRun(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.args.cmd.PersistentFlags().Set(server.APIFlagPrefix+server.AddressFlag, tt.want)
 			require.NoError(t, err)
-			require.NoError(t, tt.args.cmd.ParseFlags(tt.args.args))
 
-			err = preRun(tt.args.cmd, tt.args.args)
+			tt.args.cmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
+			err = tt.args.cmd.Execute()
 			tt.wantErr(t, err)
 			if err != nil {
 				return
