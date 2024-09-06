@@ -1,4 +1,4 @@
-# ascii-movie
+# ASCII Movie
 
 <img src="./assets/icon.svg" alt="ascii-movie logo" width="92" align="right">
 
@@ -7,14 +7,17 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/gabe565/ascii-movie)](https://goreportcard.com/report/github.com/gabe565/ascii-movie)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=gabe565_ascii-movie&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=gabe565_ascii-movie)
 
-The original Star Wars telnet server is currently down, so why not implement it in Go? This server will open a TCP server on `0.0.0.0:23` and an SSH server on `0.0.0.0:22` which stream the original Star Wars ASCII movie to command line clients.
+Stream the original Star Wars ASCII movie to command-line clients via SSH or Telnet.
+
+Inspired by [asciimation](https://asciimation.co.nz) and the iconic [towel.blinkenlights.nl](https://web.archive.org/web/20021205144143/http://www.blinkenlights.nl/thereg/), this Go rewrite introduces an interactive UI with both keyboard and mouse support.
+
+## Try It
 
 Run one of these commands in a terminal to see it in action:
 - **SSH:** `ssh starwarstel.net`
 - **Telnet:** `telnet starwarstel.net`
 - **Docker:** `docker run --rm -it ghcr.io/gabe565/ascii-movie play`
 
-## Demo
 <div align="center">
   <video src="https://user-images.githubusercontent.com/7717888/233742309-4eeace5e-9a7c-41c6-9fc5-21ea19728f77.mp4"></video>
 </div>
@@ -33,7 +36,7 @@ See [Installation](https://github.com/gabe565/ascii-movie/wiki/Installation).
 
 ## Usage
 
-The app can play a movie directly on your terminal with the [`play`](docs/ascii-movie_play.md) subcommand, or it can host an SSH and Telnet stream server with the [`serve`](docs/ascii-movie_serve.md) subcommand.
+The app can play a movie directly on your terminal with the [`play`](docs/ascii-movie_play.md) subcommand, or it can host SSH and Telnet servers with the [`serve`](docs/ascii-movie_serve.md) subcommand.
 
 See generated [docs](./docs/ascii-movie.md) for command line usage information.
 
