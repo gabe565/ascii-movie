@@ -71,7 +71,7 @@ func run(cmd *cobra.Command, args []string) error {
 			w,
 			"%s\t%s\t%t\t%s\t%d\t%s\t\n",
 			info.Name,
-			humanize.Bytes(uint64(info.Size)),
+			humanize.Bytes(uint64(info.Size)), //nolint:gosec
 			info.Default,
 			info.Duration.Round(time.Second),
 			info.NumFrames,
