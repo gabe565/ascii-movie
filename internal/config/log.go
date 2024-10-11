@@ -20,7 +20,7 @@ const (
 	LevelTrace    = slog.Level(-5)
 )
 
-//go:generate enumer -type LogFormat -trimprefix Format -transform lower -text
+//go:generate go run github.com/dmarkham/enumer -type LogFormat -trimprefix Format -transform lower -text
 
 type LogFormat uint8
 

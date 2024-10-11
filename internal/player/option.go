@@ -4,7 +4,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-//go:generate enumer -type Option -linecomment -output option_string.go
+//go:generate go run github.com/dmarkham/enumer -type Option -linecomment -output option_string.go
 
 type Option uint8
 
