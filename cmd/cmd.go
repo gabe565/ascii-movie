@@ -5,12 +5,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gabe565/ascii-movie/cmd/get"
-	"github.com/gabe565/ascii-movie/cmd/ls"
-	"github.com/gabe565/ascii-movie/cmd/play"
-	"github.com/gabe565/ascii-movie/cmd/serve"
-	"github.com/gabe565/ascii-movie/cmd/util"
-	"github.com/gabe565/ascii-movie/internal/config"
+	"gabe565.com/ascii-movie/cmd/get"
+	"gabe565.com/ascii-movie/cmd/ls"
+	"gabe565.com/ascii-movie/cmd/play"
+	"gabe565.com/ascii-movie/cmd/serve"
+	"gabe565.com/ascii-movie/cmd/util"
+	"gabe565.com/ascii-movie/internal/config"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 )

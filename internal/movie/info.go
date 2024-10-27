@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gabe565/ascii-movie/movies"
+	"gabe565.com/ascii-movie/movies"
 )
 
 func GetInfo(fsys fs.FS, path string) (Info, error) {

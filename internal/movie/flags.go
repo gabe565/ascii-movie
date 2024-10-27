@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gabe565/ascii-movie/internal/config"
-	"github.com/gabe565/ascii-movie/movies"
+	"gabe565.com/ascii-movie/internal/config"
+	"gabe565.com/ascii-movie/movies"
 	flag "github.com/spf13/pflag"
 )
 

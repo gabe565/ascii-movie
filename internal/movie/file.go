@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"gabe565.com/ascii-movie/internal/progressbar"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/gabe565/ascii-movie/internal/progressbar"
 )
 
 func (m *Movie) LoadFile(path string, src io.Reader, speed float64) error {

@@ -8,10 +8,10 @@ import (
 	"text/tabwriter"
 	"time"
 
+	cmdutil "gabe565.com/ascii-movie/cmd/util"
+	"gabe565.com/ascii-movie/internal/movie"
+	"gabe565.com/ascii-movie/internal/util"
 	"github.com/dustin/go-humanize"
-	cmdutil "github.com/gabe565/ascii-movie/cmd/util"
-	"github.com/gabe565/ascii-movie/internal/movie"
-	"github.com/gabe565/ascii-movie/internal/util"
 	"github.com/spf13/cobra"
 )
 

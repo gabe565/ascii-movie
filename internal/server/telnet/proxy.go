@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gabe565/ascii-movie/internal/config"
-	"github.com/gabe565/ascii-movie/internal/util"
+	"gabe565.com/ascii-movie/internal/config"
+	"gabe565.com/ascii-movie/internal/util"
 	"github.com/muesli/termenv"
 )
 

@@ -3,11 +3,11 @@ package play
 import (
 	"log/slog"
 
+	"gabe565.com/ascii-movie/cmd/util"
+	"gabe565.com/ascii-movie/internal/config"
+	"gabe565.com/ascii-movie/internal/movie"
+	"gabe565.com/ascii-movie/internal/player"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/gabe565/ascii-movie/cmd/util"
-	"github.com/gabe565/ascii-movie/internal/config"
-	"github.com/gabe565/ascii-movie/internal/movie"
-	"github.com/gabe565/ascii-movie/internal/player"
 	"github.com/spf13/cobra"
 )
 

@@ -1,8 +1,8 @@
 package player
 
 import (
+	"gabe565.com/ascii-movie/internal/movie"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/gabe565/ascii-movie/internal/movie"
 	"github.com/muesli/termenv"
 )
 

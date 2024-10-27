@@ -4,10 +4,10 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/gabe565/ascii-movie/cmd/get/stream"
-	"github.com/gabe565/ascii-movie/cmd/util"
-	"github.com/gabe565/ascii-movie/internal/config"
-	"github.com/gabe565/ascii-movie/internal/server"
+	"gabe565.com/ascii-movie/cmd/get/stream"
+	"gabe565.com/ascii-movie/cmd/util"
+	"gabe565.com/ascii-movie/internal/config"
+	"gabe565.com/ascii-movie/internal/server"
 	"github.com/spf13/cobra"
 )
 

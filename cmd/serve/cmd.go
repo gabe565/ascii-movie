@@ -8,10 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	"gabe565.com/ascii-movie/cmd/util"
+	"gabe565.com/ascii-movie/internal/movie"
+	"gabe565.com/ascii-movie/internal/server"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/gabe565/ascii-movie/cmd/util"
-	"github.com/gabe565/ascii-movie/internal/movie"
-	"github.com/gabe565/ascii-movie/internal/server"
 	"github.com/muesli/termenv"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"

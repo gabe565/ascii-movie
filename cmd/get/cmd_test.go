@@ -4,8 +4,8 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/gabe565/ascii-movie/internal/config"
-	"github.com/gabe565/ascii-movie/internal/server"
+	"gabe565.com/ascii-movie/internal/config"
+	"gabe565.com/ascii-movie/internal/server"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

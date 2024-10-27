@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
+	"gabe565.com/ascii-movie/internal/movie"
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/gabe565/ascii-movie/internal/movie"
 	zone "github.com/lrstanley/bubblezone"
 )
 

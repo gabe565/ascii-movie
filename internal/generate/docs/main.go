@@ -5,9 +5,9 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/gabe565/ascii-movie/cmd"
-	"github.com/gabe565/ascii-movie/cmd/util"
-	"github.com/gabe565/ascii-movie/internal/config"
+	"gabe565.com/ascii-movie/cmd"
+	"gabe565.com/ascii-movie/cmd/util"
+	"gabe565.com/ascii-movie/internal/config"
 	"github.com/spf13/cobra/doc"
 )
 

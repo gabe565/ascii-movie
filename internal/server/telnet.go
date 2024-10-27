@@ -7,11 +7,11 @@ import (
 	"sync"
 	"time"
 
+	"gabe565.com/ascii-movie/internal/movie"
+	"gabe565.com/ascii-movie/internal/player"
+	"gabe565.com/ascii-movie/internal/server/idleconn"
+	"gabe565.com/ascii-movie/internal/server/telnet"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/gabe565/ascii-movie/internal/movie"
-	"github.com/gabe565/ascii-movie/internal/player"
-	"github.com/gabe565/ascii-movie/internal/server/idleconn"
-	"github.com/gabe565/ascii-movie/internal/server/telnet"
 	"github.com/muesli/termenv"
 	flag "github.com/spf13/pflag"
 )

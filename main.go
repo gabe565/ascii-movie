@@ -4,8 +4,8 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/gabe565/ascii-movie/cmd"
-	"github.com/gabe565/ascii-movie/cmd/util"
+	"gabe565.com/ascii-movie/cmd"
+	"gabe565.com/ascii-movie/cmd/util"
 )
 
 //go:generate go run ./internal/generate/gzip

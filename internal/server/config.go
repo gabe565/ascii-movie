@@ -3,7 +3,7 @@ package server
 import (
 	"log/slog"
 
-	"github.com/gabe565/ascii-movie/internal/movie"
+	"gabe565.com/ascii-movie/internal/movie"
 	flag "github.com/spf13/pflag"
 )
 
