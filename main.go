@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"gabe565.com/ascii-movie/cmd"
-	"gabe565.com/ascii-movie/cmd/util"
+	"gabe565.com/utils/cobrax"
 )
 
 //go:generate go run ./internal/generate/gzip
@@ -13,7 +13,7 @@ import (
 var version = "beta"
 
 func main() {
-	root := cmd.NewCommand(util.WithVersion(version))
+	root := cmd.NewCommand(cobrax.WithVersion(version))
 	if err := root.Execute(); err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)

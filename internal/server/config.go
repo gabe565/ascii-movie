@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"gabe565.com/ascii-movie/internal/movie"
+	"gabe565.com/utils/must"
 	flag "github.com/spf13/pflag"
 )
 
@@ -19,26 +20,13 @@ type MovieServer struct {
 }
 
 func NewServer(flags *flag.FlagSet, prefix string) Server {
-	var config Server
-	var err error
-
-	config.Log = slog.With("server", prefix)
-
-	if config.Enabled, err = flags.GetBool(prefix + EnabledFlag); err != nil {
-		panic(err)
+	return Server{
+		Enabled: must.Must2(flags.GetBool(prefix + EnabledFlag)),
+		Address: must.Must2(flags.GetString(prefix + AddressFlag)),
+		Log:     slog.With("server", prefix),
 	}
-
-	if config.Address, err = flags.GetString(prefix + AddressFlag); err != nil {
-		panic(err)
-	}
-
-	return config
 }
 
 func NewMovieServer(flags *flag.FlagSet, prefix string) MovieServer {
-	var config MovieServer
-
-	config.Server = NewServer(flags, prefix)
-
-	return config
+	return MovieServer{Server: NewServer(flags, prefix)}
 }

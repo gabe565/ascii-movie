@@ -1,16 +1,15 @@
 package config
 
 import (
-	"errors"
 	"io"
 	"log/slog"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 
+	"gabe565.com/utils/must"
+	"gabe565.com/utils/termx"
 	"github.com/lmittmann/tint"
-	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 )
 
@@ -35,32 +34,26 @@ func RegisterLogFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringP(LogLevelFlag, "l", strings.ToLower(slog.LevelInfo.String()), "log level (one of debug, info, warn, error)")
 	cmd.PersistentFlags().String(LogFormatFlag, FormatAuto.String(), "log formatter (one of "+strings.Join(LogFormatStrings(), ", ")+")")
 
-	if err := errors.Join(
-		cmd.RegisterFlagCompletionFunc(LogLevelFlag,
-			func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
-				return []string{
-					strings.ToLower(slog.LevelDebug.String()),
-					strings.ToLower(slog.LevelInfo.String()),
-					strings.ToLower(slog.LevelWarn.String()),
-					strings.ToLower(slog.LevelError.String()),
-				}, cobra.ShellCompDirectiveNoFileComp
-			},
-		),
-		cmd.RegisterFlagCompletionFunc(LogFormatFlag,
-			func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
-				return LogFormatStrings(), cobra.ShellCompDirectiveNoFileComp
-			},
-		),
-	); err != nil {
-		panic(err)
-	}
+	must.Must(cmd.RegisterFlagCompletionFunc(LogLevelFlag,
+		func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+			return []string{
+				strings.ToLower(slog.LevelDebug.String()),
+				strings.ToLower(slog.LevelInfo.String()),
+				strings.ToLower(slog.LevelWarn.String()),
+				strings.ToLower(slog.LevelError.String()),
+			}, cobra.ShellCompDirectiveNoFileComp
+		},
+	))
+
+	must.Must(cmd.RegisterFlagCompletionFunc(LogFormatFlag,
+		func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+			return LogFormatStrings(), cobra.ShellCompDirectiveNoFileComp
+		},
+	))
 }
 
 func InitLogCmd(cmd *cobra.Command) {
-	levelStr, err := cmd.Flags().GetString("log-level")
-	if err != nil {
-		panic(err)
-	}
+	levelStr := must.Must2(cmd.Flags().GetString("log-level"))
 	var level slog.Level
 	if v, err := strconv.Atoi(levelStr); err == nil {
 		level = slog.Level(v)
@@ -71,10 +64,7 @@ func InitLogCmd(cmd *cobra.Command) {
 		level = slog.LevelInfo
 	}
 
-	formatStr, err := cmd.Flags().GetString("log-format")
-	if err != nil {
-		panic(err)
-	}
+	formatStr := must.Must2(cmd.Flags().GetString("log-format"))
 	var format LogFormat
 	if err := format.UnmarshalText([]byte(formatStr)); err != nil {
 		defer func() {
@@ -96,9 +86,7 @@ func InitLog(w io.Writer, level slog.Level, format LogFormat) {
 		var color bool
 		switch format {
 		case FormatAuto:
-			if f, ok := w.(*os.File); ok {
-				color = isatty.IsTerminal(f.Fd()) || isatty.IsCygwinTerminal(f.Fd())
-			}
+			color = termx.IsColor(w)
 		case FormatColor:
 			color = true
 		}

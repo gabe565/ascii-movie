@@ -8,14 +8,14 @@ import (
 	"text/tabwriter"
 	"time"
 
-	cmdutil "gabe565.com/ascii-movie/cmd/util"
 	"gabe565.com/ascii-movie/internal/movie"
 	"gabe565.com/ascii-movie/internal/util"
+	"gabe565.com/utils/cobrax"
 	"github.com/dustin/go-humanize"
 	"github.com/spf13/cobra"
 )
 
-func NewCommand(opts ...cmdutil.Option) *cobra.Command {
+func NewCommand(opts ...cobrax.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "ls [PATH]...",
 		Aliases: []string{"ls-embedded"},

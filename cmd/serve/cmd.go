@@ -8,16 +8,16 @@ import (
 	"os/signal"
 	"syscall"
 
-	"gabe565.com/ascii-movie/cmd/util"
 	"gabe565.com/ascii-movie/internal/movie"
 	"gabe565.com/ascii-movie/internal/server"
+	"gabe565.com/utils/cobrax"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )
 
-func NewCommand(opts ...util.Option) *cobra.Command {
+func NewCommand(opts ...cobrax.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "serve [movie]",
 		Aliases: []string{"server", "listen"},
@@ -43,8 +43,8 @@ var ErrAllDisabled = errors.New("all server types are disabled")
 func run(cmd *cobra.Command, args []string) error {
 	if parent := cmd.Parent(); parent != nil {
 		slog.Info("ASCII Movie",
-			"version", parent.Annotations["version"],
-			"commit", parent.Annotations["commit"],
+			"version", cobrax.GetVersion(cmd),
+			"commit", cobrax.GetCommit(cmd),
 		)
 	}
 

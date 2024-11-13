@@ -9,13 +9,13 @@ import (
 	"gabe565.com/ascii-movie/cmd/ls"
 	"gabe565.com/ascii-movie/cmd/play"
 	"gabe565.com/ascii-movie/cmd/serve"
-	"gabe565.com/ascii-movie/cmd/util"
 	"gabe565.com/ascii-movie/internal/config"
+	"gabe565.com/utils/cobrax"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 )
 
-func NewCommand(opts ...util.Option) *cobra.Command {
+func NewCommand(opts ...cobrax.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "ascii-movie",
 		Short: "Command line ASCII movie player.",

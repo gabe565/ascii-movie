@@ -3,6 +3,7 @@ package server
 import (
 	"time"
 
+	"gabe565.com/utils/must"
 	flag "github.com/spf13/pflag"
 )
 
@@ -46,9 +47,7 @@ func Flags(flags *flag.FlagSet) {
 	flags.DurationVar(&maxTimeout, MaxTimeoutFlag, 2*time.Hour, "Absolute connection timeout.")
 
 	flags.Duration(TimeoutFlag, time.Hour, "Maximum amount of time that a connection may stay active.")
-	if err := flags.MarkDeprecated(TimeoutFlag, "please use --idle-timeout and --max-timeout instead."); err != nil {
-		panic(err)
-	}
+	must.Must(flags.MarkDeprecated(TimeoutFlag, "please use --idle-timeout and --max-timeout instead."))
 }
 
 func LoadDeprecated(flags *flag.FlagSet) {

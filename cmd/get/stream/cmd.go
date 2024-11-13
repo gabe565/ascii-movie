@@ -10,9 +10,10 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"gabe565.com/ascii-movie/cmd/util"
 	"gabe565.com/ascii-movie/internal/config"
 	"gabe565.com/ascii-movie/internal/server"
+	"gabe565.com/utils/cobrax"
+	"gabe565.com/utils/must"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +22,7 @@ const (
 	CountTotal  = "total"
 )
 
-func NewCommand(opts ...util.Option) *cobra.Command {
+func NewCommand(opts ...cobrax.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "stream",
 		Aliases: []string{"streams", "connection", "connections", "client", "clients"},
@@ -59,9 +60,7 @@ func preRun(cmd *cobra.Command, args []string) error {
 			count = "total"
 		}
 		if count != "" {
-			if err := cmd.Flags().Set("count", count); err != nil {
-				panic(err)
-			}
+			must.Must(cmd.Flags().Set("count", count))
 		}
 	}
 	return nil
@@ -74,17 +73,14 @@ var (
 )
 
 func run(cmd *cobra.Command, _ []string) error {
-	countFlag, err := cmd.Flags().GetString("count")
-	if err != nil {
-		panic(err)
-	}
+	countFlag := must.Must2(cmd.Flags().GetString("count"))
 
 	u, ok := cmd.Context().Value(config.URLContextKey).(*url.URL)
 	if !ok {
 		panic(fmt.Errorf("%w: %v", ErrInvalidURL, u))
 	}
 
-	u, err = u.Parse("/streams")
+	u, err := u.Parse("/streams")
 	if err != nil {
 		return err
 	}

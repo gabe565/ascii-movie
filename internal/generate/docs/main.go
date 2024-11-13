@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"gabe565.com/ascii-movie/cmd"
-	"gabe565.com/ascii-movie/cmd/util"
 	"gabe565.com/ascii-movie/internal/config"
+	"gabe565.com/utils/cobrax"
 	"github.com/spf13/cobra/doc"
 )
 
@@ -31,7 +31,7 @@ func run() error {
 		return fmt.Errorf("failed to create output directory: %w", err)
 	}
 
-	rootCmd := cmd.NewCommand(util.WithVersion("beta"))
+	rootCmd := cmd.NewCommand(cobrax.WithVersion("beta"))
 	if err := doc.GenMarkdownTree(rootCmd, output); err != nil {
 		return fmt.Errorf("failed to generate docs: %w", err)
 	}

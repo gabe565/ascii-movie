@@ -3,15 +3,15 @@ package play
 import (
 	"log/slog"
 
-	"gabe565.com/ascii-movie/cmd/util"
 	"gabe565.com/ascii-movie/internal/config"
 	"gabe565.com/ascii-movie/internal/movie"
 	"gabe565.com/ascii-movie/internal/player"
+	"gabe565.com/utils/cobrax"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
 
-func NewCommand(opts ...util.Option) *cobra.Command {
+func NewCommand(opts ...cobrax.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "play [movie]",
 		Short: "Play an ASCII movie locally.",

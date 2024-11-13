@@ -11,6 +11,7 @@ import (
 	"gabe565.com/ascii-movie/internal/movie"
 	"gabe565.com/ascii-movie/internal/player"
 	"gabe565.com/ascii-movie/internal/util"
+	"gabe565.com/utils/must"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
@@ -31,17 +32,11 @@ type SSHServer struct {
 }
 
 func NewSSH(flags *flag.FlagSet) SSHServer {
-	ssh := SSHServer{MovieServer: NewMovieServer(flags, SSHFlagPrefix)}
-	var err error
-
-	if ssh.HostKeyPath, err = flags.GetStringSlice(SSHHostKeyPathFlag); err != nil {
-		panic(err)
+	ssh := SSHServer{
+		MovieServer: NewMovieServer(flags, SSHFlagPrefix),
+		HostKeyPath: must.Must2(flags.GetStringSlice(SSHHostKeyPathFlag)),
+		HostKeyPEM:  must.Must2(flags.GetStringSlice(SSHHostKeyDataFlag)),
 	}
-
-	if ssh.HostKeyPEM, err = flags.GetStringSlice(SSHHostKeyDataFlag); err != nil {
-		panic(err)
-	}
-
 	if len(ssh.HostKeyPath) == 0 && len(ssh.HostKeyPEM) == 0 {
 		ssh.HostKeyPath = []string{"$HOME/.ssh/ascii_movie_ed25519", "$HOME/.ssh/ascii_movie_rsa"}
 	}

@@ -5,13 +5,14 @@ import (
 	"net/url"
 
 	"gabe565.com/ascii-movie/cmd/get/stream"
-	"gabe565.com/ascii-movie/cmd/util"
 	"gabe565.com/ascii-movie/internal/config"
 	"gabe565.com/ascii-movie/internal/server"
+	"gabe565.com/utils/cobrax"
+	"gabe565.com/utils/must"
 	"github.com/spf13/cobra"
 )
 
-func NewCommand(opts ...util.Option) *cobra.Command {
+func NewCommand(opts ...cobrax.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get",
 		Short: "Fetches data from a running server.",
@@ -31,10 +32,7 @@ func NewCommand(opts ...util.Option) *cobra.Command {
 }
 
 func preRun(cmd *cobra.Command, _ []string) error {
-	apiAddr, err := cmd.Flags().GetString(server.APIFlagPrefix + server.AddressFlag)
-	if err != nil {
-		panic(err)
-	}
+	apiAddr := must.Must2(cmd.Flags().GetString(server.APIFlagPrefix + server.AddressFlag))
 
 	u, err := url.Parse(apiAddr)
 	if err != nil {
