@@ -110,10 +110,6 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	defer func() {
 		_ = in.Close()
 	}()
-	go func() {
-		<-errCh
-		cancel()
-	}()
 
 	gotProfile := profile != -1
 	if !gotProfile {
@@ -124,7 +120,6 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	defer p.Close()
 
 	opts := []tea.ProgramOption{
-		tea.WithContext(ctx),
 		tea.WithInput(in),
 		tea.WithOutput(conn),
 		tea.WithFPS(30),
@@ -135,8 +130,14 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	program := tea.NewProgram(p, opts...)
 
 	go func() {
-		for info := range sizeCh {
-			if info.Width != 0 && info.Height != 0 {
+		for {
+			select {
+			case <-ctx.Done():
+				program.Quit()
+				return
+			case <-errCh:
+				cancel()
+			case info := <-sizeCh:
 				program.Send(tea.WindowSizeMsg{
 					Width:  int(info.Width),
 					Height: int(info.Height),
@@ -149,5 +150,8 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 		logger.Error("Program failed", "error", err)
 	}
 
+	// p.Kill() will force kill the program if it's still running,
+	// and restore the terminal to its original state in case of a
+	// tui crash
 	program.Kill()
 }

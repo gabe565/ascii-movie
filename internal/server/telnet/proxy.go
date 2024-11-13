@@ -87,7 +87,7 @@ outer:
 					Iac, Do, TerminalType,
 					Iac, Do, NegotiateAboutWindowSize,
 				); err != nil {
-					slog.Error("Failed to write telnet commands", "error", err)
+					return err
 				}
 			}
 
@@ -134,7 +134,9 @@ outer:
 								return err
 							}
 							slog.Log(context.Background(), config.LevelTrace, "Got window size", "size", size)
-							sizeCh <- size
+							if size.Width != 0 && size.Height != 0 {
+								sizeCh <- size
+							}
 						}
 					}
 				}
@@ -156,7 +158,7 @@ outer:
 					if !willNegotiateAboutWindowSize {
 						willNegotiateAboutWindowSize = true
 						if _, err := Write(conn, Iac, Do, NegotiateAboutWindowSize); err != nil {
-							slog.Error("Failed to write telnet commands", "error", err)
+							return err
 						}
 					}
 				}
