@@ -28,7 +28,7 @@ func (c *Conn) Write(p []byte) (int, error) {
 	_ = c.updateDeadline()
 
 	n, err := c.Conn.Write(p)
-	if errors.Is(err, os.ErrDeadlineExceeded) {
+	if c.cancel != nil && errors.Is(err, os.ErrDeadlineExceeded) {
 		c.cancel()
 	}
 	return n, err
@@ -38,7 +38,7 @@ func (c *Conn) Read(b []byte) (int, error) {
 	_ = c.updateDeadline()
 
 	n, err := c.Conn.Read(b)
-	if errors.Is(err, os.ErrDeadlineExceeded) {
+	if c.cancel != nil && errors.Is(err, os.ErrDeadlineExceeded) {
 		c.cancel()
 	}
 	return n, err
