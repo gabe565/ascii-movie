@@ -45,7 +45,7 @@ func newKeymap() keymap {
 		),
 		chooseFull: key.NewBinding(
 			key.WithKeys(" ", "enter"),
-			key.WithHelp("enter/space", "select"),
+			key.WithHelp("enter", "select"),
 		),
 		jumps: jumps,
 		jump: key.NewBinding(
@@ -62,11 +62,11 @@ func newKeymap() keymap {
 		),
 		stepPrev: key.NewBinding(
 			key.WithKeys(","),
-			key.WithHelp(", (when paused)", "step backward"),
+			key.WithHelp(", (paused)", "step backward"),
 		),
 		stepNext: key.NewBinding(
 			key.WithKeys("."),
-			key.WithHelp(". (when paused)", "step forward"),
+			key.WithHelp(". (paused)", "step forward"),
 		),
 		help: key.NewBinding(
 			key.WithKeys("?"),

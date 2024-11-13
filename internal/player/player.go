@@ -261,18 +261,7 @@ func (p *Player) OptionsView() string {
 }
 
 func (p *Player) HelpView() string {
-	v := p.help.View(p.keymap)
-	if p.help.ShowAll {
-		sep := p.help.Styles.FullSeparator.Render(p.help.FullSeparator)
-		sepSpaces := strings.Repeat(" ", lipgloss.Width(sep))
-		// Remove first line separator
-		v = strings.Replace(v, sep+"\n", "\n", 1)
-		// Remove separator spaces form other lines
-		v = strings.ReplaceAll(v, sepSpaces+"\n", "\n")
-		// Remove separator spaces from final line
-		v = strings.TrimSuffix(v, sepSpaces)
-	}
-	return p.zone.Mark("help", v)
+	return p.zone.Mark("help", p.help.View(p.keymap))
 }
 
 func (p *Player) pause() {
