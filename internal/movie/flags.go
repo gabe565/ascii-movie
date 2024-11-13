@@ -21,11 +21,7 @@ const SpeedFlag = "speed"
 var ErrInvalidSpeed = errors.New("speed must be greater than 0")
 
 func Flags(flags *flag.FlagSet) {
-	flags.Float64(
-		SpeedFlag,
-		1,
-		"Playback speed multiplier. Must be greater than 0.",
-	)
+	flags.Float64(SpeedFlag, 1, "Playback speed multiplier. Must be greater than 0.")
 }
 
 func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {

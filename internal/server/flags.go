@@ -25,9 +25,9 @@ const (
 
 //nolint:gochecknoglobals
 var (
-	concurrentStreams uint
-	idleTimeout       time.Duration
-	maxTimeout        time.Duration
+	concurrentStreams = uint(10)
+	idleTimeout       = 15 * time.Minute
+	maxTimeout        = 2 * time.Hour
 )
 
 func Flags(flags *flag.FlagSet) {
@@ -42,9 +42,9 @@ func Flags(flags *flag.FlagSet) {
 	flags.Bool(APIFlagPrefix+EnabledFlag, true, "Enables API listener")
 	flags.String(APIFlagPrefix+AddressFlag, "127.0.0.1:1977", "API listen address")
 
-	flags.UintVar(&concurrentStreams, ConcurrentStreamsFlag, 10, "Number of concurrent streams allowed from an IP address. Set to 0 to disable.")
-	flags.DurationVar(&idleTimeout, IdleTimeoutFlag, 15*time.Minute, "Idle connection timeout.")
-	flags.DurationVar(&maxTimeout, MaxTimeoutFlag, 2*time.Hour, "Absolute connection timeout.")
+	flags.UintVar(&concurrentStreams, ConcurrentStreamsFlag, concurrentStreams, "Number of concurrent streams allowed from an IP address. Set to 0 to disable.")
+	flags.DurationVar(&idleTimeout, IdleTimeoutFlag, idleTimeout, "Idle connection timeout.")
+	flags.DurationVar(&maxTimeout, MaxTimeoutFlag, maxTimeout, "Absolute connection timeout.")
 
 	flags.Duration(TimeoutFlag, time.Hour, "Maximum amount of time that a connection may stay active.")
 	must.Must(flags.MarkDeprecated(TimeoutFlag, "please use --idle-timeout and --max-timeout instead."))
