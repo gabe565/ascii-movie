@@ -94,6 +94,8 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	}
 
 	slog.Info("Movie loaded",
+		"name", movie.Filename,
+		"frames", len(movie.Frames),
 		"duration", movie.Duration().Round(time.Second),
 		"took", time.Since(start).Round(time.Microsecond),
 	)
