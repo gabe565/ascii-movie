@@ -1,6 +1,8 @@
 package player
 
 import (
+	"os"
+
 	"gabe565.com/ascii-movie/internal/movie"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
@@ -22,13 +24,12 @@ func NewStyles(m *movie.Movie, renderer *lipgloss.Renderer) Styles {
 	optionsColor := lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
 	selectedColor := lipgloss.AdaptiveColor{Light: "12", Dark: "4"}
 
-	isTTY := renderer.Output().TTY() != nil
 	screenStyle := renderer.NewStyle().
 		Width(m.Width).
 		Height(m.Height).
 		Border(lipgloss.RoundedBorder()).
 		BorderForeground(borderColor)
-	if isTTY {
+	if _, isTTY := renderer.Output().Writer().(*os.File); isTTY {
 		screenStyle = screenStyle.Foreground(lipgloss.AdaptiveColor{Light: "0", Dark: "15"})
 	}
 
