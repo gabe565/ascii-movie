@@ -29,7 +29,7 @@ func Proxy(conn net.Conn) (io.ReadCloser, termenv.Profile, <-chan WindowSize, <-
 	pr, pw := io.Pipe()
 	termCh := make(chan string, 1)
 	sizeCh := make(chan WindowSize, 1)
-	errCh := make(chan error)
+	errCh := make(chan error, 1)
 
 	go func() {
 		defer func() {
