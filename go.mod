@@ -13,7 +13,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/lmittmann/tint v1.0.5
 	github.com/lrstanley/bubblezone v0.0.0-20240914071701-b48c55a5e78e
-	github.com/muesli/termenv v0.15.3-0.20240509142007-81b8f94111d5
+	github.com/muesli/termenv v0.15.3-0.20240912151726-82936c5ea257
 	github.com/prometheus/client_golang v1.20.5
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
