@@ -1,5 +1,5 @@
-gabe565.com/utils v0.0.0-20241111053222-0f59399cbb3c h1:xKxZ9fGvYYihnqbyt1OE5Giz+rDQf5junHUxmvkFBfw=
-gabe565.com/utils v0.0.0-20241111053222-0f59399cbb3c/go.mod h1:ekV9VNVFXI1E8niHsgfb76RQHP2oJH2zYaCw1cEWrhA=
+gabe565.com/utils v0.0.0-20241213205714-152b8de1d3fe h1:/QXzT2uIjZJBhJ8eADVxXMPZT716LpRVLj4TeZm+Qz0=
+gabe565.com/utils v0.0.0-20241213205714-152b8de1d3fe/go.mod h1:6FZP8OeF0k3hTsPClyDGEILcBg3hvGcSp4u4pmjMusY=
 github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be h1:9AeTilPcZAjCFIImctFaOjnTIavg87rW78vTPkQqLI8=
 github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be/go.mod h1:ySMOLuWl6zY27l47sB3qLNK6tF2fkHG55UZxx8oIVo4=
 github.com/aymanbagabas/go-osc52/v2 v2.0.1 h1:HwpRHbFMcZLEVr42D4p7XBqjyuxQH5SMiErDT4WkJ2k=
