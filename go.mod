@@ -5,13 +5,13 @@ go 1.23.3
 require (
 	gabe565.com/utils v0.0.0-20250130072635-ed882da6fcdd
 	github.com/charmbracelet/bubbles v0.20.0
-	github.com/charmbracelet/bubbletea v1.2.2
+	github.com/charmbracelet/bubbletea v1.2.4
 	github.com/charmbracelet/lipgloss v1.0.0
 	github.com/charmbracelet/ssh v0.0.0-20240725163421-eb71b85b27aa
 	github.com/charmbracelet/wish v1.4.3
 	github.com/dmarkham/enumer v1.5.10
 	github.com/lmittmann/tint v1.0.5
-	github.com/lrstanley/bubblezone v0.0.0-20240914071701-b48c55a5e78e
+	github.com/lrstanley/bubblezone v0.0.0-20250110055121-b45205ce63e2
 	github.com/muesli/termenv v0.15.3-0.20240509142007-81b8f94111d5
 	github.com/prometheus/client_golang v1.20.5
 	github.com/spf13/cobra v1.8.1
