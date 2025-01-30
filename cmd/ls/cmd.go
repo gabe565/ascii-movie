@@ -10,8 +10,8 @@ import (
 
 	"gabe565.com/ascii-movie/internal/movie"
 	"gabe565.com/ascii-movie/internal/util"
+	"gabe565.com/utils/bytefmt"
 	"gabe565.com/utils/cobrax"
-	"github.com/labstack/gommon/bytes"
 	"github.com/spf13/cobra"
 )
 
@@ -71,7 +71,7 @@ func run(cmd *cobra.Command, args []string) error {
 			w,
 			"%s\t%s\t%t\t%s\t%d\t%s\t\n",
 			info.Name,
-			bytes.Format(info.Size),
+			bytefmt.Encode(info.Size),
 			info.Default,
 			info.Duration.Round(time.Second),
 			info.NumFrames,
