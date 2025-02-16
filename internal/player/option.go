@@ -29,9 +29,8 @@ func (o Option) DynamicString(isPlaying bool) string {
 	case OptionPlayPause:
 		if isPlaying {
 			return o.String()[2:]
-		} else {
-			return o.String()[:2]
 		}
+		return o.String()[:2]
 	default:
 		return o.String()
 	}

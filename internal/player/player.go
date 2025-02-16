@@ -171,9 +171,8 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if p.isPlaying() {
 				p.pause()
 				return p, nil
-			} else {
-				return p, p.play()
 			}
+			return p, p.play()
 		default:
 			p.activeOption = msg
 			p.speed = msg.Speed()
