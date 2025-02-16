@@ -77,7 +77,7 @@ dockers:
     image_templates:
       - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-amd64
     use: buildx
-    dockerfile: Dockerfile.goreleaser
+    dockerfile: goreleaser.Dockerfile
     build_flag_templates:
       - "--platform=linux/amd64"
   - <<: *dockers
