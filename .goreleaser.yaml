@@ -23,11 +23,11 @@ builds:
     goarm:
       - "7"
 archives:
-  - format: tar.gz
+  - formats: tar.gz
     # use zip for windows archives
     format_overrides:
       - goos: windows
-        format: zip
+        formats: zip
     files:
       - LICENSE
       - README.md
