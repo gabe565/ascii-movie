@@ -11,7 +11,7 @@ require (
 	github.com/charmbracelet/wish v1.4.6
 	github.com/dmarkham/enumer v1.5.10
 	github.com/lmittmann/tint v1.0.7
-	github.com/lrstanley/bubblezone v0.0.0-20240914071701-b48c55a5e78e
+	github.com/lrstanley/bubblezone v0.0.0-20250208020128-be525e7e10ed
 	github.com/muesli/termenv v0.15.3-0.20241212154518-8c990cd6cf4b
 	github.com/prometheus/client_golang v1.20.5
 	github.com/spf13/cobra v1.9.0
