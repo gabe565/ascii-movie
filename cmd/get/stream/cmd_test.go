@@ -68,7 +68,7 @@ func Test_run(t *testing.T) {
 			u, err := url.Parse(svr.URL)
 			require.NoError(t, err)
 
-			ctx := context.WithValue(context.Background(), config.URLContextKey, u)
+			ctx := context.WithValue(t.Context(), config.URLContextKey, u)
 			tt.args.cmd.SetContext(ctx)
 
 			var buf strings.Builder
