@@ -10,7 +10,7 @@ require (
 	github.com/charmbracelet/ssh v0.0.0-20240725163421-eb71b85b27aa
 	github.com/charmbracelet/wish v1.4.3
 	github.com/dmarkham/enumer v1.5.10
-	github.com/lmittmann/tint v1.0.5
+	github.com/lmittmann/tint v1.0.7
 	github.com/lrstanley/bubblezone v0.0.0-20240914071701-b48c55a5e78e
 	github.com/muesli/termenv v0.15.3-0.20241212154518-8c990cd6cf4b
 	github.com/prometheus/client_golang v1.20.5
