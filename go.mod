@@ -1,6 +1,6 @@
 module gabe565.com/ascii-movie
 
-go 1.23.3
+go 1.24.0
 
 require (
 	gabe565.com/utils v0.0.0-20250130072635-ed882da6fcdd
