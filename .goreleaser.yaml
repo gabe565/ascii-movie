@@ -2,6 +2,7 @@ version: 2
 project_name: ascii-movie
 before:
   hooks:
+    - go mod download
     - go run ./internal/generate/gzip
     - go run ./internal/generate/completions
     - go run ./internal/generate/manpages --version='{{ .Version }}' --date='{{ .CommitDate }}'
