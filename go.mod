@@ -9,7 +9,6 @@ require (
 	github.com/charmbracelet/lipgloss v1.0.0
 	github.com/charmbracelet/ssh v0.0.0-20250213143314-8712ec3ff3ef
 	github.com/charmbracelet/wish v1.4.6
-	github.com/dmarkham/enumer v1.5.10
 	github.com/lmittmann/tint v1.0.7
 	github.com/lrstanley/bubblezone v0.0.0-20250208020128-be525e7e10ed
 	github.com/muesli/termenv v0.15.3-0.20241212154518-8c990cd6cf4b
@@ -38,6 +37,7 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.6 // indirect
 	github.com/creack/pty v1.1.24 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dmarkham/enumer v1.5.10 // indirect
 	github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
@@ -66,4 +66,9 @@ require (
 	golang.org/x/tools v0.30.0 // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+)
+
+tool (
+	github.com/dmarkham/enumer
+	golang.org/x/tools/cmd/stringer
 )

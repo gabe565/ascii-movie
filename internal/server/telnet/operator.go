@@ -4,7 +4,7 @@ import (
 	"io"
 )
 
-//go:generate stringer -type Operator
+//go:generate go tool stringer -type Operator
 
 type Operator byte
 
