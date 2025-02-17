@@ -78,7 +78,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case p.frame <= 0:
 			p.speed = 1
-			p.activeOption = 4
+			p.activeOption = Option1xForward
 			p.pause()
 			return p, nil
 		default:
@@ -95,7 +95,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return p, tea.Quit
 			} else if p.frame+frameDiff <= 0 {
 				p.speed = 1
-				p.activeOption = 4
+				p.activeOption = Option1xForward
 				p.pause()
 				return p, nil
 			}
