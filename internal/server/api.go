@@ -67,8 +67,8 @@ type HealthResponse struct {
 
 func (s *APIServer) Health(w http.ResponseWriter, _ *http.Request) {
 	response := HealthResponse{
-		Telnet: telnetListeners == 1,
-		SSH:    sshListeners == 1,
+		Telnet: s.Info.telnetListeners == 1,
+		SSH:    s.Info.sshListeners == 1,
 	}
 	response.Healthy = (!s.SSHEnabled || response.SSH) && (!s.TelnetEnabled || response.Telnet)
 

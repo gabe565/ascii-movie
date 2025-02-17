@@ -21,9 +21,6 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-//nolint:gochecknoglobals
-var sshListeners uint8
-
 type SSHServer struct {
 	Server
 }
@@ -86,9 +83,9 @@ func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
 			return ctx.Err()
 		}
 
-		sshListeners++
+		s.Info.sshListeners++
 		defer func() {
-			sshListeners--
+			s.Info.sshListeners--
 		}()
 
 		if err = server.ListenAndServe(); err != nil && !errors.Is(err, ssh.ErrServerClosed) {

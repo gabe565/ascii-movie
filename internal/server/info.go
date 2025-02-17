@@ -76,6 +76,9 @@ type Info struct {
 	nextID     uint
 	mu         sync.Mutex
 
+	sshListeners    uint8
+	telnetListeners uint8
+
 	activeConnections      *prometheus.GaugeVec
 	totalConnections       *prometheus.CounterVec
 	rateLimitedConnections *prometheus.CounterVec

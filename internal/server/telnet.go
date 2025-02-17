@@ -16,9 +16,6 @@ import (
 	"github.com/muesli/termenv"
 )
 
-//nolint:gochecknoglobals
-var telnetListeners uint8
-
 type TelnetServer struct {
 	Server
 }
@@ -43,9 +40,9 @@ func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 	defer serveCancel()
 
 	go func() {
-		telnetListeners++
+		s.Info.telnetListeners++
 		defer func() {
-			telnetListeners--
+			s.Info.telnetListeners--
 		}()
 
 		for {
