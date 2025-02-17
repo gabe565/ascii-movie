@@ -51,8 +51,11 @@ changelog:
     - title: Fixes
       order: 1
       regexp: "(fix|perf)"
-    - title: Others
+    - title: Dependencies
       order: 999
+      regexp: "\\(deps\\):"
+    - title: Others
+      order: 998
 brews:
   - homepage: https://github.com/gabe565/ascii-movie
     description: Star Wars SSH + Telnet server written in Go
