@@ -22,6 +22,10 @@ builds:
       - arm64
     goarm:
       - "7"
+    ignore:
+      - goos: windows
+        goarch: arm
+        goarm: 7
 archives:
   - formats: tar.gz
     # use zip for windows archives
