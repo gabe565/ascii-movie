@@ -6,6 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"gabe565.com/ascii-movie/internal/config"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
@@ -16,8 +17,9 @@ type Stream struct {
 	Connected time.Time `json:"connected"`
 }
 
-func NewInfo() Info {
-	return Info{
+func NewInfo(conf *config.Config) *Info {
+	return &Info{
+		conf:       &conf.Server,
 		streams:    make(map[uint]Stream, 64),
 		concurrent: make(map[string]uint, 64),
 
@@ -67,6 +69,7 @@ func NewInfo() Info {
 }
 
 type Info struct {
+	conf       *config.Server
 	streams    map[uint]Stream
 	totalCount atomic.Uint32
 	concurrent map[string]uint
@@ -87,7 +90,7 @@ func (s *Info) StreamConnect(server, remoteIP string) (uint, error) {
 
 	prometheusLabels := prometheus.Labels{"server": server}
 
-	if concurrentStreams != 0 && s.concurrent[remoteIP]+1 > concurrentStreams {
+	if s.conf.ConcurrentStreams != 0 && s.concurrent[remoteIP]+1 > s.conf.ConcurrentStreams {
 		s.rateLimitedConnections.With(prometheusLabels).Inc()
 		return 0, ErrRateLimited
 	}

@@ -13,12 +13,13 @@ import (
 
 	"gabe565.com/ascii-movie/cmd"
 	"gabe565.com/ascii-movie/internal/config"
+	"gabe565.com/utils/slogx"
 	"github.com/spf13/cobra/doc"
 	flag "github.com/spf13/pflag"
 )
 
 func main() {
-	config.InitLog(os.Stderr, slog.LevelInfo, config.FormatAuto)
+	config.InitLog(os.Stderr, slogx.LevelInfo, slogx.FormatAuto)
 
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 

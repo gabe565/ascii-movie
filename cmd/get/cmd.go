@@ -6,7 +6,6 @@ import (
 
 	"gabe565.com/ascii-movie/cmd/get/stream"
 	"gabe565.com/ascii-movie/internal/config"
-	"gabe565.com/ascii-movie/internal/server"
 	"gabe565.com/utils/cobrax"
 	"gabe565.com/utils/must"
 	"github.com/spf13/cobra"
@@ -20,7 +19,7 @@ func NewCommand(opts ...cobrax.Option) *cobra.Command {
 		PersistentPreRunE: preRun,
 	}
 
-	cmd.PersistentFlags().String(server.APIFlagPrefix+server.AddressFlag, "http://127.0.0.1:1977", "API address")
+	cmd.PersistentFlags().String(config.FlagPrefixAPI+config.FlagAddress, "http://127.0.0.1:1977", "API address")
 
 	cmd.AddCommand(
 		stream.NewCommand(),
@@ -32,7 +31,7 @@ func NewCommand(opts ...cobrax.Option) *cobra.Command {
 }
 
 func preRun(cmd *cobra.Command, _ []string) error {
-	apiAddr := must.Must2(cmd.Flags().GetString(server.APIFlagPrefix + server.AddressFlag))
+	apiAddr := must.Must2(cmd.Flags().GetString(config.FlagPrefixAPI + config.FlagAddress))
 
 	u, err := url.Parse(apiAddr)
 	if err != nil {

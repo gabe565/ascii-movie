@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"gabe565.com/ascii-movie/internal/config"
 	"gabe565.com/ascii-movie/internal/movie"
 	"gabe565.com/ascii-movie/internal/server"
 	"gabe565.com/utils/cobrax"
@@ -17,7 +18,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func NewCommand(opts ...cobrax.Option) *cobra.Command {
+func NewCommand(conf *config.Config, opts ...cobrax.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "serve [movie]",
 		Aliases: []string{"server", "listen"},
@@ -28,8 +29,8 @@ func NewCommand(opts ...cobrax.Option) *cobra.Command {
 		ValidArgsFunction: movie.CompleteMovieName,
 	}
 
-	movie.Flags(cmd.Flags())
-	server.Flags(cmd.Flags())
+	conf.RegisterPlayFlags(cmd)
+	conf.Server.RegisterFlags(cmd)
 
 	for _, opt := range opts {
 		opt(cmd)
@@ -41,6 +42,11 @@ func NewCommand(opts ...cobrax.Option) *cobra.Command {
 var ErrAllDisabled = errors.New("all server types are disabled")
 
 func run(cmd *cobra.Command, args []string) error {
+	conf, err := config.Load(cmd)
+	if err != nil {
+		return err
+	}
+
 	if parent := cmd.Parent(); parent != nil {
 		slog.Info("ASCII Movie",
 			"version", cobrax.GetVersion(cmd),
@@ -55,7 +61,7 @@ func run(cmd *cobra.Command, args []string) error {
 
 	lipgloss.SetColorProfile(termenv.ANSI256)
 
-	m, err := movie.FromFlags(cmd.Flags(), path)
+	m, err := movie.Load(path, conf.Speed)
 	if err != nil {
 		return err
 	}
@@ -64,18 +70,19 @@ func run(cmd *cobra.Command, args []string) error {
 	defer cancel()
 	group, ctx := errgroup.WithContext(ctx)
 
-	api := server.NewAPI(cmd.Flags())
+	api := server.NewAPI(conf)
 
-	if ssh := server.NewSSH(cmd.Flags()); ssh.Enabled {
+	if conf.Server.SSH.Enabled {
+		ssh := server.NewSSH(conf, api.Info)
 		api.SSHEnabled = true
 		group.Go(func() error {
 			return ssh.Listen(ctx, &m)
 		})
 	}
 
-	if telnet := server.NewTelnet(cmd.Flags()); telnet.Enabled {
+	if conf.Server.Telnet.Enabled {
+		telnet := server.NewTelnet(conf, api.Info)
 		api.TelnetEnabled = true
-		server.LoadDeprecated(cmd.Flags())
 		group.Go(func() error {
 			return telnet.Listen(ctx, &m)
 		})
@@ -85,7 +92,7 @@ func run(cmd *cobra.Command, args []string) error {
 		return ErrAllDisabled
 	}
 
-	if api.Enabled {
+	if conf.Server.API.Enabled {
 		group.Go(func() error {
 			return api.Listen(ctx)
 		})

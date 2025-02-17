@@ -3,17 +3,15 @@ package telnet
 import (
 	"bufio"
 	"bytes"
-	"context"
 	"encoding/binary"
 	"fmt"
 	"io"
-	"log/slog"
 	"net"
 	"strings"
 	"time"
 
-	"gabe565.com/ascii-movie/internal/config"
 	"gabe565.com/ascii-movie/internal/util"
+	"gabe565.com/utils/slogx"
 	"github.com/muesli/termenv"
 )
 
@@ -80,7 +78,7 @@ outer:
 			// https://ibm.com/docs/zos/latest?topic=problems-telnet-commands-options
 			if !wroteTelnetCommands {
 				wroteTelnetCommands = true
-				slog.Log(context.Background(), config.LevelTrace, "Configuring Telnet")
+				slogx.Trace("Configuring Telnet")
 				if _, err := Write(conn,
 					Iac, Will, Echo,
 					Iac, Will, SuppressGoAhead,
@@ -123,7 +121,7 @@ outer:
 						if !wroteTermType && len(command) > 4 {
 							wroteTermType = true
 							term := strings.ToLower(string(command[2 : len(command)-2]))
-							slog.Log(context.Background(), config.LevelTrace, "Got terminal type", "type", term)
+							slogx.Trace("Got terminal type", "type", term)
 							termCh <- term
 						}
 					case NegotiateAboutWindowSize:
@@ -133,7 +131,7 @@ outer:
 							if err := binary.Read(r, binary.BigEndian, &size); err != nil {
 								return err
 							}
-							slog.Log(context.Background(), config.LevelTrace, "Got window size", "size", size)
+							slogx.Trace("Got window size", "size", size)
 							if size.Width != 0 && size.Height != 0 {
 								sizeCh <- size
 							}
@@ -149,7 +147,7 @@ outer:
 				case TerminalType:
 					if !willTerminalType {
 						willTerminalType = true
-						slog.Log(context.Background(), config.LevelTrace, "Requesting terminal type")
+						slogx.Trace("Requesting terminal type")
 						if _, err := Write(conn, Iac, SubNegotiation, TerminalType, 1, Iac, Se); err != nil {
 							return err
 						}

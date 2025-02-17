@@ -13,10 +13,11 @@ import (
 
 	"gabe565.com/ascii-movie/internal/config"
 	"gabe565.com/ascii-movie/movies"
+	"gabe565.com/utils/slogx"
 )
 
 func main() {
-	config.InitLog(os.Stderr, slog.LevelInfo, config.FormatAuto)
+	config.InitLog(os.Stderr, slogx.LevelInfo, slogx.FormatAuto)
 
 	if err := fs.WalkDir(movies.Movies, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {

@@ -3,7 +3,7 @@ module gabe565.com/ascii-movie
 go 1.24.0
 
 require (
-	gabe565.com/utils v0.0.0-20250216070134-b5300e41e04c
+	gabe565.com/utils v0.0.0-20250217005250-f306fa7738cd
 	github.com/charmbracelet/bubbles v0.20.0
 	github.com/charmbracelet/bubbletea v1.3.3
 	github.com/charmbracelet/lipgloss v1.0.0

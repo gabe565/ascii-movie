@@ -9,13 +9,10 @@ import (
 	"strings"
 	"time"
 
+	"gabe565.com/ascii-movie/internal/config"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	flag "github.com/spf13/pflag"
 	"golang.org/x/sync/errgroup"
 )
-
-//nolint:gochecknoglobals
-var serverInfo = NewInfo()
 
 type APIServer struct {
 	Server
@@ -23,18 +20,19 @@ type APIServer struct {
 	SSHEnabled    bool
 }
 
-func NewAPI(flags *flag.FlagSet) APIServer {
-	return APIServer{Server: NewServer(flags, APIFlagPrefix)}
+func NewAPI(conf *config.Config) APIServer {
+	server := APIServer{Server: NewServer(conf, config.FlagPrefixAPI, NewInfo(conf))}
+	return server
 }
 
 func (s *APIServer) Listen(ctx context.Context) error {
-	s.Log.Info("Starting API server", "address", s.Address)
+	s.Log.Info("Starting API server", "address", s.conf.API.Address)
 
 	http.HandleFunc("/health", s.Health)
 	http.HandleFunc("/streams", s.Streams)
 	http.Handle("/metrics", promhttp.Handler())
 	server := &http.Server{
-		Addr:        s.Address,
+		Addr:        s.conf.API.Address,
 		ReadTimeout: 5 * time.Second,
 	}
 
@@ -104,17 +102,17 @@ func (s *APIServer) Streams(w http.ResponseWriter, r *http.Request) {
 	fields := r.URL.Query().Get("fields")
 
 	if fields == "" || strings.Contains(fields, "total") {
-		total := serverInfo.totalCount.Load()
+		total := s.Info.totalCount.Load()
 		response.Total = &total
 	}
 
 	if fields == "" || strings.Contains(fields, "active") {
-		count := serverInfo.NumActive()
+		count := s.Info.NumActive()
 		response.Active = &count
 	}
 
 	if fields == "" || strings.Contains(fields, "streams") {
-		streams := serverInfo.GetStreams()
+		streams := s.Info.GetStreams()
 		response.Streams = &streams
 	}
 

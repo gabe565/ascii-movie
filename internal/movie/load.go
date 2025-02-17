@@ -2,7 +2,6 @@ package movie
 
 import (
 	"compress/gzip"
-	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -11,20 +10,13 @@ import (
 	"strings"
 	"time"
 
-	"gabe565.com/ascii-movie/internal/config"
 	"gabe565.com/ascii-movie/movies"
-	flag "github.com/spf13/pflag"
+	"gabe565.com/utils/slogx"
 )
-
-const SpeedFlag = "speed"
 
 var ErrInvalidSpeed = errors.New("speed must be greater than 0")
 
-func Flags(flags *flag.FlagSet) {
-	flags.Float64(SpeedFlag, 1, "Playback speed multiplier. Must be greater than 0.")
-}
-
-func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
+func Load(path string, speed float64) (Movie, error) {
 	var err error
 
 	slog.Info("Loading movie...")
@@ -54,7 +46,7 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 	} else {
 		if errors.Is(err, os.ErrNotExist) {
 			// Fallback to loading file
-			slog.Log(context.Background(), config.LevelTrace, "No embedded movie matches name. Searching filesystem.")
+			slogx.Trace("No embedded movie matches name. Searching filesystem.")
 			f, err := os.Open(path)
 			if err != nil {
 				return movie, err
@@ -77,12 +69,8 @@ func FromFlags(flags *flag.FlagSet, path string) (Movie, error) {
 		}
 	}
 
-	speed, err := flags.GetFloat64(SpeedFlag)
-	if err != nil {
-		return movie, err
-	}
 	if speed <= 0 {
-		return movie, fmt.Errorf("%w: %f", ErrInvalidSpeed, speed)
+		return movie, fmt.Errorf("%w: %g", ErrInvalidSpeed, speed)
 	}
 
 	if err := movie.LoadFile(path, src, speed); err != nil {

@@ -9,10 +9,11 @@ import (
 
 	"gabe565.com/ascii-movie/cmd"
 	"gabe565.com/ascii-movie/internal/config"
+	"gabe565.com/utils/slogx"
 )
 
 func main() {
-	config.InitLog(os.Stderr, slog.LevelInfo, config.FormatAuto)
+	config.InitLog(os.Stderr, slogx.LevelInfo, slogx.FormatAuto)
 
 	if err := run(); err != nil {
 		slog.Error(err.Error())

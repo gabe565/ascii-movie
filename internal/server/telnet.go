@@ -7,30 +7,30 @@ import (
 	"sync"
 	"time"
 
+	"gabe565.com/ascii-movie/internal/config"
 	"gabe565.com/ascii-movie/internal/movie"
 	"gabe565.com/ascii-movie/internal/player"
 	"gabe565.com/ascii-movie/internal/server/idleconn"
 	"gabe565.com/ascii-movie/internal/server/telnet"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/muesli/termenv"
-	flag "github.com/spf13/pflag"
 )
 
 //nolint:gochecknoglobals
 var telnetListeners uint8
 
 type TelnetServer struct {
-	MovieServer
+	Server
 }
 
-func NewTelnet(flags *flag.FlagSet) TelnetServer {
-	return TelnetServer{MovieServer: NewMovieServer(flags, TelnetFlagPrefix)}
+func NewTelnet(conf *config.Config, info *Info) TelnetServer {
+	return TelnetServer{Server: NewServer(conf, config.FlagPrefixTelnet, info)}
 }
 
 func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
-	s.Log.Info("Starting telnet server", "address", s.Address)
+	s.Log.Info("Starting telnet server", "address", s.conf.Telnet.Address)
 
-	listen, err := net.Listen("tcp", s.Address)
+	listen, err := net.Listen("tcp", s.conf.Telnet.Address)
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 			go func() {
 				defer serveGroup.Done()
 				ctx, cancel := context.WithCancel(serveCtx)
-				conn = idleconn.New(conn, idleTimeout, maxTimeout, cancel)
+				conn = idleconn.New(conn, s.conf.IdleTimeout, s.conf.MaxTimeout, cancel)
 				s.Handler(ctx, conn, m)
 			}()
 		}
@@ -95,13 +95,13 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	remoteIP := RemoteIP(conn.RemoteAddr())
 	logger := s.Log.With("remoteIP", remoteIP)
 
-	id, err := serverInfo.StreamConnect("telnet", remoteIP)
+	id, err := s.Info.StreamConnect("telnet", remoteIP)
 	if err != nil {
 		logger.Error("Failed to begin stream", "error", err)
 		_, _ = conn.Write([]byte(ErrorText(err) + "\n"))
 		return
 	}
-	defer serverInfo.StreamDisconnect(id)
+	defer s.Info.StreamDisconnect(id)
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()

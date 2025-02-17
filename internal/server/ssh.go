@@ -8,16 +8,15 @@ import (
 	"strings"
 	"time"
 
+	"gabe565.com/ascii-movie/internal/config"
 	"gabe565.com/ascii-movie/internal/movie"
 	"gabe565.com/ascii-movie/internal/player"
 	"gabe565.com/ascii-movie/internal/util"
-	"gabe565.com/utils/must"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
 	"github.com/charmbracelet/wish/bubbletea"
 	"github.com/muesli/termenv"
-	flag "github.com/spf13/pflag"
 	gossh "golang.org/x/crypto/ssh"
 	"golang.org/x/sync/errgroup"
 )
@@ -26,42 +25,38 @@ import (
 var sshListeners uint8
 
 type SSHServer struct {
-	MovieServer
-	HostKeyPath []string
-	HostKeyPEM  []string
+	Server
 }
 
-func NewSSH(flags *flag.FlagSet) SSHServer {
-	ssh := SSHServer{
-		MovieServer: NewMovieServer(flags, SSHFlagPrefix),
-		HostKeyPath: must.Must2(flags.GetStringSlice(SSHHostKeyPathFlag)),
-		HostKeyPEM:  must.Must2(flags.GetStringSlice(SSHHostKeyDataFlag)),
+func NewSSH(conf *config.Config, info *Info) SSHServer {
+	server := SSHServer{
+		Server: NewServer(conf, config.FlagPrefixSSH, info),
 	}
-	if len(ssh.HostKeyPath) == 0 && len(ssh.HostKeyPEM) == 0 {
-		ssh.HostKeyPath = []string{"$HOME/.ssh/ascii_movie_ed25519", "$HOME/.ssh/ascii_movie_rsa"}
+	if len(server.conf.SSH.HostKeyPath) == 0 && len(server.conf.SSH.HostKeyPEM) == 0 {
+		server.conf.SSH.HostKeyPath = []string{"$HOME/.ssh/ascii_movie_ed25519", "$HOME/.ssh/ascii_movie_rsa"}
 	}
 
-	return ssh
+	return server
 }
 
 func (s *SSHServer) Listen(ctx context.Context, m *movie.Movie) error {
-	s.Log.Info("Starting SSH server", "address", s.Address)
+	s.Log.Info("Starting SSH server", "address", s.conf.SSH.Address)
 
 	sshOptions := []ssh.Option{
-		wish.WithAddress(s.Address),
-		wish.WithIdleTimeout(idleTimeout),
-		wish.WithMaxTimeout(maxTimeout),
+		wish.WithAddress(s.conf.SSH.Address),
+		wish.WithIdleTimeout(s.conf.IdleTimeout),
+		wish.WithMaxTimeout(s.conf.MaxTimeout),
 		wish.WithMiddleware(
 			bubbletea.Middleware(s.Handler(m)),
 			s.TrackStream,
 		),
 	}
 
-	for _, pem := range s.HostKeyPEM {
+	for _, pem := range s.conf.SSH.HostKeyPEM {
 		sshOptions = append(sshOptions, wish.WithHostKeyPEM([]byte(pem)))
 	}
 
-	for _, path := range s.HostKeyPath {
+	for _, path := range s.conf.SSH.HostKeyPath {
 		if strings.Contains(path, "$HOME") {
 			home, err := os.UserHomeDir()
 			if err != nil {
@@ -147,7 +142,7 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 func (s *SSHServer) TrackStream(handler ssh.Handler) ssh.Handler {
 	return func(session ssh.Session) {
 		remoteIP := RemoteIP(session.RemoteAddr())
-		id, err := serverInfo.StreamConnect("ssh", remoteIP)
+		id, err := s.Info.StreamConnect("ssh", remoteIP)
 		if err != nil {
 			s.Log.Error("Failed to begin stream",
 				"remoteIP", remoteIP,
@@ -156,7 +151,7 @@ func (s *SSHServer) TrackStream(handler ssh.Handler) ssh.Handler {
 			_, _ = session.Write([]byte(ErrorText(err) + "\n"))
 			return
 		}
-		defer serverInfo.StreamDisconnect(id)
+		defer s.Info.StreamDisconnect(id)
 		handler(session)
 	}
 }

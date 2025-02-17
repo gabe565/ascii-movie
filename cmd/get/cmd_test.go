@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"gabe565.com/ascii-movie/internal/config"
-	"gabe565.com/ascii-movie/internal/server"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -27,7 +26,7 @@ func Test_preRun(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := tt.args.cmd.PersistentFlags().Set(server.APIFlagPrefix+server.AddressFlag, tt.want)
+			err := tt.args.cmd.PersistentFlags().Set(config.FlagPrefixAPI+config.FlagAddress, tt.want)
 			require.NoError(t, err)
 
 			tt.args.cmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }

@@ -7,11 +7,12 @@ import (
 	"gabe565.com/ascii-movie/internal/movie"
 	"gabe565.com/ascii-movie/internal/player"
 	"gabe565.com/utils/cobrax"
+	"gabe565.com/utils/slogx"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
 
-func NewCommand(opts ...cobrax.Option) *cobra.Command {
+func NewCommand(conf *config.Config, opts ...cobrax.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "play [movie]",
 		Short: "Play an ASCII movie locally.",
@@ -21,7 +22,7 @@ func NewCommand(opts ...cobrax.Option) *cobra.Command {
 		ValidArgsFunction: movie.CompleteMovieName,
 	}
 
-	movie.Flags(cmd.Flags())
+	conf.RegisterPlayFlags(cmd)
 
 	for _, opt := range opts {
 		opt(cmd)
@@ -31,11 +32,14 @@ func NewCommand(opts ...cobrax.Option) *cobra.Command {
 }
 
 func run(cmd *cobra.Command, args []string) error {
-	if !cmd.Flags().Changed(config.LogLevelFlag) {
-		if err := cmd.Flags().Set(config.LogLevelFlag, slog.LevelWarn.String()); err != nil {
-			slog.Warn("Failed to decrease log level", "error", err)
-		}
-		config.InitLogCmd(cmd)
+	conf, err := config.Load(cmd)
+	if err != nil {
+		return err
+	}
+
+	if !cmd.Flags().Changed(config.FlagLogLevel) {
+		conf.LogLevel = slogx.LevelWarn
+		conf.InitLog(cmd.ErrOrStderr())
 	}
 
 	var path string
@@ -43,7 +47,7 @@ func run(cmd *cobra.Command, args []string) error {
 		path = args[0]
 	}
 
-	m, err := movie.FromFlags(cmd.Flags(), path)
+	m, err := movie.Load(path, conf.Speed)
 	if err != nil {
 		return err
 	}
