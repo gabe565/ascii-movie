@@ -10,8 +10,8 @@ github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UF
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/charmbracelet/bubbles v0.20.0 h1:jSZu6qD8cRQ6k9OMfR1WlM+ruM8fkPWkHvQWD9LIutE=
 github.com/charmbracelet/bubbles v0.20.0/go.mod h1:39slydyswPy+uVOHZ5x/GjwVAFkCsV8IIVy+4MhzwwU=
-github.com/charmbracelet/bubbletea v1.3.3 h1:WpU6fCY0J2vDWM3zfS3vIDi/ULq3SYphZhkAGGvmEUY=
-github.com/charmbracelet/bubbletea v1.3.3/go.mod h1:dtcUCyCGEX3g9tosuYiut3MXgY/Jsv9nKVdibKKRRXo=
+github.com/charmbracelet/bubbletea v1.3.4 h1:kCg7B+jSCFPLYRA52SDZjr51kG/fMUEoPoZrkaDHyoI=
+github.com/charmbracelet/bubbletea v1.3.4/go.mod h1:dtcUCyCGEX3g9tosuYiut3MXgY/Jsv9nKVdibKKRRXo=
 github.com/charmbracelet/keygen v0.5.1 h1:zBkkYPtmKDVTw+cwUyY6ZwGDhRxXkEp0Oxs9sqMLqxI=
 github.com/charmbracelet/keygen v0.5.1/go.mod h1:zznJVmK/GWB6dAtjluqn2qsttiCBhA5MZSiwb80fcHw=
 github.com/charmbracelet/lipgloss v1.0.0 h1:O7VkGDvqEdGi93X+DeqsQ7PKHDgtQfF8j8/O2qFMQNg=
@@ -63,8 +63,8 @@ github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/lmittmann/tint v1.0.7 h1:D/0OqWZ0YOGZ6AyC+5Y2kD8PBEzBk6rFHVSfOqCkF9Y=
 github.com/lmittmann/tint v1.0.7/go.mod h1:HIS3gSy7qNwGCj+5oRjAutErFBl4BzdQP6cJZ0NfMwE=
-github.com/lrstanley/bubblezone v0.0.0-20250208020128-be525e7e10ed h1:4m0iJJC4kHHIBnudXfD30oYIxkL9yZWDV5E/H8ypkLk=
-github.com/lrstanley/bubblezone v0.0.0-20250208020128-be525e7e10ed/go.mod h1:Nn+Kk4v8HhsNDmWMgOl2zhQdxu7pEdheXuLkD+7rx/0=
+github.com/lrstanley/bubblezone v0.0.0-20250301021021-ab7b445e9861 h1:lJZbpnKYI7tijRPRr7uZt7aOi1Mn5smjvM1hTAJC/vA=
+github.com/lrstanley/bubblezone v0.0.0-20250301021021-ab7b445e9861/go.mod h1:KobQOIne1AxegBa5hNBtvs4i6kAjBImL+TtQlzP6IZE=
 github.com/lucasb-eyer/go-colorful v1.2.0 h1:1nnpGOrhyZZuNyfu1QjKiUICQ74+3FNCN69Aj6K7nkY=
 github.com/lucasb-eyer/go-colorful v1.2.0/go.mod h1:R4dSotOR9KMtayYi1e77YzuveK+i7ruzyGqttikkLy0=
 github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=
