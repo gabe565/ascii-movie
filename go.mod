@@ -9,7 +9,7 @@ require (
 	github.com/charmbracelet/lipgloss v1.0.0
 	github.com/charmbracelet/ssh v0.0.0-20250213143314-8712ec3ff3ef
 	github.com/charmbracelet/wish v1.4.6
-	github.com/lmittmann/tint v1.0.7
+	github.com/lmittmann/tint v1.1.2
 	github.com/lrstanley/bubblezone v0.0.0-20250301021021-ab7b445e9861
 	github.com/muesli/termenv v0.16.0
 	github.com/prometheus/client_golang v1.21.0
