@@ -15,6 +15,7 @@ ascii-movie serve [movie] [flags]
   -h, --help                        help for serve
       --idle-timeout duration       Idle connection timeout. (default 15m0s)
       --max-timeout duration        Absolute connection timeout. (default 2h0m0s)
+      --no-controls                 Disable all UI controls, resulting in an experience more faithful to the original.
       --speed float                 Playback speed multiplier. Must be greater than 0. (default 1)
       --ssh-address string          SSH listen address (default ":22")
       --ssh-enabled                 Enables SSH listener (default true)

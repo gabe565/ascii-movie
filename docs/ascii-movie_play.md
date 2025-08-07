@@ -10,6 +10,7 @@ ascii-movie play [movie] [flags]
 
 ```
   -h, --help          help for play
+      --no-controls   Disable all UI controls, resulting in an experience more faithful to the original.
       --speed float   Playback speed multiplier. Must be greater than 0. (default 1)
 ```
 

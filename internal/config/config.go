@@ -7,9 +7,10 @@ import (
 )
 
 type Config struct {
-	Speed     float64
-	LogLevel  slogx.Level
-	LogFormat slogx.Format
+	Speed      float64
+	NoControls bool
+	LogLevel   slogx.Level
+	LogFormat  slogx.Format
 
 	Server
 }

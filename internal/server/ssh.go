@@ -126,6 +126,7 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 		p := player.NewPlayer(m,
 			player.WithLogger(logger),
 			player.WithRenderer(renderer),
+			player.WithHideControls(s.conf.NoControls),
 		)
 		go func() {
 			<-session.Context().Done()

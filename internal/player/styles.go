@@ -18,7 +18,7 @@ type Styles struct {
 	MarginX, MarginY string
 }
 
-func NewStyles(m *movie.Movie, renderer *lipgloss.Renderer) Styles {
+func NewStyles(m *movie.Movie, hideControls bool, renderer *lipgloss.Renderer) Styles {
 	borderColor := lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
 	activeColor := lipgloss.AdaptiveColor{Light: "8", Dark: "12"}
 	buttonsColor := lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
@@ -26,9 +26,18 @@ func NewStyles(m *movie.Movie, renderer *lipgloss.Renderer) Styles {
 
 	screenStyle := renderer.NewStyle().
 		Width(m.Width).
-		Height(m.Height).
+		Height(m.Height)
+
+	if hideControls {
+		return Styles{
+			Screen: screenStyle,
+		}
+	}
+
+	screenStyle = screenStyle.
 		Border(lipgloss.RoundedBorder()).
 		BorderForeground(borderColor)
+
 	if _, isTTY := renderer.Output().Writer().(*os.File); isTTY {
 		screenStyle = screenStyle.Foreground(lipgloss.AdaptiveColor{Light: "0", Dark: "15"})
 	}

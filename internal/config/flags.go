@@ -10,9 +10,10 @@ import (
 )
 
 const (
-	FlagSpeed     = "speed"
-	FlagLogLevel  = "log-level"
-	FlagLogFormat = "log-format"
+	FlagSpeed      = "speed"
+	FlagNoControls = "no-controls"
+	FlagLogLevel   = "log-level"
+	FlagLogFormat  = "log-format"
 
 	FlagPrefixSSH    = "ssh"
 	FlagPrefixTelnet = "telnet"
@@ -38,6 +39,9 @@ func (c *Config) RegisterFlags(cmd *cobra.Command) {
 func (c *Config) RegisterPlayFlags(cmd *cobra.Command) {
 	fs := cmd.Flags()
 	fs.Float64Var(&c.Speed, FlagSpeed, c.Speed, "Playback speed multiplier. Must be greater than 0.")
+	fs.BoolVar(&c.NoControls, FlagNoControls, c.NoControls,
+		"Disable all UI controls, resulting in an experience more faithful to the original.",
+	)
 }
 
 func (s *Server) RegisterFlags(cmd *cobra.Command) {

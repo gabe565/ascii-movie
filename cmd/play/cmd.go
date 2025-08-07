@@ -50,7 +50,7 @@ func run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	p := player.NewPlayer(&m)
+	p := player.NewPlayer(&m, player.WithHideControls(conf.NoControls))
 	defer p.Close()
 
 	program := tea.NewProgram(p,

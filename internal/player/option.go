@@ -19,3 +19,9 @@ func WithRenderer(r *lipgloss.Renderer) Option {
 		player.renderer = r
 	}
 }
+
+func WithHideControls(hideControls bool) Option {
+	return func(player *Player) {
+		player.hideControls = hideControls
+	}
+}

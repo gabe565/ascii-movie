@@ -36,8 +36,13 @@ func NewPlayer(m *movie.Movie, opts ...Option) *Player {
 		opt(player)
 	}
 
-	player.styles = NewStyles(m, player.renderer)
-	player.help = newHelp(player.renderer)
+	player.styles = NewStyles(m, player.hideControls, player.renderer)
+
+	if player.hideControls {
+		player.zone.SetEnabled(false)
+	} else {
+		player.help = newHelp(player.renderer)
+	}
 
 	return player
 }
@@ -50,9 +55,10 @@ type Player struct {
 	start    time.Time
 	zone     *zone.Manager
 
-	speed      float64
-	playCtx    context.Context
-	playCancel context.CancelFunc
+	hideControls bool
+	speed        float64
+	playCtx      context.Context
+	playCancel   context.CancelFunc
 
 	selectedButton Button
 	activeButton   Button
@@ -111,6 +117,8 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch {
 		case key.Matches(msg, p.keymap.quit):
 			return p, tea.Quit
+		case p.hideControls:
+			return p, nil
 		case key.Matches(msg, p.keymap.left):
 			if (p.selectedButton - 1).IsAButton() {
 				p.selectedButton--
@@ -227,17 +235,21 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (p *Player) View() string {
-	content := lipgloss.JoinHorizontal(
-		lipgloss.Top,
-		p.styles.MarginX,
-		lipgloss.JoinVertical(
-			lipgloss.Center,
-			p.styles.MarginY,
-			p.styles.Screen.Render(p.movie.Frames[p.frame].Data),
+	parts := make([]string, 0, 5)
+	parts = append(parts,
+		p.styles.MarginY,
+		p.styles.Screen.Render(p.movie.Frames[p.frame].Data),
+	)
+	if !p.hideControls {
+		parts = append(parts,
 			p.zone.Mark("progress", p.styles.Progress.Render(p.movie.Frames[p.frame].Progress)),
 			p.buttonsCache.String(),
 			p.helpCache.String(),
-		),
+		)
+	}
+
+	content := lipgloss.JoinHorizontal(lipgloss.Top, p.styles.MarginX,
+		lipgloss.JoinVertical(lipgloss.Center, parts...),
 	)
 
 	return p.zone.Scan(content)

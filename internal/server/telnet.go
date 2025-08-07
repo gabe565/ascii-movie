@@ -117,6 +117,7 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 	p := player.NewPlayer(m,
 		player.WithLogger(logger),
 		player.WithRenderer(telnet.MakeRenderer(conn, profile)),
+		player.WithHideControls(s.conf.NoControls),
 	)
 	defer p.Close()
 
