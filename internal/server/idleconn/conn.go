@@ -55,8 +55,8 @@ func (c *Conn) updateDeadline() error {
 	if c.idleTimeout != 0 {
 		idleDeadline := time.Now().Add(c.idleTimeout)
 		if idleDeadline.Before(c.maxDeadline) || c.maxDeadline.IsZero() {
-			return c.Conn.SetDeadline(idleDeadline)
+			return c.SetDeadline(idleDeadline)
 		}
 	}
-	return c.Conn.SetDeadline(c.maxDeadline)
+	return c.SetDeadline(c.maxDeadline)
 }

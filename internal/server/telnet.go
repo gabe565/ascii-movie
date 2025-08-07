@@ -27,7 +27,8 @@ func NewTelnet(conf *config.Config, info *Info) TelnetServer {
 func (s *TelnetServer) Listen(ctx context.Context, m *movie.Movie) error {
 	s.Log.Info("Starting telnet server", "address", s.conf.Telnet.Address)
 
-	listen, err := net.Listen("tcp", s.conf.Telnet.Address)
+	conf := net.ListenConfig{}
+	listen, err := conf.Listen(ctx, "tcp", s.conf.Telnet.Address)
 	if err != nil {
 		return err
 	}

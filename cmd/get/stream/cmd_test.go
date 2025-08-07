@@ -20,7 +20,7 @@ func Test_preRun(t *testing.T) {
 		require.NoError(t, preRun(cmd, []string{}))
 		got, err := cmd.Flags().GetString("count")
 		require.NoError(t, err)
-		assert.Equal(t, "", got)
+		assert.Empty(t, got)
 	})
 
 	t.Run("with active count", func(t *testing.T) {
