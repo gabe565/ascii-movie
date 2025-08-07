@@ -26,15 +26,15 @@ func NewPlayer(m *movie.Movie, logger *slog.Logger, renderer *lipgloss.Renderer)
 		start:          time.Now(),
 		zone:           zone.New(),
 		speed:          1,
-		selectedOption: OptionPlayPause,
-		activeOption:   Option1xForward,
+		selectedButton: ButtonPlayPause,
+		activeButton:   Button1xForward,
 		styles:         NewStyles(m, renderer),
 		playCtx:        playCtx,
 		playCancel:     playCancel,
 		keymap:         newKeymap(),
 		help:           newHelp(renderer),
 	}
-	player.optionsCache = NewCache(player.OptionsView)
+	player.buttonsCache = NewCache(player.ButtonsView)
 	player.helpCache = NewCache(player.HelpView)
 
 	return player
@@ -51,10 +51,10 @@ type Player struct {
 	playCtx    context.Context
 	playCancel context.CancelFunc
 
-	selectedOption Option
-	activeOption   Option
+	selectedButton Button
+	activeButton   Button
 	styles         Styles
-	optionsCache   *ViewCache
+	buttonsCache   *ViewCache
 
 	keymap    keymap
 	help      help.Model
@@ -78,7 +78,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case p.frame <= 0:
 			p.speed = 1
-			p.activeOption = Option1xForward
+			p.activeButton = Button1xForward
 			p.pause()
 			return p, nil
 		default:
@@ -95,7 +95,7 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return p, tea.Quit
 			} else if p.frame+frameDiff <= 0 {
 				p.speed = 1
-				p.activeOption = Option1xForward
+				p.activeButton = Button1xForward
 				p.pause()
 				return p, nil
 			}
@@ -104,25 +104,25 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return p, tick(p.playCtx, duration, frameTickMsg{})
 	case tea.KeyMsg:
-		p.optionsCache.Invalidate()
+		p.buttonsCache.Invalidate()
 		switch {
 		case key.Matches(msg, p.keymap.quit):
 			return p, tea.Quit
 		case key.Matches(msg, p.keymap.left):
-			if (p.selectedOption - 1).IsAOption() {
-				p.selectedOption--
+			if (p.selectedButton - 1).IsAButton() {
+				p.selectedButton--
 			}
 		case key.Matches(msg, p.keymap.right):
-			if (p.selectedOption + 1).IsAOption() {
-				p.selectedOption++
+			if (p.selectedButton + 1).IsAButton() {
+				p.selectedButton++
 			}
 		case key.Matches(msg, p.keymap.choose):
-			return p, chooseOption(p.selectedOption)
+			return p, chooseButton(p.selectedButton)
 		case key.Matches(msg, p.keymap.home):
-			p.selectedOption = 0
+			p.selectedButton = 0
 		case key.Matches(msg, p.keymap.end):
-			opts := OptionValues()
-			p.selectedOption = Option(len(opts) - 1) //nolint:gosec
+			opts := ButtonValues()
+			p.selectedButton = Button(len(opts) - 1) //nolint:gosec
 		case key.Matches(msg, p.keymap.help):
 			p.help.ShowAll = !p.help.ShowAll
 			p.helpCache.Invalidate()
@@ -164,17 +164,17 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
-	case Option:
-		p.optionsCache.Invalidate()
+	case Button:
+		p.buttonsCache.Invalidate()
 		switch msg {
-		case OptionPlayPause:
+		case ButtonPlayPause:
 			if p.isPlaying() {
 				p.pause()
 				return p, nil
 			}
 			return p, p.play()
 		default:
-			p.activeOption = msg
+			p.activeButton = msg
 			p.speed = msg.Speed()
 		}
 		p.pause()
@@ -200,10 +200,10 @@ func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return p, nil
 		}
 
-		for _, opt := range OptionValues() {
+		for _, opt := range ButtonValues() {
 			if p.zone.Get(opt.String()).InBounds(msg) {
-				p.selectedOption = opt
-				return p, chooseOption(p.selectedOption)
+				p.selectedButton = opt
+				return p, chooseButton(p.selectedButton)
 			}
 		}
 
@@ -232,7 +232,7 @@ func (p *Player) View() string {
 			p.styles.MarginY,
 			p.styles.Screen.Render(p.movie.Frames[p.frame].Data),
 			p.zone.Mark("progress", p.styles.Progress.Render(p.movie.Frames[p.frame].Progress)),
-			p.optionsCache.String(),
+			p.buttonsCache.String(),
 			p.helpCache.String(),
 		),
 	)
@@ -240,23 +240,23 @@ func (p *Player) View() string {
 	return p.zone.Scan(content)
 }
 
-func (p *Player) OptionsView() string {
-	opts := OptionValues()
-	options := make([]string, 0, len(opts))
+func (p *Player) ButtonsView() string {
+	opts := ButtonValues()
+	btns := make([]string, 0, len(opts))
 	isPlaying := p.isPlaying()
-	for _, option := range opts {
+	for _, btn := range opts {
 		var rendered string
-		switch option {
-		case p.selectedOption:
-			rendered = p.styles.Selected.Render(option.DynamicString(isPlaying))
-		case p.activeOption:
-			rendered = p.styles.Active.Render(option.DynamicString(isPlaying))
+		switch btn {
+		case p.selectedButton:
+			rendered = p.styles.Selected.Render(btn.DynamicString(isPlaying))
+		case p.activeButton:
+			rendered = p.styles.Active.Render(btn.DynamicString(isPlaying))
 		default:
-			rendered = p.styles.Options.Render(option.DynamicString(isPlaying))
+			rendered = p.styles.Buttons.Render(btn.DynamicString(isPlaying))
 		}
-		options = append(options, p.zone.Mark(option.String(), rendered))
+		btns = append(btns, p.zone.Mark(btn.String(), rendered))
 	}
-	return lipgloss.JoinHorizontal(lipgloss.Top, options...)
+	return lipgloss.JoinHorizontal(lipgloss.Top, btns...)
 }
 
 func (p *Player) HelpView() string {
@@ -264,12 +264,12 @@ func (p *Player) HelpView() string {
 }
 
 func (p *Player) pause() {
-	p.optionsCache.Invalidate()
+	p.buttonsCache.Invalidate()
 	p.clearTimeouts()
 }
 
 func (p *Player) play() tea.Cmd {
-	p.optionsCache.Invalidate()
+	p.buttonsCache.Invalidate()
 	p.clearTimeouts()
 	p.playCtx, p.playCancel = context.WithCancel(context.Background())
 	return func() tea.Msg {

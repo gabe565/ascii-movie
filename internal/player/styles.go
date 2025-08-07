@@ -11,7 +11,7 @@ import (
 type Styles struct {
 	Screen   lipgloss.Style
 	Progress lipgloss.Style
-	Options  lipgloss.Style
+	Buttons  lipgloss.Style
 	Active   lipgloss.Style
 	Selected lipgloss.Style
 
@@ -21,7 +21,7 @@ type Styles struct {
 func NewStyles(m *movie.Movie, renderer *lipgloss.Renderer) Styles {
 	borderColor := lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
 	activeColor := lipgloss.AdaptiveColor{Light: "8", Dark: "12"}
-	optionsColor := lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
+	buttonsColor := lipgloss.AdaptiveColor{Light: "7", Dark: "8"}
 	selectedColor := lipgloss.AdaptiveColor{Light: "12", Dark: "4"}
 
 	screenStyle := renderer.NewStyle().
@@ -42,28 +42,28 @@ func NewStyles(m *movie.Movie, renderer *lipgloss.Renderer) Styles {
 			Border(lipgloss.InnerHalfBlockBorder(), false, true).
 			BorderForeground(borderColor),
 
-		Options: renderer.NewStyle().
+		Buttons: renderer.NewStyle().
 			Padding(0, 2).
 			MarginBottom(1).
 			Border(lipgloss.InnerHalfBlockBorder()).
-			BorderForeground(optionsColor).
-			Background(optionsColor).
+			BorderForeground(buttonsColor).
+			Background(buttonsColor).
 			Foreground(lipgloss.AdaptiveColor{Light: "15", Dark: "7"}),
 	}
 
-	s.Active = s.Options.
+	s.Active = s.Buttons.
 		Background(activeColor).
 		BorderForeground(activeColor).
 		Bold(true)
 
-	s.Selected = s.Options.
+	s.Selected = s.Buttons.
 		Background(selectedColor).
 		BorderForeground(selectedColor).
 		Foreground(lipgloss.Color("15")).
 		Bold(true)
 
 	if renderer.ColorProfile() == termenv.Ascii {
-		s.Options = s.Options.
+		s.Buttons = s.Buttons.
 			Padding(0, 2).
 			Margin(1).
 			Border(lipgloss.InnerHalfBlockBorder(), false)
