@@ -1,8 +1,6 @@
 package play
 
 import (
-	"log/slog"
-
 	"gabe565.com/ascii-movie/internal/config"
 	"gabe565.com/ascii-movie/internal/movie"
 	"gabe565.com/ascii-movie/internal/player"
@@ -52,7 +50,7 @@ func run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	p := player.NewPlayer(&m, slog.Default(), nil)
+	p := player.NewPlayer(&m)
 	defer p.Close()
 
 	program := tea.NewProgram(p,

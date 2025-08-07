@@ -123,7 +123,10 @@ func (s *SSHServer) Handler(m *movie.Movie) bubbletea.Handler {
 			}
 		}
 
-		p := player.NewPlayer(m, logger, renderer)
+		p := player.NewPlayer(m,
+			player.WithLogger(logger),
+			player.WithRenderer(renderer),
+		)
 		go func() {
 			<-session.Context().Done()
 			p.Close()

@@ -14,38 +14,41 @@ import (
 	zone "github.com/lrstanley/bubblezone"
 )
 
-func NewPlayer(m *movie.Movie, logger *slog.Logger, renderer *lipgloss.Renderer) *Player {
-	if renderer == nil {
-		renderer = lipgloss.DefaultRenderer()
-	}
-
+func NewPlayer(m *movie.Movie, opts ...Option) *Player {
 	playCtx, playCancel := context.WithCancel(context.Background())
 	player := &Player{
+		renderer:       lipgloss.DefaultRenderer(),
 		movie:          m,
-		log:            logger,
+		log:            slog.Default(),
 		start:          time.Now(),
 		zone:           zone.New(),
 		speed:          1,
 		selectedButton: ButtonPlayPause,
 		activeButton:   Button1xForward,
-		styles:         NewStyles(m, renderer),
 		playCtx:        playCtx,
 		playCancel:     playCancel,
 		keymap:         newKeymap(),
-		help:           newHelp(renderer),
 	}
 	player.buttonsCache = NewCache(player.ButtonsView)
 	player.helpCache = NewCache(player.HelpView)
+
+	for _, opt := range opts {
+		opt(player)
+	}
+
+	player.styles = NewStyles(m, player.renderer)
+	player.help = newHelp(player.renderer)
 
 	return player
 }
 
 type Player struct {
-	movie *movie.Movie
-	frame int
-	log   *slog.Logger
-	start time.Time
-	zone  *zone.Manager
+	renderer *lipgloss.Renderer
+	movie    *movie.Movie
+	frame    int
+	log      *slog.Logger
+	start    time.Time
+	zone     *zone.Manager
 
 	speed      float64
 	playCtx    context.Context

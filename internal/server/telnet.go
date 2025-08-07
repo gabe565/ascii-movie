@@ -114,7 +114,10 @@ func (s *TelnetServer) Handler(ctx context.Context, conn net.Conn, m *movie.Movi
 		profile = termenv.ANSI256
 	}
 
-	p := player.NewPlayer(m, logger, telnet.MakeRenderer(conn, profile))
+	p := player.NewPlayer(m,
+		player.WithLogger(logger),
+		player.WithRenderer(telnet.MakeRenderer(conn, profile)),
+	)
 	defer p.Close()
 
 	opts := []tea.ProgramOption{
