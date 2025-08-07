@@ -65,7 +65,7 @@ func (p *Player) Init() tea.Cmd {
 	return tick(p.playCtx, p.movie.Frames[p.frame].Duration, frameTickMsg{})
 }
 
-//nolint:gocyclo
+//nolint:gocyclo,ireturn
 func (p *Player) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case frameTickMsg:

@@ -8,6 +8,7 @@ func NewMovie() Movie {
 	return Movie{}
 }
 
+//nolint:recvcheck
 type Movie struct {
 	Filename string
 	Frames   []Frame

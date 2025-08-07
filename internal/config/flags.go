@@ -53,7 +53,9 @@ func (s *Server) RegisterFlags(cmd *cobra.Command) {
 	fs.BoolVar(&s.API.Enabled, FlagPrefixAPI+FlagEnabled, s.API.Enabled, "Enables API listener")
 	fs.StringVar(&s.API.Address, FlagPrefixAPI+FlagAddress, s.API.Address, "API listen address")
 
-	fs.UintVar(&s.ConcurrentStreams, FlagConcurrentStreams, s.ConcurrentStreams, "Number of concurrent streams allowed from an IP address. Set to 0 to disable.")
+	fs.UintVar(&s.ConcurrentStreams, FlagConcurrentStreams, s.ConcurrentStreams,
+		"Number of concurrent streams allowed from an IP address. Set to 0 to disable.",
+	)
 	fs.DurationVar(&s.IdleTimeout, FlagIdleTimeout, s.IdleTimeout, "Idle connection timeout.")
 	fs.DurationVar(&s.MaxTimeout, FlagMaxTimeout, s.MaxTimeout, "Absolute connection timeout.")
 

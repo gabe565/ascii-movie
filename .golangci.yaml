@@ -1,13 +1,19 @@
-run:
-  timeout: 5m
+version: "2"
 
 issues:
   max-same-issues: 50
 
-linters-settings:
-  gosec:
-    excludes:
-      - G306
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - goimports
+    - golines
+  exclusions:
+    generated: lax
+  settings:
+    golines:
+      max-len: 120
 
 linters:
   enable:
@@ -15,18 +21,20 @@ linters:
     - asciicheck
     - bidichk
     - bodyclose
-    - copyloopvar
+    - canonicalheader
     - copyloopvar
     - decorder
+    - cyclop
+    - depguard
     - dupl
     - durationcheck
     - err113
     - errcheck
     - errname
     - errorlint
+    - exptostd
+    - fatcontext
     - forbidigo
-    - gci
-    - ginkgolinter
     - gocheckcompilerdirectives
     - gochecknoglobals
     - gochecknoinits
@@ -35,27 +43,27 @@ linters:
     - gocritic
     - gocyclo
     - godox
-    - gofumpt
     - goheader
-    - goimports
+    - godot
     - gomoddirectives
-    - gomodguard
     - goprintffuncname
     - gosec
-    - gosimple
-    - gosmopolitan
-    - govet
     - importas
     - inamedparam
-    - ineffassign
     - interfacebloat
+    - govet
+    - iface
+    - ineffassign
     - intrange
+    - ireturn
     - loggercheck
     - makezero
     - mirror
     - musttag
     - nakedret
+    - nestif
     - nilerr
+    - nilnesserr
     - nilnil
     - noctx
     - nolintlint
@@ -67,16 +75,15 @@ linters:
     - promlinter
     - protogetter
     - reassign
+    - recvcheck
     - revive
     - rowserrcheck
     - sloglint
     - spancheck
     - sqlclosecheck
     - staticcheck
-    - stylecheck
     - testableexamples
     - testifylint
-    - typecheck
     - unconvert
     - unparam
     - unused
@@ -84,3 +91,75 @@ linters:
     - usetesting
     - wastedassign
     - whitespace
+  settings:
+    cyclop:
+      max-complexity: 60
+    depguard:
+      rules:
+        "deprecated":
+          files:
+            - "$all"
+          deny:
+            - pkg: github.com/golang/protobuf
+              desc: Use google.golang.org/protobuf instead, see https://developers.google.com/protocol-buffers/docs/reference/go/faq#modules
+            - pkg: github.com/satori/go.uuid
+              desc: Use github.com/google/uuid instead, satori's package is not maintained
+            - pkg: github.com/gofrs/uuid$
+              desc: Use github.com/gofrs/uuid/v5 or later, it was not a go module before v5
+        "non-test files":
+          files:
+            - "!$test"
+          deny:
+            - pkg: math/rand$
+              desc: Use math/rand/v2 instead, see https://go.dev/blog/randv2
+        "non-main files":
+          files:
+            - "!**/main.go"
+          deny:
+            - pkg: log$
+              desc: Use log/slog instead, see https://go.dev/blog/slog
+    errcheck:
+      check-type-assertions: true
+    gocritic:
+      settings:
+        captLocal:
+          paramsOnly: false
+        underef:
+          skipRecvDeref: false
+    gosec:
+      excludes:
+        - G306
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+        - shadow
+    inamedparam:
+      skip-single-param: true
+    nakedret:
+      max-func-lines: 0
+    nestif:
+      min-complexity: 15
+    nolintlint:
+      allow-no-explanation: [golines]
+      require-specific: true
+    perfsprint:
+      strconcat: false
+    usetesting:
+      os-temp-dir: true
+
+  exclusions:
+    warn-unused: true
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - revive
+        text: var-naming
+      - linters:
+          - noctx
+        text: .*log/slog.* must not be called. use .*log/slog.*Context

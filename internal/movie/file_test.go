@@ -11,19 +11,19 @@ import (
 )
 
 func TestLoadFile(t *testing.T) {
-	const TestFile = "sw1.txt"
+	const testFile = "sw1.txt"
 
-	f, err := movies.Movies.Open(TestFile)
+	f, err := movies.Movies.Open(testFile)
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		_ = f.Close()
 	})
 
 	movie := NewMovie()
-	require.NoError(t, movie.LoadFile(TestFile, f, 1))
+	require.NoError(t, movie.LoadFile(testFile, f, 1))
 
-	assert.Equal(t, TestFile, movie.Filename)
-	assert.EqualValues(t, 17*time.Minute+44*time.Second, movie.Duration().Truncate(time.Second))
+	assert.Equal(t, testFile, movie.Filename)
+	assert.Equal(t, 17*time.Minute+44*time.Second, movie.Duration().Truncate(time.Second))
 	assert.Len(t, movie.Frames, 3410)
 	assert.Equal(t, 67, movie.Width)
 	assert.Equal(t, 13, movie.Height)
