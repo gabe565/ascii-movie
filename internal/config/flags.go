@@ -29,7 +29,7 @@ const (
 	FlagMaxTimeout        = "max-timeout"
 )
 
-func (c *Config) RegisterRootFlags(cmd *cobra.Command) {
+func (c *Config) RegisterFlags(cmd *cobra.Command) {
 	fs := cmd.PersistentFlags()
 	fs.VarP(&c.LogLevel, FlagLogLevel, "l", "Log level (one of "+strings.Join(slogx.LevelStrings(), ", ")+")")
 	fs.Var(&c.LogFormat, FlagLogFormat, "Log format (one of "+strings.Join(slogx.FormatStrings(), ", ")+")")

@@ -36,8 +36,8 @@ func Load(cmd *cobra.Command) (*Config, error) {
 	if flag := cmd.Flags().Lookup(FlagTimeout); flag != nil && flag.Changed {
 		d, err := cmd.Flags().GetDuration(FlagTimeout)
 		if err == nil {
-			c.Server.IdleTimeout = d
-			c.Server.MaxTimeout = d
+			c.IdleTimeout = d
+			c.MaxTimeout = d
 		}
 	}
 

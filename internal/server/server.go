@@ -8,7 +8,7 @@ import (
 )
 
 type Server struct {
-	conf  *config.Server
+	conf  *config.Config
 	Info  *Info
 	Log   *slog.Logger
 	Movie *movie.Movie
@@ -16,7 +16,7 @@ type Server struct {
 
 func NewServer(conf *config.Config, server string, info *Info) Server {
 	return Server{
-		conf: &conf.Server,
+		conf: conf,
 		Info: info,
 		Log:  slog.With("server", server),
 	}

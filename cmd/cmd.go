@@ -23,7 +23,7 @@ func NewCommand(opts ...cobrax.Option) *cobra.Command {
 	}
 
 	conf := config.New()
-	conf.RegisterRootFlags(cmd)
+	conf.RegisterFlags(cmd)
 	if cmd.Context() == nil {
 		cmd.SetContext(context.Background())
 	}

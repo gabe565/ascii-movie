@@ -72,7 +72,7 @@ func run(cmd *cobra.Command, args []string) error {
 
 	api := server.NewAPI(conf)
 
-	if conf.Server.SSH.Enabled {
+	if conf.SSH.Enabled {
 		ssh := server.NewSSH(conf, api.Info)
 		api.SSHEnabled = true
 		group.Go(func() error {
@@ -80,7 +80,7 @@ func run(cmd *cobra.Command, args []string) error {
 		})
 	}
 
-	if conf.Server.Telnet.Enabled {
+	if conf.Telnet.Enabled {
 		telnet := server.NewTelnet(conf, api.Info)
 		api.TelnetEnabled = true
 		group.Go(func() error {
@@ -92,7 +92,7 @@ func run(cmd *cobra.Command, args []string) error {
 		return ErrAllDisabled
 	}
 
-	if conf.Server.API.Enabled {
+	if conf.API.Enabled {
 		group.Go(func() error {
 			return api.Listen(ctx)
 		})

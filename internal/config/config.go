@@ -11,7 +11,7 @@ type Config struct {
 	LogLevel  slogx.Level
 	LogFormat slogx.Format
 
-	Server Server
+	Server
 }
 
 type Server struct {
