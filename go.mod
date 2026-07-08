@@ -1,6 +1,6 @@
 module gabe565.com/ascii-movie
 
-go 1.24.6
+go 1.25.0
 
 require (
 	gabe565.com/utils v0.0.0-20250302063333-ede73b14282c
@@ -17,7 +17,7 @@ require (
 	github.com/spf13/pflag v1.0.7
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/crypto v0.40.0
-	golang.org/x/sync v0.16.0
+	golang.org/x/sync v0.22.0
 )
 
 require (
