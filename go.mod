@@ -4,7 +4,7 @@ go 1.24.6
 
 require (
 	gabe565.com/utils v0.0.0-20250302063333-ede73b14282c
-	github.com/charmbracelet/bubbles v0.21.0
+	github.com/charmbracelet/bubbles/v2 v2.2.1
 	github.com/charmbracelet/bubbletea v1.3.6
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/charmbracelet/ssh v0.0.0-20250429213052-383d50896132
